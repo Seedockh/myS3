@@ -24,7 +24,7 @@ let dataDir: string = envFolder.concat("\\myS3DATA");
 // Used for post requests
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.listen(port, () => {
+app.listen(port, (): void => {
   // Create data folder if not exists
   if (!fs.existsSync(dataDir)){
     fs.mkdirSync(dataDir);
@@ -65,33 +65,36 @@ let createUser = async (connection: Connection, nickname: string, email: string,
 }
 
 // Get all users
-app.get("/users", async (req: Request, res: Response) => {
-  res.status(200).json({
+app.get("/users", async (req: Request, res: Response): Promise<Response> => {
+  return res.status(200).json({
     users: await getUserList()
   });
 });
 
 // Create user
-app.post("/user", async (req: Request, res: Response) => {
-  const user = userRepository.create(req.body);
-  const results = await userRepository.save(user);
-  res.send(results);
+app.post("/user", async (req: Request, res: Response): Promise<void> => {
+  const user: UserInterface[] = userRepository.create(req.body);
+  await userRepository.save(user).then((result): Response => {
+    return res.send(result);
+  } ); 
 });
 
 // Edit user
-app.put("/user/:id", async (req: Request, res: Response) => {
+app.put("/user/:id", async (req: Request, res: Response): Promise<void | Response> => {
   const user: UserInterface | undefined = await userRepository.findOne(req.params.id);
   console.log(user)
   if (user === undefined) {
     return res.status(400).send("User doesn't exists in database")
   }
   userRepository.merge(user, req.body);
-  const results = await userRepository.save(user);
-  res.send(results);
+  await userRepository.save(user).then((result): Response => {
+    return res.send(result);
+  });
 });
 
 // Delete user
-app.delete("/user/:id", async (req: Request, res: Response) => {
-  const results = await userRepository.delete(req.params.id);
-  res.send(results);
+app.delete("/user/:id", async (req: Request, res: Response): Promise<void> => {
+  await userRepository.delete(req.params.id).then((result): Response => {
+    return res.send(result);
+  });
 });
