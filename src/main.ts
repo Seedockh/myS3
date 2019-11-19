@@ -1,5 +1,5 @@
 import express from 'express'
-import body_parser from 'body-parser'
+import bodyParser from 'body-parser'
 import fs from 'fs'
 import 'reflect-metadata'
 import { createConnection } from 'typeorm'
@@ -12,20 +12,20 @@ interface UserInterface {
   password: string
 }
 
-let app: express.Application = express()
-let port: number = 1337
+const app: express.Application = express()
+const port: number = 1337
 
 // Get environment folder for any OS
-let envFolder: string =
+const envFolder: string =
   process.env.APPDATA ||
   (process.platform == 'darwin'
     ? process.env.HOME + '/Library/Preferences'
     : process.env.HOME + '/.local/share')
 // Set app data folder
-let dataDir: string = envFolder.concat('\\myS3DATA')
+const dataDir: string = envFolder.concat('\\myS3DATA')
 
 // Used for post requests
-app.use(body_parser.json())
+app.use(bodyParser.json())
 
 app.listen(port, () => {
   // Create data folder if not exists
@@ -61,7 +61,7 @@ app.delete('/', (req: express.Request, res: express.Response) => {
   console.log('Delete was called')
 })
 
-let createUser = (nickname: string, email: string, password: string): void => {
+const createUser = (nickname: string, email: string, password: string): void => {
   createConnection()
     .then(async connection => {
       console.log('Inserting a new user into the database...')
