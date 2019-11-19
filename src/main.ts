@@ -19,7 +19,7 @@ let userRepository: Repository<User>;
 // Get environment folder for any OS
 let envFolder: string = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share");
 // Set app data folder
-let dataDir: string = envFolder.concat("\\myS3DATA");
+const dataDir: string = envFolder.concat("\\myS3DATA");
 
 // Used for post requests
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -76,7 +76,7 @@ app.post("/user", async (req: Request, res: Response): Promise<void> => {
   const user: UserInterface[] = userRepository.create(req.body);
   await userRepository.save(user).then((result): Response => {
     return res.send(result);
-  } ); 
+  } );
 });
 
 // Edit user
