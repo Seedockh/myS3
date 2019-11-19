@@ -8,7 +8,7 @@ module.exports = {
    "password": process.env.DB_PASSWORD,
    "database": "mys3",
    "synchronize": true,
-   "logging": true,
+   "logging": false,
    "entities": [
       "src/entity/**/*.ts"
    ],
