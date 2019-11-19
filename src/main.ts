@@ -13,7 +13,7 @@ interface UserInterface {
 }
 
 const app: express.Application = express()
-const port: number = 1337
+const port = 1337
 
 // Get environment folder for any OS
 const envFolder: string =
@@ -26,16 +26,6 @@ const dataDir: string = envFolder.concat('\\myS3DATA')
 
 // Used for post requests
 app.use(bodyParser.json())
-
-app.listen(port, () => {
-  // Create data folder if not exists
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir)
-  }
-  console.log(`Server started on port ${port}`)
-  // Create the default user
-  createUser('Jack', 'jack.sparrow@gmail.com', 'Sparrow')
-})
 
 // Get request
 app.get('/', (req: express.Request, res: express.Response) => {
@@ -61,7 +51,11 @@ app.delete('/', (req: express.Request, res: express.Response) => {
   console.log('Delete was called')
 })
 
-const createUser = (nickname: string, email: string, password: string): void => {
+const createUser = (
+  nickname: string,
+  email: string,
+  password: string,
+): void => {
   createConnection()
     .then(async connection => {
       console.log('Inserting a new user into the database...')
@@ -78,3 +72,13 @@ const createUser = (nickname: string, email: string, password: string): void => 
     })
     .catch(error => console.log(error))
 }
+
+app.listen(port, () => {
+  // Create data folder if not exists
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir)
+  }
+  console.log(`Server started on port ${port}`)
+  // Create the default user
+  createUser('Jack', 'jack.sparrow@gmail.com', 'Sparrow')
+})
