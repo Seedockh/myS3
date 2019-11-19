@@ -10,9 +10,9 @@
   "scripts": {
     "test:static": "yarn tsc",
     "test:unit": "yarn jest --config=.jestrc.js --maxWorkers 2",
-    "test": "yarn test:static && yarn test:unit",
+    "test": "cross-env NODE_ENV=testing yarn test:static && yarn test:unit",
     "lint": "yarn eslint src/*.ts* src/**/*.ts*",
-    "dev": "yarn nodemon",
+    "dev": "cross-env NODE_ENV=testing yarn nodemon",
     "build": "yarn babel src/ --out-dir .dist/ --extensions \".ts\" --source-maps inline --quiet --copy-files",
     "clean": "yarn rimraf .dist"
   },
@@ -31,6 +31,7 @@
     "@babel/plugin-proposal-decorators": "^7.7.0",
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "body-parser": "^1.19.0",
+    "cross-env": "^6.0.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mysql": "^2.14.1",

@@ -11,6 +11,7 @@ yarn.lock
 
 # Environment
 .env
+.env.testing
 
 # Logs
 *.log

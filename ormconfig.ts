@@ -1,4 +1,6 @@
-require('dotenv').config()
+require('dotenv').config(
+  { path: process.env.NODE_ENV==='testing' ? `${__dirname}/.env.testing` : `${__dirname}/.env.dev` }
+)
 
 module.exports = {
    "type": "postgres",
@@ -6,9 +8,9 @@ module.exports = {
    "port": 5432,
    "username": process.env.DB_USER,
    "password": process.env.DB_PASSWORD,
-   "database": "mys3",
+   "database": process.env.DB_DATABASE,
    "synchronize": true,
-   "logging": true,
+   "logging": false,
    "entities": [
       "src/entity/**/*.ts"
    ],
