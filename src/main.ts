@@ -80,8 +80,11 @@ app.post("/user", async (req: Request, res: Response) => {
 
 // Edit user
 app.put("/user/:id", async (req: Request, res: Response) => {
-  // We use any because typeorm doc said the return of findOne is Promise<Entity | undefined>
-  const user: any = await userRepository.findOne(req.params.id);
+  const user: UserInterface | undefined = await userRepository.findOne(req.params.id);
+  console.log(user)
+  if (user === undefined) {
+    return res.status(400).send("User doesn't exists in database")
+  }
   userRepository.merge(user, req.body);
   const results = await userRepository.save(user);
   res.send(results);
