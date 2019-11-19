@@ -22,7 +22,7 @@ const envFolder: string =
     ? process.env.HOME + '/Library/Preferences'
     : process.env.HOME + '/.local/share')
 // Set app data folder
-const dataDir: string = envFolder.concat('\\myS3DATA')
+const dataDir: string = envFolder.concat('\/myS3DATA')
 
 // Used for post requests
 app.use(bodyParser.json())
