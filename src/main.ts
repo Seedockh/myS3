@@ -30,22 +30,27 @@ const initializeConnection = (): void => {
       }
       console.log('Inserting default user in the database')
       createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')
-    }).catch(error => {
+    })
+    .catch(error => {
       console.log(error)
-    });
+    })
 }
 
 // Get environment folder for any OS
-const envFolder: string = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + '/.local/share');
+const envFolder: string =
+  process.env.APPDATA ||
+  (process.platform == 'darwin'
+    ? process.env.HOME + '/Library/Preferences'
+    : process.env.HOME + '/.local/share')
 // Set app data folder
-const dataDir: string = envFolder.concat('\\myS3DATA');
+const dataDir: string = envFolder.concat('\\myS3DATA')
 
 // Used for post requests
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.listen(port, (): void => {
   // Create data folder if not exists
-  if (! fs.existsSync(dataDir)){
+  if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir)
   }
   console.log(`Server started on port ${port}`)
@@ -54,7 +59,12 @@ app.listen(port, (): void => {
   initializeConnection()
 })
 
-let createUser = async (connection: Connection, nickname: string, email: string, password: string) => {
+let createUser = async (
+  connection: Connection,
+  nickname: string,
+  email: string,
+  password: string,
+) => {
   const user: UserInterface = new User()
   user.nickname = nickname
   user.email = email
@@ -65,36 +75,56 @@ let createUser = async (connection: Connection, nickname: string, email: string,
 }
 
 // Get all users
-app.get('/users', async (req: Request, res: Response): Promise<Response> => {
-  return res.status(200).json({
-    users: await getUserList()
-  });
-});
+app.get(
+  '/users',
+  async (req: Request, res: Response): Promise<Response> => {
+    return res.status(200).json({
+      users: await getUserList(),
+    })
+  },
+)
 
 // Create user
-app.post('/user', async (req: Request, res: Response): Promise<void> => {
-  const user: UserInterface[] = userRepository.create(req.body)
-  await userRepository.save(user).then((result): Response => {
-    return res.send(result)
-  });
-});
+app.post(
+  '/user',
+  async (req: Request, res: Response): Promise<void> => {
+    const user: UserInterface[] = userRepository.create(req.body)
+    await userRepository.save(user).then(
+      (result): Response => {
+        return res.send(result)
+      },
+    )
+  },
+)
 
 // Edit user
-app.put('/user/:id', async (req: Request, res: Response): Promise<void | Response> => {
-  const user: UserInterface | undefined = await userRepository.findOne(req.params.id)
-  console.log(user)
-  if (user === undefined) {
-    return res.status(400).send(`User doesn't exists in database`)
-  }
-  userRepository.merge(user, req.body)
-  await userRepository.save(user).then((result): Response => {
-    return res.send(result)
-  })
-})
+app.put(
+  '/user/:id',
+  async (req: Request, res: Response): Promise<void | Response> => {
+    const user: UserInterface | undefined = await userRepository.findOne(
+      req.params.id,
+    )
+    console.log(user)
+    if (user === undefined) {
+      return res.status(400).send(`User doesn't exists in database`)
+    }
+    userRepository.merge(user, req.body)
+    await userRepository.save(user).then(
+      (result): Response => {
+        return res.send(result)
+      },
+    )
+  },
+)
 
 // Delete user
-app.delete('/user/:id', async (req: Request, res: Response): Promise<void> => {
-  await userRepository.delete(req.params.id).then((result): Response => {
-    return res.send(result)
-  });
-});
+app.delete(
+  '/user/:id',
+  async (req: Request, res: Response): Promise<void> => {
+    await userRepository.delete(req.params.id).then(
+      (result): Response => {
+        return res.send(result)
+      },
+    )
+  },
+)

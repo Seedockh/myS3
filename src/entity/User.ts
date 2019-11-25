@@ -15,4 +15,4 @@ class User {
   password: string
 }
 
-export default User;
+export default User
