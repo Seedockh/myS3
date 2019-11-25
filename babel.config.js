@@ -5,7 +5,8 @@ module.exports = api => {
   const plugins = [
     ['@babel/plugin-proposal-decorators', {legacy: true}],
     ['@babel/plugin-proposal-class-properties'],
-    ['@babel/plugin-proposal-export-default-from']
+    ['@babel/plugin-proposal-export-default-from'],
+    ['@babel/plugin-transform-runtime']
   ]
 
   return {
