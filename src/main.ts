@@ -28,23 +28,26 @@ export const createUser = async (
   user.nickname = nickname
   user.email = email
   user.password = password
-  await connection.manager.save(user).catch(error => {
+  return await connection.manager.save(user).catch(error => {
     console.log(error)
   })
 }
 
-export const initializeConnection = async (): Promise<void> => {
+export const initializeConnection = async (): Promise<void|UserInterface> => {
   return await createConnection()
     .then(async connection => {
       console.log('Successfully connected to database')
       userRepository = await connection.getRepository(User)
-
-      // Create the default user if not exists
-      if (process.env.NODE_ENV==='test' || (await getUserList()).length !== 0) {
+      return
+      /*if (
+        process.env.NODE_ENV === 'test' ||
+        (await getUserList()).length !== 0
+      ) {
         return
       }
+      // Create the default user if not exists
       console.log('Inserting default user in the database')
-      return createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')
+      return createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')*/
     })
     .catch(error => {
       console.log(error)
