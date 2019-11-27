@@ -2,25 +2,6 @@ name: Node CI
 
 on: [push]
 
-refs:
-  container: &container
-    docker:
-      - image: node:12-alpine
-        environment:
-          DATABASE_URL: 'postgres://mys3@localhost:5432/test_mys3'
-      - image: circleci/postgres:10.6-alpine-ram
-        environment:
-          DB_USER: mys3
-          DB_PASSWORD: mys3
-
-    working_directory: ~/
-
-  steps:
-    - &Install
-      run:
-        name: Install Dependencies
-        command: yarn install --frozen-lockfile
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,4 +21,4 @@ jobs:
           yarn
           yarn test
         env:
-          CI: true
+          CI: false
