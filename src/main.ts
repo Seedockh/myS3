@@ -40,7 +40,7 @@ export const initializeConnection = async (): Promise<void> => {
       userRepository = await connection.getRepository(User)
 
       // Create the default user if not exists
-      if ((await getUserList()).length !== 0) {
+      if (process.env.NODE_ENV==='test' || (await getUserList()).length !== 0) {
         return
       }
       console.log('Inserting default user in the database')
