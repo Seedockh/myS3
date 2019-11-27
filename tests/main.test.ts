@@ -100,7 +100,7 @@ describe(':: User CRUD tests', (): void => {
     })
   })
 
-  it('DELETES a newly created user successfully', (done) => {
+  it('DELETES the previously created user successfully', (done) => {
     getData("http://localhost:7331/user/1",
     { method: 'DELETE' })
     .then(result => {
