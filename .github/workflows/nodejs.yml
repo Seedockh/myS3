@@ -10,6 +10,19 @@ jobs:
       matrix:
         node-version: [12.x]
 
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
@@ -21,10 +34,7 @@ jobs:
           yarn
           yarn test
         env:
-          NODE_ENV: test
-          DB_HOST: localhost
-          DB_USER: mys3
-          DB_PASSWORD: mys3
-          DB_DATABASE: test_mys3
-          DB_PORT: 5432
-          CI: true
+        # use localhost for the host here because we are running the job on the VM.
+        # If we were running the job on in a container this would be postgres
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }} # get randomly assigned published port
