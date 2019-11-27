@@ -52,22 +52,23 @@ export const initializeConnection = async (): Promise<void> => {
 }
 
 // Get environment folder for any OS
-export const envFolder: string =
+/*export const envFolder: string =
   process.env.APPDATA ||
   (process.platform == 'darwin'
     ? process.env.HOME + '/Library/Preferences'
     : process.env.HOME + '/.local/share')
 // Set app data folder
-export const dataDir: string = envFolder.concat('/myS3DATA')
+export const dataDir: string = envFolder.concat('\\myS3DATA')
+*/
 
 // Used for post requests
 app.use(bodyParser.urlencoded({ extended: false }))
 
 export const server = app.listen(port, (): void => {
   // Create data folder if not exists
-  if (!fs.existsSync(dataDir)) {
+  /*if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir)
-  }
+  }*/
   console.log(`Server started on port ${port}`)
 
   // Connect to database
