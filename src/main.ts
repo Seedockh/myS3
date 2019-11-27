@@ -58,7 +58,7 @@ export const envFolder: string =
     ? process.env.HOME + '/Library/Preferences'
     : process.env.HOME + '/.local/share')
 // Set app data folder
-export const dataDir: string = envFolder.concat('\\myS3DATA')
+export const dataDir: string = envFolder.concat('/myS3DATA')
 
 // Used for post requests
 app.use(bodyParser.urlencoded({ extended: false }))
