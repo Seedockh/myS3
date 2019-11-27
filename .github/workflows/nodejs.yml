@@ -3,14 +3,6 @@ name: Node CI
 on: [push]
 
 jobs:
-  env:
-    NODE_ENV: test
-    DB_HOST: localhost
-    DB_USER: mys3
-    DB_PASSWORD: mys3
-    DB_DATABASE: test_mys3
-    DB_PORT: 5432
-
   build:
     runs-on: ubuntu-latest
 
@@ -29,4 +21,10 @@ jobs:
           yarn
           yarn test
         env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_USER: mys3
+          DB_PASSWORD: mys3
+          DB_DATABASE: test_mys3
+          DB_PORT: 5432
           CI: true
