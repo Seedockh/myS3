@@ -39,12 +39,12 @@ export const initializeConnection = async (): Promise<void | UserInterface> => {
       console.log('Successfully connected to database')
       userRepository = await connection.getRepository(User)
       return
-      /*if (
+      if (
         process.env.NODE_ENV === 'test' ||
         (await getUserList()).length !== 0
       ) {
         return
-      }
+      }/*
       // Create the default user if not exists
       console.log('Inserting default user in the database')
       return createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')*/
