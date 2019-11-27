@@ -1,5 +1,5 @@
 require('dotenv').config(
-  { path: process.env.NODE_ENV==='testing' ? `${__dirname}/.env.testing` : `${__dirname}/.env.dev` }
+  { path: process.env.NODE_ENV==='test' ? `${__dirname}/.env.testing` : `${__dirname}/.env.dev` }
 )
 
 module.exports = {
@@ -10,6 +10,7 @@ module.exports = {
    "password": process.env.DB_PASSWORD,
    "database": process.env.DB_DATABASE,
    "synchronize": true,
+   //"dropSchema": process.env.NODE_ENV==='test',
    "logging": false,
    "entities": [
       "src/entity/**/*.ts"

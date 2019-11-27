@@ -5,61 +5,38 @@ import 'reflect-metadata'
 import { createConnection, getManager, Connection, Repository } from 'typeorm'
 import User from './entity/User'
 
-interface UserInterface {
+export interface UserInterface {
   id: number
   nickname: string
   email: string
   password: string
 }
 
-const app: express.Application = express()
-const port = 1337
-let userRepository: Repository<User>
+export const app: express.Application = express()
+export const port = 1337
+export let userRepository: Repository<User>
 
-const getUserList = async () => await getManager().find(User)
+export const getUserList = async () => await getManager().find(User)
 
-const initializeConnection = (): void => {
-  createConnection()
+export const initializeConnection = async (): Promise<void> => {
+  return await createConnection()
     .then(async connection => {
       console.log('Successfully connected to database')
-      userRepository = connection.getRepository(User)
+      userRepository = await connection.getRepository(User)
 
       // Create the default user if not exists
-      if ((await getUserList()).length != 0 ? true : false) {
+      if ((await getUserList()).length !== 0) {
         return
       }
       console.log('Inserting default user in the database')
-      createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')
+      return createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')
     })
     .catch(error => {
       console.log(error)
     })
 }
 
-// Get environment folder for any OS
-const envFolder: string =
-  process.env.APPDATA ||
-  (process.platform == 'darwin'
-    ? process.env.HOME + '/Library/Preferences'
-    : process.env.HOME + '/.local/share')
-// Set app data folder
-const dataDir: string = envFolder.concat('\\myS3DATA')
-
-// Used for post requests
-app.use(bodyParser.urlencoded({ extended: false }))
-
-app.listen(port, (): void => {
-  // Create data folder if not exists
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir)
-  }
-  console.log(`Server started on port ${port}`)
-
-  // Connect to database
-  initializeConnection()
-})
-
-let createUser = async (
+export const createUser = async (
   connection: Connection,
   nickname: string,
   email: string,
@@ -73,6 +50,41 @@ let createUser = async (
     console.log(error)
   })
 }
+
+// Get environment folder for any OS
+export const envFolder: string =
+  process.env.APPDATA ||
+  (process.platform == 'darwin'
+    ? process.env.HOME + '/Library/Preferences'
+    : process.env.HOME + '/.local/share')
+// Set app data folder
+export const dataDir: string = envFolder.concat('\\myS3DATA')
+
+// Used for post requests
+app.use(bodyParser.urlencoded({ extended: false }))
+
+
+export const server = app.listen(port, ():void => {
+  // Create data folder if not exists
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir)
+  }
+  console.log(`Server started on port ${port}`)
+
+  // Connect to database
+  initializeConnection()
+})
+
+// Get home route
+app.get(
+  '/',
+  async (req: Request, res: Response): Promise<Response> => {
+    return res.status(200).json({
+      message: 'Welcome on mys3 homepage !',
+    })
+  },
+)
+
 
 // Get all users
 app.get(
@@ -88,8 +100,8 @@ app.get(
 app.post(
   '/user',
   async (req: Request, res: Response): Promise<void> => {
-    const user: UserInterface[] = userRepository.create(req.body)
-    await userRepository.save(user).then(
+    const user: UserInterface[] = userRepository?.create(req.body)
+    await userRepository?.save(user).then(
       (result): Response => {
         return res.send(result)
       },
@@ -101,10 +113,7 @@ app.post(
 app.put(
   '/user/:id',
   async (req: Request, res: Response): Promise<void | Response> => {
-    const user: UserInterface | undefined = await userRepository.findOne(
-      req.params.id,
-    )
-    console.log(user)
+    const user: UserInterface | undefined = await userRepository.findOne(req.params.id)
     if (user === undefined) {
       return res.status(400).send(`User doesn't exists in database`)
     }

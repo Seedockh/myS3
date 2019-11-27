@@ -9,10 +9,10 @@
   "types": "types.d.ts",
   "scripts": {
     "test:static": "yarn tsc",
-    "test:unit": "yarn jest --config=.jestrc.js --maxWorkers 2",
-    "test": "cross-env NODE_ENV=testing yarn test:static && yarn test:unit",
+    "test:unit": "yarn jest --config=.jestrc.js --maxWorkers 2 --detectOpenHandles --forceExit",
+    "test": "cross-env NODE_ENV=test yarn test:static && yarn test:unit",
     "lint": "yarn eslint src/*.ts* src/**/*.ts*",
-    "dev": "cross-env NODE_ENV=testing yarn nodemon",
+    "dev": "cross-env NODE_ENV=dev yarn nodemon",
     "build": "yarn babel src/ --out-dir .dist/ --extensions \".ts\" --source-maps inline --quiet --copy-files",
     "clean": "yarn rimraf .dist"
   },
@@ -29,6 +29,7 @@
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/plugin-proposal-export-default-from": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.4",
     "@babel/plugin-transform-runtime": "^7.7.4",
     "@babel/runtime": "^7.7.2",
     "body-parser": "^1.19.0",
@@ -36,6 +37,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mysql": "^2.14.1",
+    "node-fetch": "^2.6.0",
     "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.20"

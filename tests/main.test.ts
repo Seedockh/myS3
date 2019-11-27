@@ -1,7 +1,112 @@
 import { expect } from 'chai'
+import { createConnection, Connection, Server, Repository } from 'typeorm'
+import { app, server } from '../src/main'
+import fetch from 'node-fetch'
 
-describe(':: init test', (): void => {
-  it('makes a first init test', () => {
-    expect(1+2+3).equal(6)
+let testServer:Server
+let connection:Connection
+
+beforeAll(async () => {
+  testServer = app.listen(7331)
+  connection = await createConnection()
+  connection = await connection.synchronize(true)
+  return await connection
+})
+
+afterAll(async () => {
+  await testServer.close()
+  return await server.close()
+})
+
+const getData = async (url, options) => {
+  try {
+    const response = await fetch(url, options)
+    return await response.json()
+  } catch (error) {
+    return console.log(error)
+  }
+}
+
+describe(':: Database initialization', (): void => {
+  it('initializes database connection', (done) => {
+    getData("http://localhost:7331/", { method: 'GET' })
+    .then(async result => {
+      expect(result.message).equal('Welcome on mys3 homepage !')
+      done()
+    })
+  })
+})
+
+describe(':: User CRUD tests', (): void => {
+  it('CREATES one user successfully', (done) => {
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // This is a temporary data encoding solution because JSON problems
+    const data = 'nickname=john&email=johndoe@gmail.com&password=doe'
+
+    getData("http://localhost:7331/user",
+    { method: 'POST', headers: headers, body: data })
+    .then(result => {
+      expect(JSON.stringify(result))
+      .equal(
+        JSON.stringify({
+          id: 1,
+          nickname: "john",
+          email: "johndoe@gmail.com",
+          password: "doe"
+        })
+      )
+      done()
+    })
+  })
+
+  it('READS the previously created user successfully', (done) => {
+    getData("http://localhost:7331/users",
+    { method: 'GET' })
+    .then(result => {
+      expect(JSON.stringify(result))
+      .equal(
+        JSON.stringify({
+          users: [
+              {
+                id: 1,
+                nickname: "john",
+                email: "johndoe@gmail.com",
+                password: "doe"
+              }
+          ]
+        })
+      )
+      done()
+    })
+  })
+
+  it('UPDATES the previously created user successfully', (done) => {
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // This is a temporary data encoding solution because JSON problems
+    const data = 'nickname=jack'
+    getData("http://localhost:7331/user/1",
+    { method: 'PUT', headers: headers, body: data })
+    .then(result => {
+      expect(JSON.stringify(result))
+      .equal(
+        JSON.stringify({
+          id: 1,
+          nickname: "jack",
+          email: "johndoe@gmail.com",
+          password: "doe"
+        })
+      )
+      done()
+    })
+  })
+
+  it('DELETES a newly created user successfully', (done) => {
+    getData("http://localhost:7331/user/1",
+    { method: 'DELETE' })
+    .then(result => {
+      expect(JSON.stringify(result))
+      .equal(JSON.stringify({ raw:[], affected: 1 }))
+      done()
+    })
   })
 })
