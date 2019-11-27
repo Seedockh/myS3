@@ -44,7 +44,7 @@ export const initializeConnection = async (): Promise<void | UserInterface> => {
         (await getUserList()).length !== 0
       ) {
         return
-      }/*
+      } /*
       // Create the default user if not exists
       console.log('Inserting default user in the database')
       return createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')*/
