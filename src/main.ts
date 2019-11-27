@@ -33,7 +33,7 @@ export const createUser = async (
   })
 }
 
-export const initializeConnection = async (): Promise<void|UserInterface> => {
+export const initializeConnection = async (): Promise<void | UserInterface> => {
   return await createConnection()
     .then(async connection => {
       console.log('Successfully connected to database')
