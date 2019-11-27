@@ -14,9 +14,10 @@ jobs:
       postgres:
         image: postgres:10.8
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_DATABASE: postgres
+          DB_PORT: 5432
         ports:
         - 5432:5432
         # needed because the postgres container does not provide a healthcheck
