@@ -1,5 +1,3 @@
-version: 2
-
 name: Node CI
 
 on: [push]
