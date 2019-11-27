@@ -15,7 +15,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await testServer.close()
-  return await server.close()
+  await server.close()
 })
 
 const getData = async (url, options) => {

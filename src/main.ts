@@ -18,6 +18,21 @@ export let userRepository: Repository<User>
 
 export const getUserList = async () => await getManager().find(User)
 
+export const createUser = async (
+  connection: Connection,
+  nickname: string,
+  email: string,
+  password: string,
+) => {
+  const user: UserInterface = new User()
+  user.nickname = nickname
+  user.email = email
+  user.password = password
+  await connection.manager.save(user).catch(error => {
+    console.log(error)
+  })
+}
+
 export const initializeConnection = async (): Promise<void> => {
   return await createConnection()
     .then(async connection => {
@@ -36,21 +51,6 @@ export const initializeConnection = async (): Promise<void> => {
     })
 }
 
-export const createUser = async (
-  connection: Connection,
-  nickname: string,
-  email: string,
-  password: string,
-) => {
-  const user: UserInterface = new User()
-  user.nickname = nickname
-  user.email = email
-  user.password = password
-  await connection.manager.save(user).catch(error => {
-    console.log(error)
-  })
-}
-
 // Get environment folder for any OS
 export const envFolder: string =
   process.env.APPDATA ||
@@ -63,8 +63,7 @@ export const dataDir: string = envFolder.concat('\\myS3DATA')
 // Used for post requests
 app.use(bodyParser.urlencoded({ extended: false }))
 
-
-export const server = app.listen(port, ():void => {
+export const server = app.listen(port, (): void => {
   // Create data folder if not exists
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir)
@@ -84,7 +83,6 @@ app.get(
     })
   },
 )
-
 
 // Get all users
 app.get(
@@ -113,7 +111,9 @@ app.post(
 app.put(
   '/user/:id',
   async (req: Request, res: Response): Promise<void | Response> => {
-    const user: UserInterface | undefined = await userRepository.findOne(req.params.id)
+    const user: UserInterface | undefined = await userRepository.findOne(
+      req.params.id,
+    )
     if (user === undefined) {
       return res.status(400).send(`User doesn't exists in database`)
     }
