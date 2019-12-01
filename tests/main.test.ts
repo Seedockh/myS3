@@ -21,9 +21,11 @@ afterAll(async () => {
 const getData = async (url, options) => {
   try {
     const response = await fetch(url, options)
-    return await response.json()
+    console.log('>>>>>>>> getData trying')
+    return response.json()
   } catch (error) {
-    return console.log(error)
+    console.log('>>>>>>>> getData error')
+    return error
   }
 }
 
@@ -55,6 +57,22 @@ describe(':: User CRUD tests', (): void => {
           password: "doe"
         })
       )
+      done()
+    })
+  })
+
+  it('FAILS to create incorrectly defined user', (done) => {
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // This is a temporary data encoding solution because JSON problems
+    const data = 'email=johndoe@gmail.com&password=doe'
+
+    getData("http://localhost:7331/user",
+    { method: 'POST', headers: headers, body: data })
+    .then(result => {
+      // it should never go there
+      done()
+    }).catch(error => {
+      expect(JSON.stringify(error)).contains('aze')
       done()
     })
   })

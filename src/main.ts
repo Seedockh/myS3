@@ -5,7 +5,7 @@ import 'reflect-metadata'
 import { createConnection, getManager, Connection, Repository } from 'typeorm'
 import User from './entity/User'
 
-export interface UserInterface {
+interface UserInterface {
   id: number
   nickname: string
   email: string
@@ -18,18 +18,13 @@ export let userRepository: Repository<User>
 
 export const getUserList = async () => await getManager().find(User)
 
-export const createUser = async (
-  connection: Connection,
-  nickname: string,
-  email: string,
-  password: string,
-) => {
+export const createUser = async (connection: Connection, nickname: string, email: string, password: string) => {
   const user: UserInterface = new User()
   user.nickname = nickname
   user.email = email
   user.password = password
   return await connection.manager.save(user).catch(error => {
-    console.log(error)
+    return error
   })
 }
 
@@ -39,39 +34,31 @@ export const initializeConnection = async (): Promise<void | UserInterface> => {
       console.log('Successfully connected to database')
       userRepository = await connection.getRepository(User)
       return
-      if (
-        process.env.NODE_ENV === 'test' ||
-        (await getUserList()).length !== 0
-      ) {
-        return
-      } /*
+      /*
       // Create the default user if not exists
       console.log('Inserting default user in the database')
       return createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')*/
     })
-    .catch(error => {
-      console.log(error)
-    })
+    .catch(error => error)
 }
 
 // Get environment folder for any OS
-/*export const envFolder: string =
+export const envFolder: string =
   process.env.APPDATA ||
   (process.platform == 'darwin'
     ? process.env.HOME + '/Library/Preferences'
     : process.env.HOME + '/.local/share')
 // Set app data folder
 export const dataDir: string = envFolder.concat('\\myS3DATA')
-*/
 
 // Used for post requests
 app.use(bodyParser.urlencoded({ extended: false }))
 
 export const server = app.listen(port, (): void => {
   // Create data folder if not exists
-  /*if (!fs.existsSync(dataDir)) {
+  if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir)
-  }*/
+  }
   console.log(`Server started on port ${port}`)
 
   // Connect to database
@@ -107,7 +94,10 @@ app.post(
       (result): Response => {
         return res.send(result)
       },
-    )
+    ).catch( error => {
+      console.log('>>>>>>>> POST route')
+      return error
+    })
   },
 )
 
