@@ -18,7 +18,12 @@ export let userRepository: Repository<User>
 
 export const getUserList = async () => await getManager().find(User)
 
-export const createUser = async (connection: Connection, nickname: string, email: string, password: string) => {
+export const createUser = async (
+  connection: Connection,
+  nickname: string,
+  email: string,
+  password: string,
+) => {
   const user: UserInterface = new User()
   user.nickname = nickname
   user.email = email
@@ -90,14 +95,17 @@ app.post(
   '/user',
   async (req: Request, res: Response): Promise<void> => {
     const user: UserInterface[] = userRepository?.create(req.body)
-    await userRepository?.save(user).then(
-      (result): Response => {
-        return res.send(result)
-      },
-    ).catch( error => {
-      console.log('>>>>>>>> POST route')
-      return error
-    })
+    await userRepository
+      ?.save(user)
+      .then(
+        (result): Response => {
+          return res.send(result)
+        },
+      )
+      .catch(error => {
+        console.log('>>>>>>>> POST route')
+        return error
+      })
   },
 )
 
