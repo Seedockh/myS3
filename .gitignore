@@ -10,8 +10,7 @@ package-lock.json
 yarn.lock
 
 # Environment
-.env.dev
-.env.testing
+.env*
 
 # Logs
 *.log

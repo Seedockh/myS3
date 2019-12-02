@@ -12,8 +12,8 @@ interface UserInterface {
   password: string
 }
 
+const port = 1337
 export const app: express.Application = express()
-export const port = 1337
 export let userRepository: Repository<User>
 
 export const getUserList = async () => await getManager().find(User)

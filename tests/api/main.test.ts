@@ -1,16 +1,21 @@
 import { expect } from 'chai'
-import { createConnection, Connection, Server, Repository } from 'typeorm'
-import { app, server } from '../src/main'
+import express from 'express'
 import fetch from 'node-fetch'
+import { createConnection, getManager, getUserList, createUser, initializeConnection, UserInterface, Connection, Server, Repository } from 'typeorm'
+import { app, server } from '../../src/main'
+import User from '../../src/entity/User'
 
 let testServer:Server
 let connection:Connection
+let userRepository: Repository<User>
 
 beforeAll(async () => {
   testServer = app.listen(7331)
   connection = await createConnection()
-  connection = await connection.synchronize(true)
-  return await connection
+  connection = await connection.synchronize(true).then(async () => {
+    userRepository = await connection.getRepository(User)
+  })
+  return await userRepository
 })
 
 afterAll(async () => {
@@ -24,22 +29,48 @@ const getData = async (url, options) => {
     console.log('>>>>>>>> getData trying')
     return response.json()
   } catch (error) {
-    console.log('>>>>>>>> getData error')
     return error
   }
 }
 
 describe(':: Database initialization', (): void => {
+  it('checks UserInterface type', (done) => {
+    const user:UserInterface =
+    expect(UserInterface).equals(undefined)
+    done()
+  })
+
   it('initializes database connection', (done) => {
     getData("http://localhost:7331/", { method: 'GET' })
     .then(async result => {
+      expect(testServer._connectionKey).contains('7331')
       expect(result.message).equal('Welcome on mys3 homepage !')
       done()
     })
   })
 })
 
-describe(':: User CRUD tests', (): void => {
+describe(':: User Entity CRUD tests', (): void => {
+  it('CREATES and DELETES one User successfully', (done) => {
+    let user:UserInterface = new User()
+    user.nickname = 'Neo'
+    user.email = 'neoanderson@gmail.com'
+    user.password = 'Anderson'
+    userRepository.save(user).then( dbUser => {
+      expect(typeof dbUser.id).equal('number')
+      expect(typeof dbUser.nickname).equal('string')
+      expect(typeof dbUser.email).equal('string')
+      expect(typeof dbUser.password).equal('string')
+
+      userRepository.delete(1).then(result => {
+        expect(JSON.stringify(result)).equal(JSON.stringify({ raw:[],  affected: 1 }))
+        done()
+      })
+    })
+  })
+})
+
+describe(':: API User CRUD tests', (): void => {
   it('CREATES one user successfully', (done) => {
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     // This is a temporary data encoding solution because JSON problems
@@ -51,7 +82,7 @@ describe(':: User CRUD tests', (): void => {
       expect(JSON.stringify(result))
       .equal(
         JSON.stringify({
-          id: 1,
+          id: 2,
           nickname: "john",
           email: "johndoe@gmail.com",
           password: "doe"
@@ -86,7 +117,7 @@ describe(':: User CRUD tests', (): void => {
         JSON.stringify({
           users: [
               {
-                id: 1,
+                id: 2,
                 nickname: "john",
                 email: "johndoe@gmail.com",
                 password: "doe"
@@ -102,13 +133,13 @@ describe(':: User CRUD tests', (): void => {
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     // This is a temporary data encoding solution because JSON problems
     const data = 'nickname=jack'
-    getData("http://localhost:7331/user/1",
+    getData("http://localhost:7331/user/2",
     { method: 'PUT', headers: headers, body: data })
     .then(result => {
       expect(JSON.stringify(result))
       .equal(
         JSON.stringify({
-          id: 1,
+          id: 2,
           nickname: "jack",
           email: "johndoe@gmail.com",
           password: "doe"
@@ -119,7 +150,7 @@ describe(':: User CRUD tests', (): void => {
   })
 
   it('DELETES the previously created user successfully', (done) => {
-    getData("http://localhost:7331/user/1",
+    getData("http://localhost:7331/user/2",
     { method: 'DELETE' })
     .then(result => {
       expect(JSON.stringify(result))
