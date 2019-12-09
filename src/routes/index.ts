@@ -1,8 +1,8 @@
-import { Router, Request, Response } from "express";
-import auth from "./auth";
-import user from "./user";
+import { Router, Request, Response } from 'express'
+import auth from './auth'
+import user from './user'
 
-const routes = Router();
+const routes = Router()
 
 // Get home route
 routes.get(
@@ -14,7 +14,7 @@ routes.get(
   },
 )
 
-routes.use("/auth", auth);
-routes.use("/user", user);
+routes.use('/auth', auth)
+routes.use('/user', user)
 
-export default routes;
+export default routes

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
-import * as bcrypt from "bcryptjs";
+import * as bcrypt from 'bcryptjs'
 
 @Entity()
 class User {
@@ -16,15 +16,16 @@ class User {
   password: string
 
   @Column('text', { nullable: true })
-  role: string;
+  role: string
 
   hashPassword() {
-    if (!this.password) return { error: true, message: 'Password is not defined.'}
-    return this.password = bcrypt.hashSync(this.password, 8);
+    if (!this.password)
+      return { error: true, message: 'Password is not defined.' }
+    return (this.password = bcrypt.hashSync(this.password, 8))
   }
 
   checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
-    return bcrypt.compareSync(unencryptedPassword, this.password);
+    return bcrypt.compareSync(unencryptedPassword, this.password)
   }
 }
 
