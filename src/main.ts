@@ -16,6 +16,32 @@ const port = 1337
 export const app: express.Application = express()
 export let userRepository: Repository<User>
 
+// Get environment folder for any OS
+export const getEnvFolder = ((platform:string, dirName:string): any => {
+  let dataDir: string
+
+  switch (platform) {
+    case('darwin'):
+      dataDir = `${process.env.HOME}/Library/Preferences/${dirName}`
+      break
+    case('linux'):
+      dataDir = `${process.env.HOME}/${dirName}`
+      break
+    default:
+      dataDir = `${process.env.HOME}/.local/share/${dirName}`
+      break
+  }
+
+  // Create data folder if not exists
+  if (!fs.existsSync(dataDir) && platform === process.platform) {
+    console.log('There is no directory data yet. Creating...')
+    console.log(dataDir)
+    fs.mkdirSync(dataDir)
+  }
+
+  return dataDir
+})
+
 export const getUserList = async () => await getManager().find(User)
 
 export const createUser = async (
@@ -44,28 +70,19 @@ export const initializeConnection = async (): Promise<void | UserInterface> => {
       console.log('Inserting default user in the database')
       return createUser(connection, 'Jack', 'jack.sparrow@gmail.com', 'Sparrow')*/
     })
-    .catch(error => error)
+    .catch(error => {
+      return error
+    })
 }
-
-// Get environment folder for any OS
-export const envFolder: string =
-  process.env.APPDATA ||
-  (process.platform == 'darwin'
-    ? process.env.HOME + '/Library/Preferences'
-    : process.env.HOME + '/.local/share')
-// Set app data folder
-export const dataDir: string = envFolder.concat('\\myS3DATA')
 
 // Used for post requests
 app.use(bodyParser.urlencoded({ extended: false }))
 
 export const server = app.listen(port, (): void => {
-  // Create data folder if not exists
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir)
-  }
   console.log(`Server started on port ${port}`)
 
+  // Create data folder
+  getEnvFolder(process.platform, 'myS3DATA')
   // Connect to database
   initializeConnection()
 })
@@ -95,16 +112,14 @@ app.post(
   '/user',
   async (req: Request, res: Response): Promise<void> => {
     const user: UserInterface[] = userRepository?.create(req.body)
-    await userRepository
-      ?.save(user)
+    await userRepository?.save(user)
       .then(
         (result): Response => {
           return res.send(result)
         },
       )
       .catch(error => {
-        console.log('>>>>>>>> POST route')
-        return error
+        return res.send(error)
       })
   },
 )
@@ -117,7 +132,7 @@ app.put(
       req.params.id,
     )
     if (user === undefined) {
-      return res.status(400).send(`User doesn't exists in database`)
+      return res.status(400).send({ message: `User doesn't exists in database` })
     }
     userRepository.merge(user, req.body)
     await userRepository.save(user).then(
