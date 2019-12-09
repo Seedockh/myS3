@@ -17,14 +17,14 @@ export const app: express.Application = express()
 export let userRepository: Repository<User>
 
 // Get environment folder for any OS
-export const getEnvFolder = ((platform:string, dirName:string): any => {
+export const getEnvFolder = (platform: string, dirName: string): any => {
   let dataDir: string
 
   switch (platform) {
-    case('darwin'):
+    case 'darwin':
       dataDir = `${process.env.HOME}/Library/Preferences/${dirName}`
       break
-    case('linux'):
+    case 'linux':
       dataDir = `${process.env.HOME}/${dirName}`
       break
     default:
@@ -34,13 +34,11 @@ export const getEnvFolder = ((platform:string, dirName:string): any => {
 
   // Create data folder if not exists
   if (!fs.existsSync(dataDir) && platform === process.platform) {
-    console.log('There is no directory data yet. Creating...')
-    console.log(dataDir)
     fs.mkdirSync(dataDir)
   }
 
   return dataDir
-})
+}
 
 export const getUserList = async () => await getManager().find(User)
 
@@ -112,7 +110,8 @@ app.post(
   '/user',
   async (req: Request, res: Response): Promise<void> => {
     const user: UserInterface[] = userRepository?.create(req.body)
-    await userRepository?.save(user)
+    await userRepository
+      ?.save(user)
       .then(
         (result): Response => {
           return res.send(result)
@@ -132,7 +131,9 @@ app.put(
       req.params.id,
     )
     if (user === undefined) {
-      return res.status(400).send({ message: `User doesn't exists in database` })
+      return res
+        .status(400)
+        .send({ message: `User doesn't exists in database` })
     }
     userRepository.merge(user, req.body)
     await userRepository.save(user).then(
