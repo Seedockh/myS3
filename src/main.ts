@@ -1,4 +1,5 @@
-import express, { Server } from 'express'
+import express from 'express'
+import { Server } from 'http'
 import fs from 'fs'
 import bodyParser from 'body-parser'
 import 'reflect-metadata'
