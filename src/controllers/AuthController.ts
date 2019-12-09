@@ -4,7 +4,10 @@ import { getRepository, Repository } from 'typeorm'
 import User from '../entity/User'
 
 class AuthController {
-  static login = async (req: Request, res: Response): Promise<object|undefined> => {
+  static login = async (
+    req: Request,
+    res: Response,
+  ): Promise<object | undefined> => {
     if (process.env.JWT_SECRET === undefined) throw 'jwt_secret is undefined'
 
     // Check if nickname and password are set
