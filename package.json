@@ -9,7 +9,7 @@
   "types": "types.d.ts",
   "scripts": {
     "test:static": "yarn tsc",
-    "test:unit": "yarn jest --config=.jestrc.js --maxWorkers 2 --forceExit",
+    "test:unit": "yarn jest --config=.jestrc.js --maxWorkers 2 --forceExit --coverage --no-cache",
     "test": "cross-env NODE_ENV=test yarn test:static && yarn test:unit",
     "lint": "yarn eslint src/*.ts* src/**/*.ts*",
     "dev": "cross-env NODE_ENV=dev yarn nodemon",
@@ -40,6 +40,7 @@
     "node-fetch": "^2.6.0",
     "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
+    "ts-jest": "^24.2.0",
     "typeorm": "^0.2.20"
   },
   "devDependencies": {

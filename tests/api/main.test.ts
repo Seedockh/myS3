@@ -67,7 +67,7 @@ describe(':: Database & Environment initialization', (): void => {
   })
 })
 
-describe(':: User Entity CRUD tests', (): void => {
+describe(':: User Model tests', (): void => {
   it('FAILS to create a user with wrong setup', async done => {
     const user = await createUser(getConnection(), 'Jack', 'Sparrow')
     expect(user.message).contains('null value in column "password"')
