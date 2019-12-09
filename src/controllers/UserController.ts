@@ -16,8 +16,8 @@ class UserController {
   // Create user
   static createUser = async (req: Request, res: Response): Promise<void> => {
     const userRepository: Repository<User> = getRepository(User)
-    let { nickname, email, password, role } = req.body
-    let user = new User()
+    const { nickname, email, password, role } = req.body
+    const user = new User()
     user.nickname = nickname
     user.email = email
     user.password = password
