@@ -10,10 +10,10 @@ import routes from './routes'
 const port = 1337
 // Create express application instance
 export const app: express.Application = express()
-export let server: any
+export let server: void
 
 // Get environment folder for any OS
-export const getEnvFolder = (platform: string, dirName: string): any => {
+export const getEnvFolder = (platform: string, dirName: string): string => {
   let dataDir: string
 
   switch (platform) {
