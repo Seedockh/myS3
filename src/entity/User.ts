@@ -17,11 +17,12 @@ class User {
 
   @Column('text', { nullable: true })
   role: string;
-  
+
   hashPassword() {
-    this.password = bcrypt.hashSync(this.password, 8);
+    if (!this.password) return { error: true, message: 'Password is not defined.'}
+    return this.password = bcrypt.hashSync(this.password, 8);
   }
-  
+
   checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
     return bcrypt.compareSync(unencryptedPassword, this.password);
   }

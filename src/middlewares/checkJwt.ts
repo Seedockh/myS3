@@ -1,12 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
-require('dotenv').config();
-
-const jwt_secret: string | undefined = process.env.JWT_SECRET
 
 export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
-  if (jwt_secret === undefined) throw "jwt_secret is undefined";
-  
+  if (process.env.JWT_SECRET === undefined) throw "jwt_secret is undefined";
+
   const header = req.headers['authorization'];
   let jwtPayload;
 
@@ -14,7 +11,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     const bearer = header.split(' ');
     const token = bearer[1];
 
-    jwt.verify(token, jwt_secret, (err, authorizedData) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, authorizedData) => {
       if(err){
           // If error
           console.log('ERROR: Could not connect to the protected route');
@@ -35,7 +32,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     // The token is valid for 1 hour
     // Send a new token on every request
     const { userId, username } = jwtPayload;
-    const newToken = jwt.sign({ userId, username }, jwt_secret, {
+    const newToken = jwt.sign({ userId, username }, process.env.JWT_SECRET, {
       expiresIn: "1h"
     });
     res.setHeader("token", newToken);

@@ -12,7 +12,7 @@ router.get("/getAll", [checkJwt, checkRole(["ADMIN"])], UserController.getAllUse
 router.post("/createNew", UserController.createUser);
 
 //Edit one user
-router.patch("/edit/:uuid([0-9]+)", [checkJwt, checkRole(["ADMIN"])], UserController.editUser);
+router.put("/edit/:uuid([0-9]+)", [checkJwt, checkRole(["ADMIN"])], UserController.editUser);
 
 //Delete one user
 router.delete("/delete/:uuid([0-9]+)", [checkJwt, checkRole(["ADMIN"])], UserController.deleteUser);

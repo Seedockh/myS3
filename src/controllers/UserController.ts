@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getRepository, Repository, getManager } from "typeorm";
-import { User } from "../entity/User";
+import User from "../entity/User";
 
 class UserController {
     // Get all users
@@ -22,27 +22,30 @@ class UserController {
         user.hashPassword();
         await userRepository.save(user).then((result): Response => {
             return res.send(result);
-        } ); 
+        }).catch( error => {
+          res.status(400).send(error)
+        });
     };
 
     // Edit user
     static editUser = async (req: Request, res: Response): Promise<void | Response> => {
         const userRepository: Repository<User> = getRepository(User);
-        const user: User | undefined = await userRepository.findOne(req.params.id);
-        console.log(user)
+        const user: User | undefined = await userRepository.findOne({
+          where: { uuid: req.params.uuid }
+        });
         if (user === undefined) {
-            return res.status(400).send("User doesn't exists in database")
+          return res.status(400).send({ message: "User doesn't exists in database" })
         }
         userRepository.merge(user, req.body);
         await userRepository.save(user).then((result): Response => {
-            return res.send(result);
+          return res.send(result);
         });
     };
 
     // Delete user
     static deleteUser = async (req: Request, res: Response): Promise<void> => {
         const userRepository: Repository<User> = getRepository(User);
-        await userRepository.delete(req.params.id).then((result): Response => {
+        await userRepository.delete(req.params.uuid).then((result): Response => {
             return res.send(result);
         });
     };
