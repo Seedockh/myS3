@@ -38,7 +38,7 @@ The goal here is to recreate an **`AWS S3`** docker container, working only loca
 - [ ] Create a route which allow to get blob metadata. Infos: path and size
 
 ### .step_05
-- [ ] Create a simple web interface with React or Angular 😎
+- [ ] Create a simple web interface with Vue 😎
 
 ### bonus
 - [ ] Add bucket and|or blob sharing permission (read|write)
