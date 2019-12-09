@@ -5,12 +5,14 @@ https://mys3.mhirba.now.sh/
 `Pierre Hérissé` && `Antoine Nivoy`
 
 # Description
-The goal here is to recreate an **`AWS S3`** package, working only locally, using **TypeScript** and **TypeORM**.
+The goal here is to recreate an **`AWS S3`** docker container, working only locally, using **TypeScript** and **TypeORM**.
 
 # Steps
 ### .step_01
 - [X] Bootstrap an API server using express and typeORM with Typescript + Babel
 - [X] You HAVE TO use snakecase and lowercase table names
+- [X] Setup tests with **Jest**
+- [ ] Setup docker container
 
 ### .step_02
 - [X] A user is described with: uuid, nickname, email, password
@@ -40,4 +42,7 @@ The goal here is to recreate an **`AWS S3`** package, working only locally, usin
 
 ### bonus
 - [ ] Add bucket and|or blob sharing permission (read|write)
+
+### required
+- [ ] Make sure test coverage is 100%
 - [ ] Don't forget to add .crew and .oav.name files
