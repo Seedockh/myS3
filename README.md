@@ -25,8 +25,8 @@ The goal here is to recreate an **`AWS S3`** docker container, working only loca
 - [ ] The file structure on your computer will be ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
 
 ### .step_03
-- [ ] A bucket is describe with: id, name and belongs to a user
-- [ ] Create routes which allows to create, edit and delete a bucket
+- [X] A bucket is describe with: id, name and belongs to a user
+- [X] Create routes which allows to create, edit and delete a bucket
 - [ ] Create a route which allow to list all objects from a bucket
 - [ ] Create a route which allow to check if a bucket exist with a head method that return 200 or 400
 
@@ -39,6 +39,21 @@ The goal here is to recreate an **`AWS S3`** docker container, working only loca
 
 ### .step_05
 - [ ] Create a simple web interface with Vue 😎
+
+### .step_06
+- [ ] Your client has to handle all user API actions. _From the authentication to the upload through browsing buckets and files_
+
+### .step_07
+- [ ] You HAVE TO transform you application to handle Server-side Rendering (SSR). _Maybe express has a kind of middleware_
+
+### .step_08
+- [ ] You HAVE TO use at least one major feature from your front library. _Hook/Context with React, Observables with Angular or Mixins with Vue_
+
+### .step_09
+- [ ] One click sharing. _Well, on each blob, we can generate a static public link for the assets 😱😎_ 
+
+### .step_10
+- [ ] Of course your app is responsive :)
 
 ### bonus
 - [ ] Add bucket and|or blob sharing permission (read|write)
