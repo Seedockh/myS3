@@ -7,6 +7,29 @@ https://mys3.mhirba.now.sh/
 # Description
 The goal here is to recreate an **`AWS S3`** docker container, working only locally, using **TypeScript** and **TypeORM**.
 
+# Environment
+
+We're actually using **PostgreSQL** for handling databases.
+
+For mailing, we're using `gmail` system so you'll need to use one of your **`Gmail`** address & password, and make sure you **_Grant the access to less secured applications_** in your Account Management panel / Security tab.
+
+You'll need 2 environment files :
+- **.env.dev**
+- **.env.testing**
+
+Each one will follow this structure :
+```env
+NODE_ENV = dev_or_test
+DB_HOST = localhost
+DB_USER = your_postgres_user
+DB_PASSWORD = your_postgres_password
+DB_DATABASE= your_postgres_dev_or_test_database_name
+DB_PORT = 5432
+JWT_SECRET = some_secret
+MAIL_USER = one_of_your_gmail_address
+MAIL_PASSWORD = one_of_your_gmail_password
+```
+
 # Steps
 ### .step_01
 - [X] Bootstrap an API server using express and typeORM with Typescript + Babel
