@@ -228,9 +228,21 @@ describe(':: API Bucket Unsecured routes tests', (): void => {
   it('FAILS to create one bucket with wrong request', async done => {
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     // This is a temporary data encoding solution because JSON problems
+    const data = 'nickname=failbucket&userUuid=3'
+
+    await getData("http://localhost:7331/bucket/createNew",
+    { method: 'POST', headers: headers, body: data }).then(result => {
+      expect(result.message).contains("not-null constraint")
+      done()
+    })
+  })
+
+  it('FAILS to create one bucket with wrong user', async done => {
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // This is a temporary data encoding solution because JSON problems
     const data = 'name=failbucket&userUuid=42'
 
-    const user = await getData("http://localhost:7331/bucket/createNew",
+    await getData("http://localhost:7331/bucket/createNew",
     { method: 'POST', headers: headers, body: data }).then(result => {
       expect(result.message).equals("User doesn't exists in database")
       done()
@@ -328,12 +340,27 @@ describe(':: API Bucket Secured routes tests', (): void => {
       'Authorization': `Bearer ${token}`
     }
     // This is a temporary data encoding solution because JSON problems
-    const data = 'name=updatedbucket'
+    const data = 'name=updatedbucket&userUuid=3'
     getData("http://localhost:7331/bucket/edit/3",
     { method: 'PUT', headers: headers, body: data })
     .then(result => {
       expect(result.id).equals(3)
       expect(result.name).equals("updatedbucket")
+      done()
+    })
+  })
+
+  it('FAILS to update with non existent user', done => {
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Bearer ${token}`
+    }
+    // This is a temporary data encoding solution because JSON problems
+    const data = 'name=updatebucket&userUuid=4'
+    getData("http://localhost:7331/bucket/edit/3",
+    { method: 'PUT', headers: headers, body: data })
+    .then(result => {
+      expect(result.message).equals(`User doesn't exists in database`)
       done()
     })
   })
