@@ -20,7 +20,6 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
         // If token is successfully verified
         jwtPayload = authorizedData
         res.locals.jwtPayload = jwtPayload
-        console.log('SUCCESS: Connected to protected route')
       }
     })
   } else {

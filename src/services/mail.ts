@@ -11,7 +11,7 @@ export default class Mail {
     this.message = message
   }
 
-  sendMail() {
+  async sendMail() {
     const mailOptions = {
       from: process.env.MAIL_USER,
       to: this.to,
@@ -28,12 +28,8 @@ export default class Mail {
       },
     })
 
-    transporter.sendMail(mailOptions, function(error) {
-      if (error) {
-        return 'error'
-      } else {
-        return 'Le mmail a été envoyé avec succès!'
-      }
-    })
+    return transporter.sendMail(mailOptions)
+      .then(result => result)
+      .catch(error => error)
   }
 }

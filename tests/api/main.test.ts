@@ -6,6 +6,7 @@ import { createConnection, getManager, getConnection, Connection, Server, Reposi
 import { initializeConnection, app, server, getEnvFolder } from '../../src/main'
 import UserController from '../../src/controllers/UserController'
 import User from '../../src/entity/User'
+import Mail from '../../src/services/mail'
 import BucketController from '../../src/controllers/BucketController'
 import Bucket from '../../src/entity/Bucket'
 
@@ -469,5 +470,21 @@ describe(':: API User Secured routes tests', (): void => {
       .equals(JSON.stringify({ raw:[], affected: 1 }))
       done()
     })
+  })
+})
+
+describe(':: Mailing tests', (): void => {
+  it('SENDS email successfully to random address', async done => {
+    const mailing = new Mail('johndoe@gmail.com', 'hello', 'this is a test')
+    const mail = await mailing.sendMail()
+    expect(mail.accepted[0]).equals('johndoe@gmail.com')
+    done()
+  })
+
+  it('FAILS to send email to wrong address', async done => {
+    const mailing = new Mail('fakeuser', 'hello', 'this will fails')
+    const mail = await mailing.sendMail()
+    expect(mail.code).equals('EENVELOPE')
+    done()
   })
 })
