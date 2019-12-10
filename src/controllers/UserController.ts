@@ -57,7 +57,13 @@ class UserController {
         .status(400)
         .send({ message: "User doesn't exists in database" })
     }
-    userRepository.merge(user, req.body)
+    const userUpdated = new User()
+    userUpdated.nickname = req.body.nickname
+    userUpdated.email = req.body.email
+    userUpdated.password = req.body.password
+    userUpdated.role = req.body.role
+    userUpdated.hashPassword()
+    userRepository.merge(user, userUpdated)
     await userRepository.save(user).then(
       (result): Response => {
         return res.send(result)
@@ -73,6 +79,22 @@ class UserController {
         return res.send(result)
       },
     )
+  }
+
+  // Generate a mail to reset password
+  static generatePwMail = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    req.body.password = Math.random().toString(36).substring(7);
+    const newPass: string = req.body.password
+    await UserController.editUser(req, res)
+    const { email } = req.body
+    const to: string = email
+    const subject = 'Efrei myS3'
+    const message = `You requested a password reset. Your new password is: ${newPass}`
+    const mail: Mail = new Mail(to, subject, message)
+    mail.sendMail()
   }
 }
 
