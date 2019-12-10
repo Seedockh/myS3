@@ -28,7 +28,8 @@ export default class Mail {
       },
     })
 
-    return transporter.sendMail(mailOptions)
+    return transporter
+      .sendMail(mailOptions)
       .then(result => result)
       .catch(error => error)
   }
