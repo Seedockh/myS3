@@ -19,7 +19,10 @@ class User {
   @Column('text', { nullable: true })
   role: string
 
-  @OneToMany(type => Bucket, bucket => bucket.user)
+  @OneToMany(
+    type => Bucket,
+    bucket => bucket.user,
+  )
   buckets: Bucket[]
 
   hashPassword() {

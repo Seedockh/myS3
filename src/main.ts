@@ -17,7 +17,7 @@ export let server: Server
 export const getEnvFolder = (platform: string, dirName: string): string => {
   let dataDir: string
 
-  if (platform==='darwin') {
+  if (platform === 'darwin') {
     dataDir = `${process.env.HOME}/Library/Preferences/${dirName}`
   } else {
     dataDir = `${process.env.HOME}/${dirName}`
