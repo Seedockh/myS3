@@ -66,16 +66,27 @@ describe(':: Database & Environment initialization', (): void => {
   })
 })
 
-describe(':: User Model tests', (): void => {
-    it('FAILS to create a user with wrong setup', async done => {
-      let user:UserInterface = new User()
-      user.nickname = 'Neo'
-      user.email = 'neoanderson@gmail.com'
-      userRepository.save(user).then().catch(error => {
-        expect(error.message).contains('not-null constraint')
-        done()
-      })
+describe(':: User Entity tests', (): void => {
+  it('INSTANTIATES correctly a new User model', done => {
+    const user = new User()
+    expect(JSON.stringify(user)).equals(JSON.stringify({
+      id: undefined,
+      nickname: undefined,
+      email: undefined,
+      password: undefined
+    }))
+    done()
+  })
+
+  it('FAILS to create a user with wrong setup', async done => {
+    let user:UserInterface = new User()
+    user.nickname = 'Neo'
+    user.email = 'neoanderson@gmail.com'
+    userRepository.save(user).then().catch(error => {
+      expect(error.message).contains('not-null constraint')
+      done()
     })
+  })
 
   it('CREATES and DELETES one User successfully', done => {
     let user:UserInterface = new User()
@@ -98,7 +109,7 @@ describe(':: User Model tests', (): void => {
   })
 })
 
-describe(':: API User CRUD tests', (): void => {
+describe(':: API User Unsecured routes tests', (): void => {
   it('CREATES one user successfully', done => {
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     // This is a temporary data encoding solution because JSON problems
@@ -125,7 +136,10 @@ describe(':: API User CRUD tests', (): void => {
       done()
     })
   })
+})
 
+
+describe(':: API Authentification routes tests', (): void => {
   it('LOGS IN successfully', done => {
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     // This is a temporary data encoding solution because JSON problems
@@ -194,7 +208,9 @@ describe(':: API User CRUD tests', (): void => {
       done()
     })
   })
+})
 
+describe(':: API User Secured routes tests', (): void => {
   it('READS the previously created user successfully', done => {
     getData("http://localhost:7331/user/getAll",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
