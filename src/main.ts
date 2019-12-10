@@ -24,6 +24,9 @@ export const getEnvFolder = (platform: string, dirName: string): string => {
     case 'linux':
       dataDir = `${process.env.HOME}/${dirName}`
       break
+    case 'win32':
+      dataDir = `${process.env.HOME}/${dirName}`
+      break
     default:
       dataDir = `${process.env.HOME}/.local/share/${dirName}`
       break

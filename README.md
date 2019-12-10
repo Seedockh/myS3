@@ -17,8 +17,8 @@ The goal here is to recreate an **`AWS S3`** docker container, working only loca
 ### .step_02
 - [X] A user is described with: uuid, nickname, email, password
 - [X] Bootstrap all CRUD user operations
-- [ ] You HAVE TO use JWT
-- [ ] You HAVE TO send an email on user creation
+- [x] You HAVE TO use JWT
+- [x] You HAVE TO send an email on user creation
 - [ ] Add user password reset e-mail workflow
 
 ### interlude

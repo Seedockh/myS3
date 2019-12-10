@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
 import User from '../entity/User'
+import Mail from '../services/mail'
 
 class UserController {
   // Get all users
@@ -27,6 +28,13 @@ class UserController {
       .save(user)
       .then(
         (result): Response => {
+          // Send mail
+          const to: string = user.email;
+          const subject: string = 'Efrei myS3';
+          const message: string = `Welcome ${user.nickname}! Your account is now ready to use, enjoy :)`;
+      
+          const mail : Mail = new Mail(to, subject, message);
+          mail.sendMail();
           return res.send(result)
         },
       )
