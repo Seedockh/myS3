@@ -43,3 +43,5 @@ jobs:
           DB_DATABASE: postgres
           DB_PORT: 5432
           JWT_SECRET: secret
+          MAIL_USER: peterjackh4l@gmail.com
+          MAIL_PASSWORD: ?4iC<T:6q,qg=e[o5?2^-r;nW<gTRzxX
