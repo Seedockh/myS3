@@ -49,7 +49,7 @@ describe(':: Database & Environment initialization', (): void => {
 
     expect(getEnvFolder('linux', 'myS3DATA/tests')).equals(`${process.env.HOME}/myS3DATA/tests`)
     expect(getEnvFolder('darwin', 'myS3DATA/tests')).equals(`${process.env.HOME}/Library/Preferences/myS3DATA/tests`)
-    expect(getEnvFolder('windows', 'myS3DATA/tests')).equals(`${process.env.HOME}/.local/share/myS3DATA/tests`)
+    expect(getEnvFolder('windows', 'myS3DATA/tests')).equals(`${process.env.HOME}/myS3DATA/tests`)
 
     expect(fs.existsSync(dataDir)).equals(true)
 
