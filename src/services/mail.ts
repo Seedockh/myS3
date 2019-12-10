@@ -1,22 +1,22 @@
-import * as nodemailer from "nodemailer";
+import * as nodemailer from 'nodemailer'
 
 export default class Mail {
-  to: string;
-  subject: string;
-  message: string;
+  to: string
+  subject: string
+  message: string
 
-  constructor (to: string, subject: string, message: string) {
-    this.to = to;
-    this.subject = subject;
-    this.message = message;
+  constructor(to: string, subject: string, message: string) {
+    this.to = to
+    this.subject = subject
+    this.message = message
   }
 
   sendMail() {
     const mailOptions = {
-      from : process.env.MAIL_USER,
+      from: process.env.MAIL_USER,
       to: this.to,
       subject: this.subject,
-      html: this.message
+      html: this.message,
     }
 
     const transporter = nodemailer.createTransport({
@@ -24,16 +24,16 @@ export default class Mail {
       service: 'gmail',
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASSWORD
-      }
-    });
+        pass: process.env.MAIL_PASSWORD,
+      },
+    })
 
-    transporter.sendMail(mailOptions, function (error) {
+    transporter.sendMail(mailOptions, function(error) {
       if (error) {
-          return "error";
+        return 'error'
       } else {
-          return "Le mmail a été envoyé avec succès!";
+        return 'Le mmail a été envoyé avec succès!'
       }
-    });
+    })
   }
 }

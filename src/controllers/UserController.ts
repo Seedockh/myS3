@@ -29,12 +29,12 @@ class UserController {
       .then(
         (result): Response => {
           // Send mail
-          const to: string = user.email;
-          const subject: string = 'Efrei myS3';
-          const message: string = `Welcome ${user.nickname}! Your account is now ready to use, enjoy :)`;
-      
-          const mail: Mail = new Mail(to, subject, message);
-          mail.sendMail();
+          const to: string = user.email
+          const subject = 'Efrei myS3'
+          const message = `Welcome ${user.nickname}! Your account is now ready to use, enjoy :)`
+
+          const mail: Mail = new Mail(to, subject, message)
+          mail.sendMail()
           return res.send(result)
         },
       )
