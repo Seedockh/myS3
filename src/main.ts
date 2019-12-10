@@ -17,19 +17,10 @@ export let server: Server
 export const getEnvFolder = (platform: string, dirName: string): string => {
   let dataDir: string
 
-  switch (platform) {
-    case 'darwin':
-      dataDir = `${process.env.HOME}/Library/Preferences/${dirName}`
-      break
-    case 'linux':
-      dataDir = `${process.env.HOME}/${dirName}`
-      break
-    case 'win32':
-      dataDir = `${process.env.HOME}/${dirName}`
-      break
-    default:
-      dataDir = `${process.env.HOME}/${dirName}`
-      break
+  if (platform==='darwin') {
+    dataDir = `${process.env.HOME}/Library/Preferences/${dirName}`
+  } else {
+    dataDir = `${process.env.HOME}/${dirName}`
   }
 
   // Create data folder if not exists
@@ -46,7 +37,6 @@ export const initializeConnection = async (
   return await createConnection(connectionName)
     .then(() => {
       console.log('Successfully connected to database')
-
       // Enable cross-origin Requests
       app.use(cors())
       // Secure app by setting various HTTP headers
