@@ -9,10 +9,15 @@ export const checkRole = (roles: Array<string>) => {
 
     // Get user role from the database
     const userRepository: Repository<User> = getRepository(User)
-    const user: User = await userRepository.findOneOrFail({ where: { uuid: uuid } })
+    const user: User = await userRepository.findOneOrFail({
+      where: { uuid: uuid },
+    })
 
     // Check if array of authorized roles includes the user's role
     if (roles.indexOf(user.role) > -1) next()
-    else res.status(401).send({ message: `ERROR: ${user.role} Users are not authorized for this route` })
+    else
+      res.status(401).send({
+        message: `ERROR: ${user.role} Users are not authorized for this route`,
+      })
   }
 }
