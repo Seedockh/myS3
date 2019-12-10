@@ -8,7 +8,8 @@ class AuthController {
     req: Request,
     res: Response,
   ): Promise<object | undefined> => {
-    if (process.env.JWT_SECRET === undefined) throw 'jwt_secret is undefined'
+    if (process.env.JWT_SECRET === undefined)
+      return res.status(400).send({ message: 'jwt_secret is undefined' })
 
     // Check if nickname and password are set
     const { nickname, password } = req.body

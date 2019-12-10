@@ -37,8 +37,8 @@ export const getEnvFolder = (platform: string, dirName: string): string => {
   return dataDir
 }
 
-createConnection()
-  .then(() => {
+export const initializeConnection = async (connectionName = 'default'): Promise<void|string> => {
+  return await createConnection(connectionName).then(() => {
     console.log('Successfully connected to database')
 
     // Enable cross-origin Requests
@@ -54,7 +54,9 @@ createConnection()
       getEnvFolder(process.platform, 'myS3DATA')
       console.log(`Server started on port ${port}`)
     })
-  })
-  .catch(error => {
+  }).catch(error => {
     return error
   })
+}
+
+initializeConnection()

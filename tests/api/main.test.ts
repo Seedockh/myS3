@@ -3,7 +3,7 @@ import express from 'express'
 import fetch from 'node-fetch'
 import fs from 'fs'
 import { createConnection, getManager, getConnection, Connection, Server, Repository } from 'typeorm'
-import { app, server, getEnvFolder } from '../../src/main'
+import { initializeConnection, app, server, getEnvFolder } from '../../src/main'
 import UserController from '../../src/controllers/UserController'
 import User from '../../src/entity/User'
 
@@ -36,11 +36,8 @@ const getData = async (url, options) => {
 }
 
 describe(':: Database & Environment initialization', (): void => {
-  it('FAILS to create second default database connection', done => {
-    createConnection().then().catch( error => {
-      expect(JSON.stringify(error)).contains('AlreadyHasActiveConnectionError')
-      done()
-    })
+  it('FAILS to create bad database connection', async () => {
+    expect((await initializeConnection('fail')).name).equals('error')
   })
 
   it('RETURNS correct environment folder', done => {
@@ -143,6 +140,22 @@ describe(':: API User CRUD tests', (): void => {
     })
   })
 
+  it('FAILS to login with undefined secret', done => {
+    const env = process.env
+    process.env = { }
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // This is a temporary data encoding solution because JSON problems
+    const data = 'nickname=john&password=doe'
+
+    getData("http://localhost:7331/auth/login",
+    { method: 'POST', headers: headers, body: data })
+    .then(result => {
+      expect(result.message).equals('jwt_secret is undefined')
+      process.env = env
+      done()
+    })
+  })
+
   it('FAILS to login with missing credentials', done => {
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     // This is a temporary data encoding solution because JSON problems
@@ -192,6 +205,59 @@ describe(':: API User CRUD tests', (): void => {
       expect(result.users[0].email).equals("johndoe@gmail.com")
       expect(result.users[0].role).equals("ADMIN")
       done()
+    })
+  })
+
+  it('FAILS to access to secure route if jwt_secret is undefined', done => {
+    const env = process.env
+    process.env = { }
+    getData("http://localhost:7331/user/getAll",
+    { method: 'GET', headers: { 'Authorization': `Bearer ${token}ee` } })
+    .then(result => {
+      expect(result.message).equals('ERROR: jwt_secret is undefined')
+      process.env = env
+      done()
+    })
+  })
+
+  it('FAILS to access to secure route when jwt.verify() fails', done => {
+    getData("http://localhost:7331/user/getAll",
+    { method: 'GET', headers: { 'Authorization': `Bearer ${token}ee` } })
+    .then(result => {
+      expect(result.message).equals('ERROR: Wrong token sent')
+      done()
+    })
+  })
+
+  it('FAILS to access to secure route when Bearer token not sent', done => {
+    getData("http://localhost:7331/user/getAll",
+    { method: 'GET' })
+    .then(result => {
+      expect(result.message).equals('ERROR: Bearer token is undefined')
+      done()
+    })
+  })
+
+  it('FAILS to access to secure route with wrong User Role', done => {
+    let headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // This is a temporary data encoding solution because JSON problems
+    let data = 'nickname=nonadmin&email=nonadmin@gmail.com&password=user&role=REGULAR'
+
+    getData("http://localhost:7331/user/createNew",
+    { method: 'POST', headers: headers, body: data })
+    .then(() => {
+      data = 'nickname=nonadmin&password=user'
+      getData("http://localhost:7331/auth/login",
+      { method: 'POST', headers: headers, body: data })
+      .then(result => {
+        const nonAdminToken = result.token
+        getData("http://localhost:7331/user/getAll",
+        { method: 'GET', headers: { 'Authorization': `Bearer ${nonAdminToken}` } })
+        .then(res => {
+          expect(res.message).equals(`ERROR: REGULAR Users are not authorized for this route`)
+          done()
+        })
+      })
     })
   })
 

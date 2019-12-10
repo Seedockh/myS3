@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import * as jwt from 'jsonwebtoken'
 
 export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
-  if (process.env.JWT_SECRET === undefined) throw 'jwt_secret is undefined'
+  if (process.env.JWT_SECRET === undefined)
+    return res.status(403).send({ message: 'ERROR: jwt_secret is undefined' })
 
   const header = req.headers['authorization']
   let jwtPayload
@@ -14,8 +15,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, authorizedData) => {
       if (err) {
         // If error
-        console.log('ERROR: Could not connect to the protected route')
-        res.sendStatus(403)
+        res.status(403).send({ message: 'ERROR: Wrong token sent' })
       } else {
         // If token is successfully verified
         jwtPayload = authorizedData
@@ -25,7 +25,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     })
   } else {
     // If header is undefined
-    res.sendStatus(403)
+    res.status(403).send({ message: 'ERROR: Bearer token is undefined' })
   }
 
   if (jwtPayload != undefined) {
