@@ -24,23 +24,18 @@ class UserController {
     user.password = password
     user.role = role
     user.hashPassword()
-    await userRepository
-      .save(user)
-      .then(
-        (result): Response => {
-          // Send mail
-          const to: string = user.email
-          const subject = 'Efrei myS3'
-          const message = `Welcome ${user.nickname}! Your account is now ready to use, enjoy :)`
+    await userRepository.save(user).then((result): Response => {
+      // Send mail
+      const to: string = user.email
+      const subject = 'Efrei myS3'
+      const message = `Welcome ${user.nickname}! Your account is now ready to use, enjoy :)`
 
-          const mail: Mail = new Mail(to, subject, message)
-          mail.sendMail()
-          return res.send(result)
-        },
-      )
-      .catch(error => {
-        res.status(400).send(error)
-      })
+      const mail: Mail = new Mail(to, subject, message)
+      mail.sendMail()
+      return res.send(result)
+    }).catch(error => {
+      res.status(400).send(error)
+    })
   }
 
   // Edit user
