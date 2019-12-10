@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import auth from './auth'
 import user from './user'
+import bucket from './bucket'
 
 const routes = Router()
 
@@ -16,5 +17,6 @@ routes.get(
 
 routes.use('/auth', auth)
 routes.use('/user', user)
+routes.use('/bucket', bucket)
 
 export default routes
