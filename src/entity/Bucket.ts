@@ -9,8 +9,11 @@ class Bucket {
   @Column('text', { nullable: false })
   name: string
 
-  @ManyToOne(type => User, user => user.buckets)
-  user: User;
+  @ManyToOne(
+    type => User,
+    user => user.buckets,
+  )
+  user: User
 }
 
 export default Bucket

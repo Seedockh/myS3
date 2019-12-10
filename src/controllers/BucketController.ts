@@ -15,26 +15,34 @@ class BucketController {
   }
 
   // Create bucket
-  static createBucket = async (req: Request, res: Response): Promise<void|Response> => {
+  static createBucket = async (
+    req: Request,
+    res: Response,
+  ): Promise<void | Response> => {
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
     const userRepository: Repository<User> = getRepository(User)
     const { name, userUuid } = req.body
     const bucket = new Bucket()
-    const user: User | undefined = await userRepository.findOne({
+    const belongsToUser: User | undefined = await userRepository.findOne({
       where: { uuid: userUuid },
     })
-    if (user === undefined) {
+    if (belongsToUser === undefined) {
       return res
         .status(400)
         .send({ message: "User doesn't exists in database" })
     }
     bucket.name = name
-    bucket.user.uuid = userUuid
-    await bucketRepository.save(bucket).then((result): Response => {
-      return res.send(result)
-    }).catch(error => {
-      res.status(400).send(error)
-    })
+    bucket.user = belongsToUser
+    await bucketRepository
+      .save(bucket)
+      .then(
+        (result): Response => {
+          return res.send(result)
+        },
+      )
+      .catch(error => {
+        res.status(400).send(error)
+      })
   }
 
   // Edit bucket
@@ -55,7 +63,9 @@ class BucketController {
     }
 
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
-    const bucket = await bucketRepository.findOne({ where: { id: req.params.id } })
+    const bucket = await bucketRepository.findOne({
+      where: { id: req.params.id },
+    })
     if (bucket === undefined) {
       return res
         .status(400)
