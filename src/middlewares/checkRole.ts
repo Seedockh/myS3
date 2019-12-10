@@ -9,8 +9,7 @@ export const checkRole = (roles: Array<string>) => {
 
     // Get user role from the database
     const userRepository: Repository<User> = getRepository(User)
-    let user: User
-    user = await userRepository.findOneOrFail({ where: { uuid: uuid } })
+    const user: User = await userRepository.findOneOrFail({ where: { uuid: uuid } })
 
     // Check if array of authorized roles includes the user's role
     if (roles.indexOf(user.role) > -1) next()

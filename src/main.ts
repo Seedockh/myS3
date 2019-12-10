@@ -37,26 +37,30 @@ export const getEnvFolder = (platform: string, dirName: string): string => {
   return dataDir
 }
 
-export const initializeConnection = async (connectionName = 'default'): Promise<void|string> => {
-  return await createConnection(connectionName).then(() => {
-    console.log('Successfully connected to database')
+export const initializeConnection = async (
+  connectionName = 'default',
+): Promise<void | string> => {
+  return await createConnection(connectionName)
+    .then(() => {
+      console.log('Successfully connected to database')
 
-    // Enable cross-origin Requests
-    app.use(cors())
-    // Secure app by setting various HTTP headers
-    app.use(helmet())
-    // Used for post requests
-    app.use(bodyParser.urlencoded({ extended: false }))
-    // Use all routes from routes folder
-    app.use('/', routes)
+      // Enable cross-origin Requests
+      app.use(cors())
+      // Secure app by setting various HTTP headers
+      app.use(helmet())
+      // Used for post requests
+      app.use(bodyParser.urlencoded({ extended: false }))
+      // Use all routes from routes folder
+      app.use('/', routes)
 
-    server = app.listen(port, () => {
-      getEnvFolder(process.platform, 'myS3DATA')
-      console.log(`Server started on port ${port}`)
+      server = app.listen(port, () => {
+        getEnvFolder(process.platform, 'myS3DATA')
+        console.log(`Server started on port ${port}`)
+      })
     })
-  }).catch(error => {
-    return error
-  })
+    .catch(error => {
+      return error
+    })
 }
 
 initializeConnection()
