@@ -12,12 +12,11 @@ export default class Mail {
   }
 
   sendMail() {
-
     const mailOptions = {
-        from : process.env.MAIL_USER,
-        to: this.to,
-        subject: this.subject,
-        html: this.message
+      from : process.env.MAIL_USER,
+      to: this.to,
+      subject: this.subject,
+      html: this.message
     }
 
     const transporter = nodemailer.createTransport({
@@ -29,12 +28,12 @@ export default class Mail {
       }
     });
 
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            return error;
-        } else {
-            return "E-mail a été envoyé avec succès!";
-        }
+    transporter.sendMail(mailOptions, function (error) {
+      if (error) {
+          return "error";
+      } else {
+          return "Le mmail a été envoyé avec succès!";
+      }
     });
   }
 }
