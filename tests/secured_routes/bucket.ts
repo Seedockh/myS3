@@ -35,7 +35,7 @@ const bucketSecuredRoutes = (): void => {
       'Authorization': `Bearer ${token}`
     }
     // This is a temporary data encoding solution because JSON problems
-    const data = 'name=updatebucket&userUuid=4'
+    const data = 'name=updatebucket&userUuid=5'
     getData("http://localhost:7331/bucket/edit/3",
     { method: 'PUT', headers: headers, body: data })
     .then(result => {

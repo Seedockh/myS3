@@ -6,35 +6,12 @@ const userSecuredRoutes = (): void => {
     getData("http://localhost:7331/user/getAll",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
-      expect(result.users.length).equals(1)
+      expect(result.users.length).equals(2)
       expect(result.users[0].uuid).equals(3)
-      expect(result.users[0].nickname).equals("john")
-      expect(result.users[0].email).equals("johndoe@gmail.com")
-      expect(result.users[0].role).equals("ADMIN")
+      expect(result.users[0].nickname).equals("nonadmin")
+      expect(result.users[0].email).equals("nonadmin@gmail.com")
+      expect(result.users[0].role).equals("REGULAR")
       done()
-    })
-  })
-
-  it('FAILS to access to secure route with wrong User Role', done => {
-    let headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
-    // This is a temporary data encoding solution because JSON problems
-    let data = 'nickname=nonadmin&email=nonadmin@gmail.com&password=user&role=REGULAR'
-
-    getData("http://localhost:7331/user/createNew",
-    { method: 'POST', headers: headers, body: data })
-    .then(() => {
-      data = 'nickname=nonadmin&password=user'
-      getData("http://localhost:7331/auth/login",
-      { method: 'POST', headers: headers, body: data })
-      .then(result => {
-        const nonAdminToken = result.token
-        getData("http://localhost:7331/user/getAll",
-        { method: 'GET', headers: { 'Authorization': `Bearer ${nonAdminToken}` } })
-        .then(res => {
-          expect(res.message).equals(`ERROR: REGULAR Users are not authorized for this route`)
-          done()
-        })
-      })
     })
   })
 
@@ -45,10 +22,10 @@ const userSecuredRoutes = (): void => {
     }
     // This is a temporary data encoding solution because JSON problems
     const data = 'nickname=jack'
-    getData("http://localhost:7331/user/edit/3",
+    getData("http://localhost:7331/user/edit/4",
     { method: 'PUT', headers: headers, body: data })
     .then(result => {
-      expect(result.uuid).equals(3)
+      expect(result.uuid).equals(4)
       expect(result.nickname).equals("jack")
       expect(result.email).equals("johndoe@gmail.com")
       expect(result.role).equals("ADMIN")
