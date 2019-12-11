@@ -10,7 +10,7 @@ class Bucket {
   name: string
 
   @ManyToOne(
-    type => User,
+    () => User,
     user => user.buckets,
   )
   user: User

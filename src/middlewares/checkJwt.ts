@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
 import * as jwt from 'jsonwebtoken'
 
-export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
+export const checkJwt = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Response | undefined => {
   if (process.env.JWT_SECRET === undefined)
     return res.status(403).send({ message: 'ERROR: jwt_secret is undefined' })
 
