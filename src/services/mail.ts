@@ -11,7 +11,7 @@ export default class Mail {
     this.message = message
   }
 
-  async sendMail() {
+  sendMail(): Promise<string> {
     const mailOptions = {
       from: process.env.MAIL_USER,
       to: this.to,

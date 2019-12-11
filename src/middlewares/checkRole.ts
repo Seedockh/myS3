@@ -3,7 +3,11 @@ import { getRepository, Repository } from 'typeorm'
 import User from '../entity/User'
 
 export const checkRole = (roles: Array<string>) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
     // Get the user ID from previous middleware
     const uuid: string = res.locals.jwtPayload.userId
 

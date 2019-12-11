@@ -20,18 +20,18 @@ class User {
   role: string
 
   @OneToMany(
-    type => Bucket,
+    () => Bucket,
     bucket => bucket.user,
   )
   buckets: Bucket[]
 
-  hashPassword() {
+  hashPassword(): string | object {
     if (!this.password)
       return { error: true, message: 'Password is not defined.' }
     return (this.password = bcrypt.hashSync(this.password, 8))
   }
 
-  checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
+  checkIfUnencryptedPasswordIsValid(unencryptedPassword: string): boolean {
     return bcrypt.compareSync(unencryptedPassword, this.password)
   }
 }
