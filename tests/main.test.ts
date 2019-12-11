@@ -10,6 +10,7 @@ import mail from './services/mail'
 import userEntity from './entities/User'
 import bucketEntity from './entities/Bucket'
 import checkJwt from './middlewares/checkJwt'
+import checkRole from './middlewares/checkRole'
 import userPublicRoutes from './public_routes/user'
 import bucketPublicRoutes from './public_routes/bucket'
 import authRoutes from './public_routes/auth'
@@ -17,7 +18,6 @@ import bucketSecuredRoutes from './secured_routes/bucket'
 import userSecuredRoutes from './secured_routes/user'
 
 /*============== TESTS SETUPS =====================*/
-/*=================================================*/
 let testServer:Server
 let connection:Connection
 export let userRepository: Repository<User>
@@ -87,6 +87,7 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/ describe(':: User Entity tests', userEntity)
 /*===*/ describe(':: Bucket Entity tests', bucketEntity)
 /*===*/ describe(':: CheckJwt routes tests', checkJwt)
+/*===*/ describe(':: CheckRole routes tests', checkRole)
 /*===*/ describe(':: User public routes tests', userPublicRoutes)
 /*===*/ describe(':: Bucket public routes tests', bucketPublicRoutes)
 
