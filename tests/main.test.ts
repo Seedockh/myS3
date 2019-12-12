@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import fetch from 'node-fetch'
 import fs from 'fs'
+import * as jwt from 'jsonwebtoken'
 import { createConnection, getConnection, Connection, Server, Repository } from 'typeorm'
 import { initializeConnection, app, server, getEnvFolder } from '../src/main'
 import User from '../src/entity/User'
@@ -12,7 +13,6 @@ import bucketEntity from './entities/Bucket'
 import checkJwt from './middlewares/checkJwt'
 import checkRole from './middlewares/checkRole'
 import userPublicRoutes from './public_routes/user'
-import bucketPublicRoutes from './public_routes/bucket'
 import authRoutes from './public_routes/auth'
 import bucketSecuredRoutes from './secured_routes/bucket'
 import userSecuredRoutes from './secured_routes/user'
@@ -23,6 +23,7 @@ let connection:Connection
 export let userRepository: Repository<User>
 export let bucketRepository: Repository<Bucket>
 export let token: string
+export let userToken: User | undefined
 export const getData = async (url, options) => {
   try {
     const response = await fetch(url, options)
@@ -89,7 +90,6 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/ describe(':: CheckJwt routes tests', checkJwt)
 /*===*/ describe(':: CheckRole routes tests', checkRole)
 /*===*/ describe(':: User public routes tests', userPublicRoutes)
-/*===*/ describe(':: Bucket public routes tests', bucketPublicRoutes)
 
 /*===*/ describe(':: Authentication for tests', ():void => {
 /*===*/  it('LOGS IN successfully', done => {
@@ -98,14 +98,21 @@ describe(':: Database & Environment initialization', (): void => {
 
 /*===*/    getData("http://localhost:7331/auth/login",
 /*===*/    { method: 'POST', headers: headers, body: data })
-/*===*/    .then(result => {
+/*===*/    .then( async result => {
 /*===*/      expect(!result.token).equals(false)
+
 /*===*/      token = result.token
+/*===*/      let jwtPayload
+
+/*===*/      jwt.verify(token, process.env.JWT_SECRET,
+/*===*/      (err, data) => err ? res.status(403).send({ message: 'ERROR: Wrong token sent'}) : jwtPayload = data )
+/*===*/      userToken = await userRepository.findOne({
+/*===*/         where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
+/*===*/      })
 /*===*/      done()
 /*===*/    })
 /*===*/  })
 /*===*/})
-
 /*===*/ describe(':: Authentication routes tests', authRoutes)
 /*===*/ describe(':: Bucket secured routes tests', bucketSecuredRoutes)
 /*===*/ describe(':: User secured routes tests', userSecuredRoutes)

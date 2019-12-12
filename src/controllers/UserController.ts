@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
+import * as jwt from 'jsonwebtoken'
 import User from '../entity/User'
 import Mail from '../services/mail'
 
@@ -49,30 +50,58 @@ class UserController {
     res: Response,
   ): Promise<void | Response> => {
     const userRepository: Repository<User> = getRepository(User)
-    const user: User | undefined = await userRepository.findOne({
-      where: { uuid: req.params.uuid },
-    })
-    if (user === undefined) {
-      return res
-        .status(400)
-        .send({ message: "User doesn't exists in database" })
+    if (req.headers.authorization && process.env.JWT_SECRET) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+
+      let jwtPayload
+      jwt.verify(userToken, process.env.JWT_SECRET,
+        (err, data) => err ? res.status(403).send({ message: 'ERROR: Wrong token sent'}) : jwtPayload = data )
+
+      const user: User | undefined = await userRepository.findOne({
+        where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
+      })
+      if (user === undefined) {
+        return res
+          .status(400)
+          .send({ message: "User doesn't exists in database" })
+      }
+      userRepository.merge(user, req.body)
+      await userRepository.save(user).then(
+        (result): Response => {
+          return res.send(result)
+        },
+      )
+    } else {
+      return res.status(400).send({ message: 'Something went wrong with your JWt configuration.' })
     }
-    userRepository.merge(user, req.body)
-    await userRepository.save(user).then(
-      (result): Response => {
-        return res.send(result)
-      },
-    )
   }
 
   // Delete user
-  static deleteUser = async (req: Request, res: Response): Promise<void> => {
+  static deleteUser = async (req: Request, res: Response): Promise<Response|void> => {
     const userRepository: Repository<User> = getRepository(User)
-    await userRepository.delete(req.params.uuid).then(
-      (result): Response => {
-        return res.send(result)
-      },
-    )
+    if (req.headers.authorization && process.env.JWT_SECRET) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+
+      let jwtPayload
+      jwt.verify(userToken, process.env.JWT_SECRET,
+        (err, data) => err ? res.status(403).send({ message: 'ERROR: Wrong token sent'}) : jwtPayload = data )
+
+      const user: User | undefined = await userRepository.findOne({
+        where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
+      })
+      if (user === undefined) {
+        return res
+          .status(400)
+          .send({ message: "User doesn't exists in database" })
+      }
+      await userRepository.delete(user.id).then(
+        (result): Response => {
+          return res.send(result)
+        },
+      )
+    } else {
+      return res.status(400).send({ message: 'Something went wrong with your JWt configuration.' })
+    }
   }
 }
 
