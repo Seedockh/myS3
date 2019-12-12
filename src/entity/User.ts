@@ -4,8 +4,8 @@ import Bucket from './Bucket'
 
 @Entity()
 class User {
-  @PrimaryGeneratedColumn()
-  uuid: number
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
   @Column('text', { nullable: false })
   nickname: string

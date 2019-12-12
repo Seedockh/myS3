@@ -31,13 +31,13 @@ const userEntity = (): void => {
     user.password = 'Anderson'
     user.role = 'ADMIN'
     userRepository.save(user).then( dbUser => {
-      expect(typeof dbUser.uuid).equals('number')
+      expect(typeof dbUser.id).equals('string')
       expect(typeof dbUser.nickname).equals('string')
       expect(typeof dbUser.email).equals('string')
       expect(typeof dbUser.password).equals('string')
       expect(typeof dbUser.role).equals('string')
 
-      userRepository.delete(2).then(result => {
+      userRepository.delete(dbUser.id).then(result => {
         expect(JSON.stringify(result)).equals(JSON.stringify({ raw:[],  affected: 1 }))
         done()
       })

@@ -9,12 +9,12 @@ export const checkRole = (roles: Array<string>) => {
     next: NextFunction,
   ): Promise<Response | void> => {
     // Get the user ID from previous middleware
-    const uuid: string = res.locals.jwtPayload.userId
+    const id: string = res.locals.jwtPayload.userId
 
     // Get user role from the database
     const userRepository: Repository<User> = getRepository(User)
     const user: User = await userRepository.findOneOrFail({
-      where: { uuid: uuid },
+      where: { id: id },
     })
 
     // Check if array of authorized roles includes the user's role
