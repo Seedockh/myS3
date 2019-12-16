@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
 import { getEnvFolder } from '../main'
-import FileManager from '../services/filemanager'
 import Authentifier from '../services/authentifier'
 import Bucket from '../entity/Bucket'
 
@@ -92,7 +91,10 @@ class BucketController {
   }
 
   // Delete bucket
-  static deleteBucket = async (req: Request, res: Response): Promise<void|Response> => {
+  static deleteBucket = async (
+    req: Request,
+    res: Response,
+  ): Promise<void | Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
