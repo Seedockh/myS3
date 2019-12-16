@@ -1,18 +1,14 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
+import { getEnvFolder } from '../main'
 import User from '../entity/User'
 import Mail from '../services/mail'
+import Authentifier from '../services/authentifier'
 
 class UserController {
   // Get all users
-  static getAllUsers = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response> => {
-    return res.status(200).json({
-      users: await getManager().find(User),
-    })
-  }
+  static getAllUsers = async (req: Request, res: Response): Promise<Response> =>
+    res.status(200).json({ users: await getManager().find(User) })
 
   // Create user
   static createUser = async (req: Request, res: Response): Promise<void> => {
@@ -28,6 +24,9 @@ class UserController {
       .save(user)
       .then(
         (result): Response => {
+          // Create folder with user UUID
+          getEnvFolder.createFolder(result.id)
+
           // Send mail
           const to: string = user.email
           const subject = 'Efrei myS3'
@@ -49,30 +48,50 @@ class UserController {
     res: Response,
   ): Promise<void | Response> => {
     const userRepository: Repository<User> = getRepository(User)
-    const user: User | undefined = await userRepository.findOne({
-      where: { uuid: req.params.uuid },
-    })
-    if (user === undefined) {
-      return res
-        .status(400)
-        .send({ message: "User doesn't exists in database" })
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      userRepository.merge(authUser.user, req.body)
+      await userRepository.save(authUser.user).then(
+        (result: User): Response => {
+          return res.send(result)
+        },
+      )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
     }
-    userRepository.merge(user, req.body)
-    await userRepository.save(user).then(
-      (result): Response => {
-        return res.send(result)
-      },
-    )
   }
 
   // Delete user
-  static deleteUser = async (req: Request, res: Response): Promise<void> => {
+  static deleteUser = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response | void> => {
     const userRepository: Repository<User> = getRepository(User)
-    await userRepository.delete(req.params.uuid).then(
-      (result): Response => {
-        return res.send(result)
-      },
-    )
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      await userRepository.delete(authUser.user.id).then(
+        (result): Response => {
+          if (authUser.user !== undefined)
+            getEnvFolder.deleteFolder(`${authUser.user.id}`)
+
+          return res.send(result)
+        },
+      )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
   }
 }
 

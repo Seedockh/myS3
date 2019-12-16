@@ -9,19 +9,19 @@ export const checkRole = (roles: Array<string>) => {
     next: NextFunction,
   ): Promise<Response | void> => {
     // Get the user ID from previous middleware
-    const uuid: string = res.locals.jwtPayload.userId
+    const id: string = res.locals.jwtPayload.userId
 
     // Get user role from the database
     const userRepository: Repository<User> = getRepository(User)
     const user: User = await userRepository.findOneOrFail({
-      where: { uuid: uuid },
+      where: { id: id },
     })
 
     // Check if array of authorized roles includes the user's role
     if (roles.indexOf(user.role) > -1) next()
     else
       res.status(401).send({
-        message: `ERROR: ${user.role} Users are not authorized for this route`,
+        message: `ERROR: Users with Role:${user.role} are not authorized for this route`,
       })
   }
 }

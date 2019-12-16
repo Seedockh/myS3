@@ -1,17 +1,42 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
+import { getEnvFolder } from '../main'
+import Authentifier from '../services/authentifier'
 import Bucket from '../entity/Bucket'
-import User from '../entity/User'
 
 class BucketController {
   // Get all users
   static getAllBuckets = async (
     req: Request,
     res: Response,
-  ): Promise<Response> => {
-    return res.status(200).json({
-      buckets: await getManager().find(Bucket),
-    })
+  ): Promise<Response> =>
+    res.status(200).json({ buckets: await getManager().find(Bucket) })
+
+  static listFiles = async (req: Request, res: Response): Promise<Response> => {
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: req.params.id },
+      })
+      if (bucket === undefined) {
+        return res
+          .status(400)
+          .send({ message: "Bucket doesn't exists in database" })
+      }
+
+      return res.send(
+        getEnvFolder.readFolder(`${authUser.user.id}/${bucket.name}`),
+      )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
   }
 
   // Create bucket
@@ -20,29 +45,36 @@ class BucketController {
     res: Response,
   ): Promise<void | Response> => {
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
-    const userRepository: Repository<User> = getRepository(User)
-    const { name, userUuid } = req.body
-    const bucket = new Bucket()
-    const belongsToUser: User | undefined = await userRepository.findOne({
-      where: { uuid: userUuid },
-    })
-    if (belongsToUser === undefined) {
-      return res
-        .status(400)
-        .send({ message: "User doesn't exists in database" })
-    }
-    bucket.name = name
-    bucket.user = belongsToUser
-    await bucketRepository
-      .save(bucket)
-      .then(
-        (result): Response => {
-          return res.send(result)
-        },
-      )
-      .catch(error => {
-        res.status(400).send(error)
+    const { name } = req.body
+
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      const bucket = new Bucket()
+      bucket.name = name
+      bucket.user = authUser.user
+      await bucketRepository
+        .save(bucket)
+        .then(
+          (result): Response => {
+            // ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
+            // Create folder with bucket name
+            getEnvFolder.createFolder(`${result.user.id}/${result.name}`)
+
+            return res.send(result)
+          },
+        )
+        .catch(error => {
+          res.status(400).send(error)
+        })
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
       })
+    }
   }
 
   // Edit bucket
@@ -50,43 +82,77 @@ class BucketController {
     req: Request,
     res: Response,
   ): Promise<void | Response> => {
-    if (req.body.userUuid) {
-      const userRepository: Repository<User> = getRepository(User)
-      const user: User | undefined = await userRepository.findOne({
-        where: { uuid: req.body.userUuid },
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: req.params.id },
       })
-      if (user === undefined) {
+      if (bucket === undefined) {
         return res
           .status(400)
-          .send({ message: "User doesn't exists in database" })
+          .send({ message: "Bucket doesn't exists in database" })
       }
+      const oldName = bucket.name
+      bucketRepository.merge(bucket, req.body)
+      return await bucketRepository.save(bucket).then(
+        (result): Response => {
+          if (authUser.user === undefined)
+            return res.status(400).send(authUser.message)
+          // Rename folder with new bucket name
+          getEnvFolder.renameFolder(
+            `${authUser.user.id}/${oldName}`,
+            `${authUser.user.id}/${bucket.name}`,
+          )
+          return res.send(result)
+        },
+      )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
     }
-
-    const bucketRepository: Repository<Bucket> = getRepository(Bucket)
-    const bucket = await bucketRepository.findOne({
-      where: { id: req.params.id },
-    })
-    if (bucket === undefined) {
-      return res
-        .status(400)
-        .send({ message: "Bucket doesn't exists in database" })
-    }
-    bucketRepository.merge(bucket, req.body)
-    await bucketRepository.save(bucket).then(
-      (result): Response => {
-        return res.send(result)
-      },
-    )
   }
 
   // Delete bucket
-  static deleteBucket = async (req: Request, res: Response): Promise<void> => {
-    const bucketRepository: Repository<Bucket> = getRepository(Bucket)
-    await bucketRepository.delete(req.params.id).then(
-      (result): Response => {
-        return res.send(result)
-      },
-    )
+  static deleteBucket = async (
+    req: Request,
+    res: Response,
+  ): Promise<void | Response> => {
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
+
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: req.params.id },
+      })
+      if (bucket === undefined) {
+        return res
+          .status(400)
+          .send({ message: "ERROR: Bucket doesn't exists in database" })
+      }
+
+      return await bucketRepository.delete(req.params.id).then(
+        (result): Response => {
+          if (authUser.user === undefined)
+            return res.status(400).send(authUser.message)
+          getEnvFolder.deleteFolder(`${authUser.user.id}/${bucket.name}`)
+          return res.send(result)
+        },
+      )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
   }
 }
 

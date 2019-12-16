@@ -1,7 +1,7 @@
 # myS3
 https://mys3.mhirba.now.sh/
 
-# Authors 
+# Authors
 `Pierre Hérissé` && `Antoine Nivoy`
 
 # Description
@@ -62,6 +62,7 @@ MAIL_PASSWORD = one_of_your_gmail_password
 
 ### .step_05
 - [ ] Create a simple web interface with Vue 😎
+- [ ] Optimistic UI : make UI responding instantaneously generating front before backend response, display will change only if response is different than front UI
 
 ### .step_06
 - [ ] Your client has to handle all user API actions. _From the authentication to the upload through browsing buckets and files_
@@ -73,13 +74,14 @@ MAIL_PASSWORD = one_of_your_gmail_password
 - [ ] You HAVE TO use at least one major feature from your front library. _Hook/Context with React, Observables with Angular or Mixins with Vue_
 
 ### .step_09
-- [ ] One click sharing. _Well, on each blob, we can generate a static public link for the assets 😱😎_ 
+- [ ] One click sharing. _Well, on each blob, we can generate a static public link for the assets 😱😎_
 
 ### .step_10
 - [ ] Of course your app is responsive :)
 
 ### bonus
 - [ ] Add bucket and|or blob sharing permission (read|write)
+- [ ] Front : PRPL
 
 ### required
 - [ ] Make sure test coverage is 100%

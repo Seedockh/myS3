@@ -1,35 +1,18 @@
 import express from 'express'
 import { Server } from 'http'
-import fs from 'fs'
 import bodyParser from 'body-parser'
 import 'reflect-metadata'
 import helmet from 'helmet'
 import cors from 'cors'
 import { createConnection } from 'typeorm'
 import routes from './routes'
+import FileManager from './services/filemanager'
 
 const port = 1337
 // Create express application instance
 export const app: express.Application = express()
 export let server: Server
-
-// Get environment folder for any OS
-export const getEnvFolder = (platform: string, dirName: string): string => {
-  let dataDir: string
-
-  if (platform === 'darwin') {
-    dataDir = `${process.env.HOME}/Library/Preferences/${dirName}`
-  } else {
-    dataDir = `${process.env.HOME}/${dirName}`
-  }
-
-  // Create data folder if not exists
-  if (!fs.existsSync(dataDir) && platform === process.platform) {
-    fs.mkdirSync(dataDir)
-  }
-
-  return dataDir
-}
+export const getEnvFolder = new FileManager(process.platform)
 
 export const initializeConnection = async (
   connectionName = 'default',
@@ -47,7 +30,7 @@ export const initializeConnection = async (
       app.use('/', routes)
 
       server = app.listen(port, () => {
-        getEnvFolder(process.platform, 'myS3DATA')
+        getEnvFolder.init('myS3DATA')
         console.log(`Server started on port ${port}`)
       })
     })

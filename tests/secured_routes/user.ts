@@ -1,40 +1,18 @@
 import { expect } from 'chai'
-import { token, getData } from '../main.test'
+import { token, userToken, getData } from '../main.test'
+import * as jwt from 'jsonwebtoken'
+import UserController from '../../src/controllers/UserController'
 
 const userSecuredRoutes = (): void => {
   it('READS the previously created user successfully', done => {
     getData("http://localhost:7331/user/getAll",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
-      expect(result.users.length).equals(1)
-      expect(result.users[0].uuid).equals(3)
-      expect(result.users[0].nickname).equals("john")
-      expect(result.users[0].email).equals("johndoe@gmail.com")
-      expect(result.users[0].role).equals("ADMIN")
+      expect(result.users.length).equals(2)
+      expect(result.users[0].nickname).equals("nonadmin")
+      expect(result.users[0].email).equals("nonadmin@gmail.com")
+      expect(result.users[0].role).equals("REGULAR")
       done()
-    })
-  })
-
-  it('FAILS to access to secure route with wrong User Role', done => {
-    let headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
-    // This is a temporary data encoding solution because JSON problems
-    let data = 'nickname=nonadmin&email=nonadmin@gmail.com&password=user&role=REGULAR'
-
-    getData("http://localhost:7331/user/createNew",
-    { method: 'POST', headers: headers, body: data })
-    .then(() => {
-      data = 'nickname=nonadmin&password=user'
-      getData("http://localhost:7331/auth/login",
-      { method: 'POST', headers: headers, body: data })
-      .then(result => {
-        const nonAdminToken = result.token
-        getData("http://localhost:7331/user/getAll",
-        { method: 'GET', headers: { 'Authorization': `Bearer ${nonAdminToken}` } })
-        .then(res => {
-          expect(res.message).equals(`ERROR: REGULAR Users are not authorized for this route`)
-          done()
-        })
-      })
     })
   })
 
@@ -45,10 +23,10 @@ const userSecuredRoutes = (): void => {
     }
     // This is a temporary data encoding solution because JSON problems
     const data = 'nickname=jack'
-    getData("http://localhost:7331/user/edit/3",
+    getData(`http://localhost:7331/user/edit`,
     { method: 'PUT', headers: headers, body: data })
     .then(result => {
-      expect(result.uuid).equals(3)
+      expect(result.id).equals(userToken.id)
       expect(result.nickname).equals("jack")
       expect(result.email).equals("johndoe@gmail.com")
       expect(result.role).equals("ADMIN")
@@ -56,29 +34,60 @@ const userSecuredRoutes = (): void => {
     })
   })
 
-  it('FAILS to update non existent user', done => {
-    const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': `Bearer ${token}`
-    }
-    // This is a temporary data encoding solution because JSON problems
-    const data = 'nickname=jack'
-    getData("http://localhost:7331/user/edit/99999",
-    { method: 'PUT', headers: headers, body: data })
-    .then(result => {
-      expect(result.message).equals(`User doesn't exists in database`)
-      done()
-    })
+  it('FAILS to update one user without token', async done => {
+    const update = await UserController.editUser(
+      { body: { nickname: 'failuser'}, headers: { } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(update.message).equals("ERROR : Missing Bearer token in your Authorizations")
+    done()
+  })
+
+  it('FAILS to update one user with wrong token', async done => {
+    const falseToken: string = jwt.sign(
+      { userId: 'cd1efe69-6735-403b-a47d-f585042d271e', username: 'johnny' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' },
+    )
+    const update = await UserController.editUser(
+      { body: { nickname: 'failuser'}, headers: { authorization: `Bearer ${falseToken}` } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(update).equals("ERROR: User doesn't exists in database")
+    done()
   })
 
   it('DELETES the previously created user successfully', done => {
-    getData("http://localhost:7331/user/delete/3",
+    getData(`http://localhost:7331/user/delete`,
     { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
       expect(JSON.stringify(result))
       .equals(JSON.stringify({ raw:[], affected: 1 }))
       done()
     })
+  })
+
+  it('FAILS to delete one user without token', async done => {
+    const deleteUser = await UserController.deleteUser(
+      { headers: { } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(deleteUser.message).equals("ERROR : Missing Bearer token in your Authorizations")
+    done()
+  })
+
+  it('FAILS to delete one user with wrong token', async done => {
+    const falseToken: string = jwt.sign(
+      { userId: 'cd1efe69-6735-403b-a47d-f585042d271e', username: 'johnny' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' },
+    )
+    const deleteUser = await UserController.deleteUser(
+      { body: { nickname: 'failuser'}, headers: { authorization: `Bearer ${falseToken}` } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(deleteUser).equals("ERROR: User doesn't exists in database")
+    done()
   })
 }
 
