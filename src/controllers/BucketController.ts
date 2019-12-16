@@ -12,10 +12,7 @@ class BucketController {
   ): Promise<Response> =>
     res.status(200).json({ buckets: await getManager().find(Bucket) })
 
-  static listFiles = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response> => {
+  static listFiles = async (req: Request, res: Response): Promise<Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
@@ -32,7 +29,9 @@ class BucketController {
           .send({ message: "Bucket doesn't exists in database" })
       }
 
-      return res.send(getEnvFolder.readFolder(`${authUser.user.id}/${bucket.name}`))
+      return res.send(
+        getEnvFolder.readFolder(`${authUser.user.id}/${bucket.name}`),
+      )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
