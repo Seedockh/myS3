@@ -3,14 +3,14 @@ import User from '../entity/User'
 import { getRepository, Repository } from 'typeorm'
 
 interface AuthResponse {
-  message: string|undefined
-  user: User|undefined
+  message: string | undefined
+  user: User | undefined
 }
 
 export default class Authentifier {
   token: string
   repository: Repository<User> = getRepository(User)
-  secret: string|undefined
+  secret: string | undefined
 
   constructor(token: string) {
     this.token = token
@@ -19,7 +19,7 @@ export default class Authentifier {
 
   async getUser(): Promise<AuthResponse> {
     if (this.secret) {
-      const jwtPayload: string|object = jwt.verify(this.token, this.secret)
+      const jwtPayload: string | object = jwt.verify(this.token, this.secret)
 
       if (typeof jwtPayload === 'string')
         return { message: 'ERROR: Wrong token sent', user: undefined }
@@ -29,10 +29,16 @@ export default class Authentifier {
       })
 
       if (user === undefined)
-        return { message: "ERROR: User doesn't exists in database", user: undefined }
+        return {
+          message: "ERROR: User doesn't exists in database",
+          user: undefined,
+        }
 
       return { message: undefined, user: user }
     }
-    return { message: 'ERROR: Missing secret in your .env file', user: undefined }
+    return {
+      message: 'ERROR: Missing secret in your .env file',
+      user: undefined,
+    }
   }
 }

@@ -45,16 +45,14 @@ class UserController {
     res: Response,
   ): Promise<void | Response> => {
     const userRepository: Repository<User> = getRepository(User)
-    if (req.headers.authorization && process.env.JWT_SECRET) {
+    if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
-      const user = await auth.getUser()
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
 
-      if (!user.user)
-        return res.status(400).send(user.message)
-
-      userRepository.merge(user.user, req.body)
-      await userRepository.save(user.user).then(
+      userRepository.merge(authUser.user, req.body)
+      await userRepository.save(authUser.user).then(
         (result: User): Response => {
           return res.send(result)
         },
@@ -62,7 +60,7 @@ class UserController {
     } else {
       return res
         .status(400)
-        .send({ message: 'Something went wrong with your Jwt configuration.' })
+        .send({ message: 'ERROR : Missing Bearer token in your Authorizations' })
     }
   }
 
@@ -72,26 +70,13 @@ class UserController {
     res: Response,
   ): Promise<Response | void> => {
     const userRepository: Repository<User> = getRepository(User)
-    if (req.headers.authorization && process.env.JWT_SECRET) {
+    if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
 
-      let jwtPayload
-      jwt.verify(userToken, process.env.JWT_SECRET, (err, data) =>
-        err
-          ? res.status(403).send({ message: 'ERROR: Wrong token sent' })
-          : (jwtPayload = data),
-      )
-
-      const user: User | undefined = await userRepository.findOne({
-        where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
-      })
-      if (user === undefined) {
-        return res
-          .status(400)
-          .send({ message: "User doesn't exists in database" })
-      }
-
-      await userRepository.delete(user.id).then(
+      await userRepository.delete(authUser.user.id).then(
         (result): Response => {
           return res.send(result)
         },
@@ -99,7 +84,7 @@ class UserController {
     } else {
       return res
         .status(400)
-        .send({ message: 'Something went wrong with your JWt configuration.' })
+        .send({ message: 'ERROR : Missing Bearer token in your Authorizations' })
     }
   }
 }

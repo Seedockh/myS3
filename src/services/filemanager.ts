@@ -7,15 +7,14 @@ export default class FileManager {
     this.defaultPath = defaultPath
   }
 
-  createFolder(path: string): Array<string|Array<string>> {
-    let cleanPath: string = ''
+  createFolder(path: string): Array<string | Array<string>> {
+    let cleanPath = ''
     let splitPath: Array<string> = ['']
 
-    if (path.charAt(0) === '/')
-      cleanPath = path.substring(1, path.length-1)
+    if (path.charAt(0) === '/') cleanPath = path.substring(1, path.length - 1)
 
-    if (path.charAt(path.length-1) === '/')
-      cleanPath = path.substring(0, path.length-1)
+    if (path.charAt(path.length - 1) === '/')
+      cleanPath = path.substring(0, path.length - 1)
 
     if (cleanPath.includes('/')) splitPath = path.split('/')
 
