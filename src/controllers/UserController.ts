@@ -54,8 +54,11 @@ class UserController {
       const userToken = req.headers.authorization.replace('Bearer ', '')
 
       let jwtPayload
-      jwt.verify(userToken, process.env.JWT_SECRET,
-        (err, data) => err ? res.status(403).send({ message: 'ERROR: Wrong token sent'}) : jwtPayload = data )
+      jwt.verify(userToken, process.env.JWT_SECRET, (err, data) =>
+        err
+          ? res.status(403).send({ message: 'ERROR: Wrong token sent' })
+          : (jwtPayload = data),
+      )
 
       const user: User | undefined = await userRepository.findOne({
         where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
@@ -72,19 +75,27 @@ class UserController {
         },
       )
     } else {
-      return res.status(400).send({ message: 'Something went wrong with your JWt configuration.' })
+      return res
+        .status(400)
+        .send({ message: 'Something went wrong with your JWt configuration.' })
     }
   }
 
   // Delete user
-  static deleteUser = async (req: Request, res: Response): Promise<Response|void> => {
+  static deleteUser = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response | void> => {
     const userRepository: Repository<User> = getRepository(User)
     if (req.headers.authorization && process.env.JWT_SECRET) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
 
       let jwtPayload
-      jwt.verify(userToken, process.env.JWT_SECRET,
-        (err, data) => err ? res.status(403).send({ message: 'ERROR: Wrong token sent'}) : jwtPayload = data )
+      jwt.verify(userToken, process.env.JWT_SECRET, (err, data) =>
+        err
+          ? res.status(403).send({ message: 'ERROR: Wrong token sent' })
+          : (jwtPayload = data),
+      )
 
       const user: User | undefined = await userRepository.findOne({
         where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
@@ -94,13 +105,16 @@ class UserController {
           .status(400)
           .send({ message: "User doesn't exists in database" })
       }
+
       await userRepository.delete(user.id).then(
         (result): Response => {
           return res.send(result)
         },
       )
     } else {
-      return res.status(400).send({ message: 'Something went wrong with your JWt configuration.' })
+      return res
+        .status(400)
+        .send({ message: 'Something went wrong with your JWt configuration.' })
     }
   }
 
