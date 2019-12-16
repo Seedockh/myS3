@@ -50,7 +50,7 @@ MAIL_PASSWORD = one_of_your_gmail_password
 ### .step_03
 - [X] A bucket is describe with: id, name and belongs to a user
 - [X] Create routes which allows to create, edit and delete a bucket
-- [ ] Create a route which allow to list all objects from a bucket
+- [X] Create a route which allow to list all objects from a bucket
 - [ ] Create a route which allow to check if a bucket exist with a head method that return 200 or 400
 
 ### .step_04
