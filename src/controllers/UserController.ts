@@ -3,6 +3,7 @@ import { getRepository, Repository, getManager } from 'typeorm'
 import * as jwt from 'jsonwebtoken'
 import User from '../entity/User'
 import Mail from '../services/mail'
+import Authentifier from '../services/authentifier'
 
 class UserController {
   // Get all users
@@ -46,32 +47,22 @@ class UserController {
     const userRepository: Repository<User> = getRepository(User)
     if (req.headers.authorization && process.env.JWT_SECRET) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const user = await auth.getUser()
 
-      let jwtPayload
-      jwt.verify(userToken, process.env.JWT_SECRET, (err, data) =>
-        err
-          ? res.status(403).send({ message: 'ERROR: Wrong token sent' })
-          : (jwtPayload = data),
-      )
+      if (!user.user)
+        return res.status(400).send(user.message)
 
-      const user: User | undefined = await userRepository.findOne({
-        where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
-      })
-      if (user === undefined) {
-        return res
-          .status(400)
-          .send({ message: "User doesn't exists in database" })
-      }
-      userRepository.merge(user, req.body)
-      await userRepository.save(user).then(
-        (result): Response => {
+      userRepository.merge(user.user, req.body)
+      await userRepository.save(user.user).then(
+        (result: User): Response => {
           return res.send(result)
         },
       )
     } else {
       return res
         .status(400)
-        .send({ message: 'Something went wrong with your JWt configuration.' })
+        .send({ message: 'Something went wrong with your Jwt configuration.' })
     }
   }
 

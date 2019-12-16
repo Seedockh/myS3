@@ -1,12 +1,16 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
 import * as jwt from 'jsonwebtoken'
+import FileManager from '../services/filemanager'
 import Bucket from '../entity/Bucket'
 import User from '../entity/User'
 
 class BucketController {
   // Get all users
-  static getAllBuckets = async (req: Request, res: Response): Promise<Response> =>
+  static getAllBuckets = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> =>
     res.status(200).json({ buckets: await getManager().find(Bucket) })
 
   // Create bucket
@@ -44,7 +48,8 @@ class BucketController {
         .then(
           (result): Response => {
             // ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
-
+            const filemanager = new FileManager('~/myS3DATA')
+            console.log(filemanager.createFolder(`/${result.user.id}/${result.name}/`))
             //console.log(result)
 
             return res.send(result)
