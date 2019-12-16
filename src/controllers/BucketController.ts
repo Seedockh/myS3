@@ -28,8 +28,11 @@ class BucketController {
       const userToken = req.headers.authorization.replace('Bearer ', '')
 
       let jwtPayload
-      jwt.verify(userToken, process.env.JWT_SECRET,
-        (err, data) => err ? res.status(403).send({ message: 'ERROR: Wrong token sent'}) : jwtPayload = data )
+      jwt.verify(userToken, process.env.JWT_SECRET, (err, data) =>
+        err
+          ? res.status(403).send({ message: 'ERROR: Wrong token sent' })
+          : (jwtPayload = data),
+      )
 
       const bucket = new Bucket()
       const belongsToUser: User | undefined = await userRepository.findOne({
@@ -57,7 +60,9 @@ class BucketController {
           res.status(400).send(error)
         })
     } else {
-      return res.status(400).send({ message: 'Something went wrong with your JWt configuration.' })
+      return res
+        .status(400)
+        .send({ message: 'Something went wrong with your JWt configuration.' })
     }
   }
 

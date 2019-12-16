@@ -16,11 +16,7 @@ router.get(
 router.post('/createNew', UserController.createUser)
 
 //Edit one user
-router.put(
-  '/edit',
-  [checkJwt, checkRole(['ADMIN'])],
-  UserController.editUser,
-)
+router.put('/edit', [checkJwt, checkRole(['ADMIN'])], UserController.editUser)
 
 //Delete one user
 router.delete(
