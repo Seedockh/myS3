@@ -6,14 +6,8 @@ import Mail from '../services/mail'
 
 class UserController {
   // Get all users
-  static getAllUsers = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response> => {
-    return res.status(200).json({
-      users: await getManager().find(User),
-    })
-  }
+  static getAllUsers = async (req: Request, res: Response): Promise<Response> =>
+    res.status(200).json({ users: await getManager().find(User) })
 
   // Create user
   static createUser = async (req: Request, res: Response): Promise<void> => {
