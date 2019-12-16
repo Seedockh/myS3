@@ -1,10 +1,8 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
-import * as jwt from 'jsonwebtoken'
 import FileManager from '../services/filemanager'
 import Authentifier from '../services/authentifier'
 import Bucket from '../entity/Bucket'
-import User from '../entity/User'
 
 class BucketController {
   // Get all users
@@ -20,7 +18,6 @@ class BucketController {
     res: Response,
   ): Promise<void | Response> => {
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
-    const userRepository: Repository<User> = getRepository(User)
     const { name } = req.body
 
     if (req.headers.authorization) {
@@ -50,9 +47,7 @@ class BucketController {
           res.status(400).send(error)
         })
     } else {
-      return res
-        .status(400)
-        .send({ message: 'ERROR : Missing Bearer token in your Authorizations' })
+      return res.status(400).send({message: 'ERROR : Missing Bearer token in your Authorizations'})
     }
   }
 
@@ -85,7 +80,9 @@ class BucketController {
     } else {
       return res
         .status(400)
-        .send({ message: 'ERROR : Missing Bearer token in your Authorizations' })
+        .send({
+          message: 'ERROR : Missing Bearer token in your Authorizations',
+        })
     }
   }
 
