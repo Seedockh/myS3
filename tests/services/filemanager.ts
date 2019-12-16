@@ -31,6 +31,23 @@ const filemanager = (): void => {
     done()
   })
 
+  it('LISTS all files from a folder successfully', async done => {
+    fs.writeFileSync(`${process.env.HOME}/myS3DATA/tests/testingfolder/test1.txt`)
+    fs.writeFileSync(`${process.env.HOME}/myS3DATA/tests/testingfolder/test2.txt`)
+    fs.writeFileSync(`${process.env.HOME}/myS3DATA/tests/testingfolder/test3.txt`)
+
+    const folder = envFolder.readFolder('testingfolder')
+    expect(JSON.stringify(folder))
+      .equals(JSON.stringify(['test1.txt', 'test2.txt', 'test3.txt']))
+    done()
+  })
+
+  it('FAILS to list files from unknown folder', async done => {
+    const folder = envFolder.readFolder('testingfolders')
+    expect(folder).equals(`Folder ${process.env.HOME}/myS3DATA/tests/testingfolders does not exist.`)
+    done()
+  })
+
   it('UPDATES a folder successfully', async done => {
     const folder = envFolder.renameFolder('testingfolder', 'renamedFolder')
     expect(folder).equals(`Folder ${process.env.HOME}/myS3DATA/tests/renamedFolder successfully updated.`)

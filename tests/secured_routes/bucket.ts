@@ -1,9 +1,11 @@
 import { expect } from 'chai'
 import { token, userToken, getData } from '../main.test'
+import fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import BucketController from '../../src/controllers/BucketController'
 
 const bucketSecuredRoutes = (): void => {
+
   it('CREATES one bucket successfully', done => {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -68,6 +70,33 @@ const bucketSecuredRoutes = (): void => {
       expect(result.buckets[0].name).equals("firstbucket")
       done()
     })
+  })
+
+  it('LISTS all files of a correct folder', done => {
+    getData("http://localhost:7331/bucket/listfiles/3",
+    { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(JSON.stringify(result)).equals(JSON.stringify([]))
+      done()
+    })
+  })
+
+  it('FAILS to list files of an unknown folder', done => {
+    getData("http://localhost:7331/bucket/listfiles/99999999",
+    { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(result.message).equals("Bucket doesn't exists in database")
+      done()
+    })
+  })
+
+  it('FAILS to list files without token', async done => {
+    const list = await BucketController.listFiles(
+      { params: { id: 3 }, headers: { } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(list.message).equals("ERROR : Missing Bearer token in your Authorizations")
+    done()
   })
 
   it('UPDATES the previously created bucket successfully', done => {
