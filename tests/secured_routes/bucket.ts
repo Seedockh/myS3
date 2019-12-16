@@ -76,20 +76,20 @@ const bucketSecuredRoutes = (): void => {
     })
   })
 
-  it('FAILS to update with non existent user', done => {
+  /*it('FAILS to update with non existent user', done => {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': `Bearer ${token}`
     }
     // This is a temporary data encoding solution because JSON problems
-    const data = `name=updatebucket&userUuid=00000000-0000-0000-0000-000000000000`
+    const data = `name=updatebucket`
     getData("http://localhost:7331/bucket/edit/3",
     { method: 'PUT', headers: headers, body: data })
     .then(result => {
       expect(result.message).equals(`User doesn't exists in database`)
       done()
     })
-  })
+  })*/
 
   it('FAILS to update non existent bucket', done => {
     const headers = {

@@ -12,6 +12,7 @@ class Bucket {
   @ManyToOne(
     () => User,
     user => user.buckets,
+    { onDelete: 'CASCADE' }
   )
   user: User
 }
