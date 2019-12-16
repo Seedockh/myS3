@@ -6,14 +6,8 @@ import User from '../entity/User'
 
 class BucketController {
   // Get all users
-  static getAllBuckets = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response> => {
-    return res.status(200).json({
-      buckets: await getManager().find(Bucket),
-    })
-  }
+  static getAllBuckets = async (req: Request, res: Response): Promise<Response> =>
+    res.status(200).json({ buckets: await getManager().find(Bucket) })
 
   // Create bucket
   static createBucket = async (
