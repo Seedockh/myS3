@@ -19,20 +19,19 @@ export default class Authentifier {
 
   async getUser(): Promise<AuthResponse> {
     if (this.secret) {
-      const jwtPayload: string | object = jwt.verify(this.token, this.secret)
-
-      if (typeof jwtPayload === 'string')
+      let jwtPayload: string | object
+      try {
+        jwtPayload = jwt.verify(this.token, this.secret)
+      } catch (error) {
         return { message: 'ERROR: Wrong token sent', user: undefined }
+      }
 
       const user = await this.repository.findOne({
         where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
       })
 
       if (user === undefined)
-        return {
-          message: "ERROR: User doesn't exists in database",
-          user: undefined,
-        }
+        return { message: "ERROR: User doesn't exists in database", user: undefined }
 
       return { message: undefined, user: user }
     }

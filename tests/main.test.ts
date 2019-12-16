@@ -9,6 +9,8 @@ import Bucket from '../src/entity/Bucket'
 import FileManager from '../src/services/filemanager'
 
 import mail from './services/mail'
+import authentifier from './services/authentifier'
+import filemanager from './services/filemanager'
 import userEntity from './entities/User'
 import bucketEntity from './entities/Bucket'
 import checkJwt from './middlewares/checkJwt'
@@ -61,7 +63,7 @@ describe(':: Database & Environment initialization', (): void => {
     const dataDir = new FileManager(process.platform).init('myS3DATA/tests')
     expect(fs.existsSync(dataDir)).equals(true)
 
-    fs.rmdirSync(dataDir)
+    fs.rmdirSync(dataDir, { recursive: true })
     expect(fs.existsSync(dataDir)).equals(false)
 
     expect(new FileManager('linux').init('myS3DATA/tests'))
@@ -74,8 +76,7 @@ describe(':: Database & Environment initialization', (): void => {
       .equals(`${process.env.HOME}/myS3DATA/tests`)
 
     expect(fs.existsSync(dataDir)).equals(true)
-    fs.rmdirSync(dataDir)
-    
+
     done()
   })
 
@@ -121,6 +122,8 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/  })
 /*===*/})
 /*===*/ describe(':: Authentication routes tests', authRoutes)
+/*===*/ describe(':: Authentifier tests', authentifier)
+/*===*/ describe(':: FileManager tests', filemanager)
 /*===*/ describe(':: Bucket secured routes tests', bucketSecuredRoutes)
 /*===*/ describe(':: User secured routes tests', userSecuredRoutes)
 /*===*/ describe(':: Mailing tests', mail)

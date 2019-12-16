@@ -13,7 +13,6 @@ const port = 1337
 // Create express application instance
 export const app: express.Application = express()
 export let server: Server
-
 export const getEnvFolder = new FileManager(process.platform)
 
 export const initializeConnection = async (

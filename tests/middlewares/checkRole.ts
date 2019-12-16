@@ -18,7 +18,7 @@ const checkRole = (): void => {
         getData("http://localhost:7331/user/getAll",
         { method: 'GET', headers: { 'Authorization': `Bearer ${nonAdminToken}` } })
         .then(res => {
-          expect(res.message).equals(`ERROR: REGULAR Users are not authorized for this route`)
+          expect(res.message).equals(`ERROR: Users with Role:REGULAR are not authorized for this route`)
           done()
         })
       })

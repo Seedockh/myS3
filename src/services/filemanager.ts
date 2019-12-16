@@ -19,43 +19,41 @@ export default class FileManager {
     }
 
     // Create data folder if not exists
-    if (!fs.existsSync(dataDir) && this.platform === process.platform) {
+    if (!fs.existsSync(dataDir) && this.platform === process.platform)
       fs.mkdirSync(dataDir)
-    }
 
     this.defaultPath = dataDir
     return dataDir
   }
 
   createFolder(path: string): string {
+    if (process.env.NODE_ENV === 'test' && !this.defaultPath.includes('/tests'))
+      this.defaultPath += '/tests'
     if (fs.existsSync(`${this.defaultPath}/${path}`)) {
-      console.log(`Folder ${this.defaultPath}/${path} already exists.`)
       return `Folder ${this.defaultPath}/${path} already exists.`
     } else {
       fs.mkdirSync(`${this.defaultPath}/${path}`)
-      console.log(`Folder ${this.defaultPath}/${path} successfully created.`)
       return `Folder ${this.defaultPath}/${path} successfully created.`
     }
   }
 
   renameFolder(path: string, name: string): string {
     if (!fs.existsSync(`${this.defaultPath}/${path}`)) {
-      console.log(`Folder ${this.defaultPath}/${path} does not exists.`)
-      return `Folder ${this.defaultPath}/${path} does not exists.`
+      return `Folder ${this.defaultPath}/${path} does not exist.`
     } else {
-      fs.renameSync(`${this.defaultPath}/${path}`, `${this.defaultPath}/${name}`)
-      console.log(`Folder ${this.defaultPath}/${name} successfully updated.`)
+      fs.renameSync(
+        `${this.defaultPath}/${path}`,
+        `${this.defaultPath}/${name}`,
+      )
       return `Folder ${this.defaultPath}/${name} successfully updated.`
     }
   }
 
   deleteFolder(path: string): string {
     if (!fs.existsSync(`${this.defaultPath}/${path}`)) {
-      console.log(`Folder ${this.defaultPath}/${path} does not exists.`)
-      return `Folder ${this.defaultPath}/${path} does not exists.`
+      return `Folder ${this.defaultPath}/${path} does not exist.`
     } else {
-      fs.rmdirSync(`${this.defaultPath}/${path}`, { recursive: true });
-      console.log(`Folder ${this.defaultPath}/${path} deleted successfully.`)
+      fs.rmdirSync(`${this.defaultPath}/${path}`, { recursive: true })
       return `Folder ${this.defaultPath}/${path} deleted successfully.`
     }
   }

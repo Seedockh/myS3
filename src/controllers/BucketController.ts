@@ -60,7 +60,6 @@ class BucketController {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
       const authUser = await auth.getUser()
-      if (!authUser.user) return res.status(400).send(authUser.message)
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
@@ -73,14 +72,18 @@ class BucketController {
       }
       const oldName = bucket.name
       bucketRepository.merge(bucket, req.body)
-      await bucketRepository.save(bucket).then((result): Response => {
-        // Rename folder with new bucket name
-        getEnvFolder.renameFolder(
-          `${authUser.user.id}/${oldName}`,
-          `${authUser.user.id}/${bucket.name}`,
-        )
-        return res.send(result)
-      })
+      return await bucketRepository.save(bucket).then(
+        (result): Response => {
+          if (authUser.user === undefined)
+            return res.status(400).send(authUser.message)
+          // Rename folder with new bucket name
+          getEnvFolder.renameFolder(
+            `${authUser.user.id}/${oldName}`,
+            `${authUser.user.id}/${bucket.name}`,
+          )
+          return res.send(result)
+        },
+      )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
@@ -89,12 +92,14 @@ class BucketController {
   }
 
   // Delete bucket
-  static deleteBucket = async (req: Request, res: Response): Promise<void> => {
+  static deleteBucket = async (req: Request, res: Response): Promise<void|Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
       const authUser = await auth.getUser()
-      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
@@ -103,14 +108,17 @@ class BucketController {
       if (bucket === undefined) {
         return res
           .status(400)
-          .send({ message: "Bucket doesn't exists in database" })
+          .send({ message: "ERROR: Bucket doesn't exists in database" })
       }
 
-      await bucketRepository.delete(req.params.id).then(
+      return await bucketRepository.delete(req.params.id).then(
         (result): Response => {
+          if (authUser.user === undefined)
+            return res.status(400).send(authUser.message)
           getEnvFolder.deleteFolder(`${authUser.user.id}/${bucket.name}`)
           return res.send(result)
-        })
+        },
+      )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
