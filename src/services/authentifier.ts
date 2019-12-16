@@ -31,7 +31,10 @@ export default class Authentifier {
       })
 
       if (user === undefined)
-        return { message: "ERROR: User doesn't exists in database", user: undefined }
+        return {
+          message: "ERROR: User doesn't exists in database",
+          user: undefined,
+        }
 
       return { message: undefined, user: user }
     }

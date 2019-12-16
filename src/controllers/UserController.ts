@@ -3,7 +3,6 @@ import { getRepository, Repository, getManager } from 'typeorm'
 import { getEnvFolder } from '../main'
 import User from '../entity/User'
 import Mail from '../services/mail'
-import FileManager from '../services/filemanager'
 import Authentifier from '../services/authentifier'
 
 class UserController {
@@ -84,7 +83,7 @@ class UserController {
         (result): Response => {
           if (authUser.user !== undefined)
             getEnvFolder.deleteFolder(`${authUser.user.id}`)
-            
+
           return res.send(result)
         },
       )

@@ -1,6 +1,5 @@
 import express from 'express'
 import { Server } from 'http'
-import fs from 'fs'
 import bodyParser from 'body-parser'
 import 'reflect-metadata'
 import helmet from 'helmet'
