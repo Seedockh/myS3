@@ -42,10 +42,10 @@ MAIL_PASSWORD = one_of_your_gmail_password
 - [X] Bootstrap all CRUD user operations
 - [x] You HAVE TO use JWT
 - [x] You HAVE TO send an email on user creation
-- [ ] Add user password reset e-mail workflow
+- [X] Add user password reset e-mail workflow
 
 ### interlude
-- [ ] The file structure on your computer will be ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
+- [X] The file structure on your computer will be ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
 
 ### .step_03
 - [X] A bucket is describe with: id, name and belongs to a user
