@@ -1,7 +1,9 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
+import { getEnvFolder } from '../main'
 import User from '../entity/User'
 import Mail from '../services/mail'
+import FileManager from '../services/filemanager'
 import Authentifier from '../services/authentifier'
 
 class UserController {
@@ -23,6 +25,9 @@ class UserController {
       .save(user)
       .then(
         (result): Response => {
+          // Create folder with user UUID
+          getEnvFolder.createFolder(result.id)
+
           // Send mail
           const to: string = user.email
           const subject = 'Efrei myS3'
@@ -57,11 +62,9 @@ class UserController {
         },
       )
     } else {
-      return res
-        .status(400)
-        .send({
-          message: 'ERROR : Missing Bearer token in your Authorizations',
-        })
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
     }
   }
 
@@ -79,15 +82,14 @@ class UserController {
 
       await userRepository.delete(authUser.user.id).then(
         (result): Response => {
+          getEnvFolder.deleteFolder(`${authUser.user.id}`)
           return res.send(result)
         },
       )
     } else {
-      return res
-        .status(400)
-        .send({
-          message: 'ERROR : Missing Bearer token in your Authorizations',
-        })
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
     }
   }
 }

@@ -6,6 +6,7 @@ import { createConnection, getConnection, Connection, Server, Repository } from 
 import { initializeConnection, app, server, getEnvFolder } from '../src/main'
 import User from '../src/entity/User'
 import Bucket from '../src/entity/Bucket'
+import FileManager from '../src/services/filemanager'
 
 import mail from './services/mail'
 import userEntity from './entities/User'
@@ -57,18 +58,24 @@ describe(':: Database & Environment initialization', (): void => {
   })
 
   it('RETURNS correct environment folder', done => {
-    const dataDir = getEnvFolder(process.platform, 'myS3DATA/tests')
+    const dataDir = new FileManager(process.platform).init('myS3DATA/tests')
     expect(fs.existsSync(dataDir)).equals(true)
 
     fs.rmdirSync(dataDir)
     expect(fs.existsSync(dataDir)).equals(false)
 
-    expect(getEnvFolder('linux', 'myS3DATA/tests')).equals(`${process.env.HOME}/myS3DATA/tests`)
-    expect(getEnvFolder('darwin', 'myS3DATA/tests')).equals(`${process.env.HOME}/Library/Preferences/myS3DATA/tests`)
-    expect(getEnvFolder('windows', 'myS3DATA/tests')).equals(`${process.env.HOME}/myS3DATA/tests`)
+    expect(new FileManager('linux').init('myS3DATA/tests'))
+      .equals(`${process.env.HOME}/myS3DATA/tests`)
+
+    expect(new FileManager('darwin').init('myS3DATA/tests'))
+      .equals(`${process.env.HOME}/Library/Preferences/myS3DATA/tests`)
+
+    expect(new FileManager('windows').init('myS3DATA/tests'))
+      .equals(`${process.env.HOME}/myS3DATA/tests`)
 
     expect(fs.existsSync(dataDir)).equals(true)
-
+    fs.rmdirSync(dataDir)
+    
     done()
   })
 

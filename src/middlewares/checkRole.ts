@@ -21,7 +21,7 @@ export const checkRole = (roles: Array<string>) => {
     if (roles.indexOf(user.role) > -1) next()
     else
       res.status(401).send({
-        message: `ERROR: ${user.role} Users are not authorized for this route`,
+        message: `ERROR: Users with Role:${user.role} are not authorized for this route`,
       })
   }
 }
