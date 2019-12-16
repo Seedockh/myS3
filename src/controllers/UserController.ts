@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
-import * as jwt from 'jsonwebtoken'
 import User from '../entity/User'
 import Mail from '../services/mail'
 import Authentifier from '../services/authentifier'
@@ -60,7 +59,9 @@ class UserController {
     } else {
       return res
         .status(400)
-        .send({ message: 'ERROR : Missing Bearer token in your Authorizations' })
+        .send({
+          message: 'ERROR : Missing Bearer token in your Authorizations',
+        })
     }
   }
 
@@ -84,7 +85,9 @@ class UserController {
     } else {
       return res
         .status(400)
-        .send({ message: 'ERROR : Missing Bearer token in your Authorizations' })
+        .send({
+          message: 'ERROR : Missing Bearer token in your Authorizations',
+        })
     }
   }
 
