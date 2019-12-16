@@ -82,7 +82,9 @@ class UserController {
 
       await userRepository.delete(authUser.user.id).then(
         (result): Response => {
-          getEnvFolder.deleteFolder(`${authUser.user.id}`)
+          if (authUser.user !== undefined)
+            getEnvFolder.deleteFolder(`${authUser.user.id}`)
+            
           return res.send(result)
         },
       )
