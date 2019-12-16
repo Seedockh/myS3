@@ -19,6 +19,9 @@ export default class FileManager {
     }
 
     // Create data folder if not exists
+    if (!fs.existsSync(`${process.env.HOME}/myS3DATA`))
+      fs.mkdirSync(`${process.env.HOME}/myS3DATA`)
+
     if (!fs.existsSync(dataDir) && this.platform === process.platform)
       fs.mkdirSync(dataDir)
 
