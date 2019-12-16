@@ -11,11 +11,9 @@ router.get('/getAll', [checkJwt], BucketController.getAllBuckets)
 router.post('/createNew', [checkJwt], BucketController.createBucket)
 
 //Edit one bucket
-/** @FIXME Need to remove param id to take token */
 router.put('/edit/:id([0-9]+)', [checkJwt], BucketController.editBucket)
 
 //Delete one bucket
-/** @FIXME Need to remove param id to take token */
 router.delete('/delete/:id([0-9]+)', [checkJwt], BucketController.deleteBucket)
 
 export default router

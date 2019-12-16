@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { getRepository, Repository, getManager } from 'typeorm'
 import * as jwt from 'jsonwebtoken'
 import FileManager from '../services/filemanager'
+import Authentifier from '../services/authentifier'
 import Bucket from '../entity/Bucket'
 import User from '../entity/User'
 
@@ -22,34 +23,24 @@ class BucketController {
     const userRepository: Repository<User> = getRepository(User)
     const { name } = req.body
 
-    if (req.headers.authorization && process.env.JWT_SECRET) {
+    if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
-
-      let jwtPayload
-      jwt.verify(userToken, process.env.JWT_SECRET, (err, data) =>
-        err
-          ? res.status(403).send({ message: 'ERROR: Wrong token sent' })
-          : (jwtPayload = data),
-      )
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
 
       const bucket = new Bucket()
-      const belongsToUser: User | undefined = await userRepository.findOne({
-        where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
-      })
-      if (belongsToUser === undefined) {
-        return res
-          .status(400)
-          .send({ message: "User doesn't exists in database" })
-      }
       bucket.name = name
-      bucket.user = belongsToUser
+      bucket.user = authUser.user
       await bucketRepository
         .save(bucket)
         .then(
           (result): Response => {
             // ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
             const filemanager = new FileManager('~/myS3DATA')
-            console.log(filemanager.createFolder(`/${result.user.id}/${result.name}/`))
+            console.log(
+              filemanager.createFolder(`/${result.user.id}/${result.name}/`),
+            )
             //console.log(result)
 
             return res.send(result)
@@ -61,7 +52,7 @@ class BucketController {
     } else {
       return res
         .status(400)
-        .send({ message: 'Something went wrong with your JWt configuration.' })
+        .send({ message: 'ERROR : Missing Bearer token in your Authorizations' })
     }
   }
 
@@ -70,33 +61,32 @@ class BucketController {
     req: Request,
     res: Response,
   ): Promise<void | Response> => {
-    if (req.body.userUuid) {
-      const userRepository: Repository<User> = getRepository(User)
-      const user: User | undefined = await userRepository.findOne({
-        where: { id: req.body.userUuid },
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: req.params.id },
       })
-      if (user === undefined) {
+      if (bucket === undefined) {
         return res
           .status(400)
-          .send({ message: "User doesn't exists in database" })
+          .send({ message: "Bucket doesn't exists in database" })
       }
-    }
-
-    const bucketRepository: Repository<Bucket> = getRepository(Bucket)
-    const bucket = await bucketRepository.findOne({
-      where: { id: req.params.id },
-    })
-    if (bucket === undefined) {
+      bucketRepository.merge(bucket, req.body)
+      await bucketRepository.save(bucket).then(
+        (result): Response => {
+          return res.send(result)
+        },
+      )
+    } else {
       return res
         .status(400)
-        .send({ message: "Bucket doesn't exists in database" })
+        .send({ message: 'ERROR : Missing Bearer token in your Authorizations' })
     }
-    bucketRepository.merge(bucket, req.body)
-    await bucketRepository.save(bucket).then(
-      (result): Response => {
-        return res.send(result)
-      },
-    )
   }
 
   // Delete bucket
