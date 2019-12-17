@@ -12,8 +12,8 @@ class Blob {
   @Column('text', { nullable: false })
   path: string
 
-  @Column('int', { nullable: false })
-  size: int8
+  @Column('int8', { nullable: false })
+  size: number
 
   @ManyToOne(
     () => Bucket,
