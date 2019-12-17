@@ -17,7 +17,9 @@ class BucketController {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
       const authUser = await auth.getUser()
-      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
@@ -51,7 +53,9 @@ class BucketController {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
       const authUser = await auth.getUser()
-      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
 
       const bucket = new Bucket()
       bucket.name = name
@@ -91,11 +95,11 @@ class BucketController {
       const bucket = await bucketRepository.findOne({
         where: { id: req.params.id },
       })
-      if (bucket === undefined) {
+      if (bucket === undefined)
         return res
           .status(400)
           .send({ message: "Bucket doesn't exists in database" })
-      }
+
       const oldName = bucket.name
       bucketRepository.merge(bucket, req.body)
       return await bucketRepository.save(bucket).then(
