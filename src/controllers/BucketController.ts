@@ -12,6 +12,21 @@ class BucketController {
   ): Promise<Response> =>
     res.status(200).json({ buckets: await getManager().find(Bucket) })
 
+  static bucketExists = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+    const bucket = await bucketRepository.findOne({
+      where: { name: req.params.name },
+    })
+    if (bucket === undefined) {
+      return res.status(400).end()
+    } else {
+      return res.status(200).end()
+    }
+  }
+
   static listFiles = async (req: Request, res: Response): Promise<Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')

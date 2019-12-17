@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import * as jwt from 'jsonwebtoken'
+import fs from 'fs'
+import { getEnvFolder } from '../main'
 import { getRepository, Repository } from 'typeorm'
 import User from '../entity/User'
 
@@ -42,6 +44,10 @@ class AuthController {
       { expiresIn: '1h' },
     )
 
+    if (!fs.existsSync(`${getEnvFolder.defaultPath}/${user.id}`) ) {
+      // Create folder with user UUID
+      getEnvFolder.createFolder(user.id)
+    }
     // Send the jwt in the response
     res.send({ token: token })
   }

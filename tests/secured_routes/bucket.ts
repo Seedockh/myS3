@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import { token, userToken, getData } from '../main.test'
+import fetch from 'node-fetch'
 import fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import BucketController from '../../src/controllers/BucketController'
@@ -68,6 +69,24 @@ const bucketSecuredRoutes = (): void => {
       expect(result.buckets.length).equals(1)
       expect(result.buckets[0].id).equals(3)
       expect(result.buckets[0].name).equals("firstbucket")
+      done()
+    })
+  })
+
+  it('CHECKS if the previously bucket exists successfully', done => {
+    fetch("http://localhost:7331/bucket/exists/firstbucket",
+    { method: 'HEAD', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(result.status).equals(200)
+      done()
+    })
+  })
+
+  it('FAILS to find unknown bucket', done => {
+    fetch("http://localhost:7331/bucket/exists/firstbuckets",
+    { method: 'HEAD', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(result.status).equals(400)
       done()
     })
   })
