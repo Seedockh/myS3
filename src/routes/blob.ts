@@ -4,5 +4,4 @@ import { checkJwt } from '../middlewares/checkJwt'
 
 const router = Router()
 
-
 export default router
