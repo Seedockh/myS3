@@ -78,12 +78,11 @@ class UserController {
       const auth = new Authentifier(userToken)
       const authUser = await auth.getUser()
       if (!authUser.user) return res.status(400).send(authUser.message)
-
-      await userRepository.delete(authUser.user.id).then(
+      const user = authUser.user
+      
+      await userRepository.delete(user.id).then(
         (result): Response => {
-          if (authUser.user !== undefined)
-            getEnvFolder.deleteFolder(`${authUser.user.id}`)
-
+          getEnvFolder.deleteFolder(`${user.id}`)
           return res.send(result)
         },
       )

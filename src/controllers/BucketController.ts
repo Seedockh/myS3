@@ -156,11 +156,10 @@ class BucketController {
           .send({ message: "ERROR: Bucket doesn't exists in database" })
       }
 
+      const user = authUser.user
       return await bucketRepository.delete(req.params.id).then(
         (result): Response => {
-          if (authUser.user === undefined)
-            return res.status(400).send(authUser.message)
-          getEnvFolder.deleteFolder(`${authUser.user.id}/${bucket.name}`)
+          getEnvFolder.deleteFolder(`${user.id}/${bucket.name}`)
           return res.send(result)
         },
       )
