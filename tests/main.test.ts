@@ -61,6 +61,7 @@ describe(':: Database & Environment initialization', (): void => {
   })
 
   it('RETURNS correct environment folder', done => {
+    new FileManager(process.platform).init('myS3DATA/tests')
     expect(fs.existsSync(dataDir)).equals(true)
 
     fs.rmdirSync(dataDir, { recursive: true })
@@ -98,17 +99,17 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/ describe(':: CheckJwt routes tests', checkJwt)
 /*===*/ describe(':: CheckRole routes tests', checkRole)
 /*===*/ describe(':: User public routes tests', userPublicRoutes)
-
+/*===*/
 /*===*/ describe(':: Authentication for tests', ():void => {
 /*===*/  it('LOGS IN successfully', async done => {
 /*===*/    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
 /*===*/    const data = 'nickname=john&password=doe'
-
-           const user = await userRepository.findOne({where:{nickname:'john'}})
-           expect(fs.existsSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`)).equals(true)
-           fs.rmdirSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`, { recursive: true })
-           expect(fs.existsSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`)).equals(false)
-
+/*===*/
+/*===*/    const user = await userRepository.findOne({where:{nickname:'john'}})
+/*===*/    expect(fs.existsSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`)).equals(true)
+/*===*/    fs.rmdirSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`, { recursive: true })
+/*===*/    expect(fs.existsSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`)).equals(false)
+/*===*/
 /*===*/    getData("http://localhost:7331/auth/login",
 /*===*/    { method: 'POST', headers: headers, body: data })
 /*===*/    .then( async result => {
