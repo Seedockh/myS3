@@ -81,6 +81,20 @@ const bucketSecuredRoutes = (): void => {
     })
   })
 
+  it('FAILS to list files with wrong token', async done => {
+    const falseToken: string = jwt.sign(
+      { userId: 'cd1efe69-6735-403b-a47d-f585042d271e', username: 'johnny' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' },
+    )
+    const list = await BucketController.listFiles(
+      { params: { id: 3 }, headers: { authorization: `Bearer ${falseToken}` } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(list).equals("ERROR: User doesn't exists in database")
+    done()
+  })
+
   it('FAILS to list files of an unknown folder', done => {
     getData("http://localhost:7331/bucket/listfiles/99999999",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
