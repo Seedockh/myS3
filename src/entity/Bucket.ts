@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm'
 import User from './User'
+import Blob from './Blob'
 
 @Entity()
 class Bucket {
@@ -15,6 +16,12 @@ class Bucket {
     { onDelete: 'CASCADE' },
   )
   user: User
+
+  @OneToMany(
+    () => Blob,
+    blob => blob.bucket,
+  )
+  blobs: Blob[]
 }
 
 export default Bucket

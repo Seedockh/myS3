@@ -12,10 +12,7 @@ class BucketController {
   ): Promise<Response> =>
     res.status(200).json({ buckets: await getManager().find(Bucket) })
 
-  static bucketExists = async (
-    req: Request,
-    res: Response,
-  ): Promise<void> => {
+  static bucketExists = async (req: Request, res: Response): Promise<void> => {
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
     const bucket = await bucketRepository.findOne({
       where: { name: req.params.name },
