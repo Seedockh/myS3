@@ -4,8 +4,6 @@ import { getEnvFolder } from '../main'
 import Authentifier from '../services/authentifier'
 import Blob from '../entity/Blob'
 
-class BlobController {
-
-}
+class BlobController {}
 
 export default BlobController
