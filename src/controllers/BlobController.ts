@@ -19,10 +19,7 @@ class BlobController {
     return res.status(200).send({ message: 'Init' })
   }
 
-  static addBlob = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response> => {
+  static addBlob = async (req: Request, res: Response): Promise<Response> => {
     return res.status(200).send({ message: 'Init' })
   }
 
