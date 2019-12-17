@@ -44,7 +44,7 @@ class AuthController {
       { expiresIn: '1h' },
     )
 
-    if (!fs.existsSync(`${getEnvFolder.defaultPath}/${user.id}`) ) {
+    if (!fs.existsSync(`${getEnvFolder.defaultPath}/${user.id}`)) {
       // Create folder with user UUID
       getEnvFolder.createFolder(user.id)
     }
