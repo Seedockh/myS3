@@ -7,6 +7,9 @@ const router = Router()
 // Get all buckets
 router.get('/getAll', [checkJwt], BucketController.getAllBuckets)
 
+// Get to know if a bucket exists
+router.head('/exists/:name([a-z]+)', [checkJwt], BucketController.bucketExists)
+
 // List all files of a bucket
 router.get('/listFiles/:id([0-9]+)', [checkJwt], BucketController.listFiles)
 
