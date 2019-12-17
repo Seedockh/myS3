@@ -72,7 +72,7 @@ class BucketController {
       const bucket = new Bucket()
       bucket.name = name
       bucket.user = authUser.user
-      await bucketRepository
+      bucketRepository
         .save(bucket)
         .then(
           (result): Response => {
@@ -114,7 +114,7 @@ class BucketController {
 
       const oldName = bucket.name
       bucketRepository.merge(bucket, req.body)
-      return await bucketRepository.save(bucket).then(
+      return bucketRepository.save(bucket).then(
         (result): Response => {
           if (authUser.user === undefined)
             return res.status(400).send(authUser.message)
@@ -157,7 +157,7 @@ class BucketController {
       }
 
       const user = authUser.user
-      return await bucketRepository.delete(req.params.id).then(
+      return bucketRepository.delete(req.params.id).then(
         (result): Response => {
           getEnvFolder.deleteFolder(`${user.id}/${bucket.name}`)
           return res.send(result)

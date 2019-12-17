@@ -17,7 +17,7 @@ export const getEnvFolder = new FileManager(process.platform)
 export const initializeConnection = async (
   connectionName = 'default',
 ): Promise<void | string> => {
-  return await createConnection(connectionName)
+  return createConnection(connectionName)
     .then(() => {
       console.log('Successfully connected to database')
       // Enable cross-origin Requests

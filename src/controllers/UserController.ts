@@ -55,7 +55,7 @@ class UserController {
       if (!authUser.user) return res.status(400).send(authUser.message)
 
       userRepository.merge(authUser.user, req.body)
-      await userRepository.save(authUser.user).then(
+      userRepository.save(authUser.user).then(
         (result: User): Response => {
           return res.send(result)
         },
@@ -80,7 +80,7 @@ class UserController {
       if (!authUser.user) return res.status(400).send(authUser.message)
       const user = authUser.user
 
-      await userRepository.delete(user.id).then(
+      userRepository.delete(user.id).then(
         (result): Response => {
           getEnvFolder.deleteFolder(`${user.id}`)
           return res.send(result)
