@@ -9,6 +9,18 @@
 <body>
   <h1>Welcome on myS3 !</h1><hr>
 
+  <form method="POST" action="http://localhost:1337/blob/add" enctype="multipart/form-data">
+      <div>
+          <label>Select your profile picture:</label>
+          <input type="file" name="mys3-upload" />
+      </div>
+      <div>
+          <input type="submit" name="btn-mys3-upload" value="Upload" />
+      </div>
+  </form>
+
+
+<!--
   <div id="app">
     {{ message }}
   </div>
@@ -49,14 +61,14 @@
   <hr>
 
   <div id="app-7">
-    <ol>
+    <ol>-->
       <!--
         Maintenant nous fournissons à chaque todo-item l'objet todo
         qu'il représente de manière à ce que son contenu puisse être dynamique.
         Nous avons également besoin de fournir à chaque composant une « clé »,
         mais nous expliquerons cela plus tard.
       -->
-      <todo-item
+<!--      <todo-item
         v-for="item in groceryList"
         v-bind:todo="item"
         v-bind:key="item.id"
@@ -64,7 +76,7 @@
     </ol>
   </div>
   <hr>
-
+-->
   <script src="./js/index.js"></script>
 </body>
 </html>
