@@ -55,7 +55,7 @@ MAIL_PASSWORD = one_of_your_gmail_password
 
 ### .step_04
 - [X] An object or a blob is describe with: id, name, path, size and belongs to a bucket
-- [ ] Create routes which allows to add and delete a blob using the package multer
+- [X] Create routes which allows to add and delete a blob using the package multer
 - [ ] Create a route which allows to retrieve a blob
 - [ ] Create a route which allows to duplicate a blob by adding .copy.$NB before the file extension
 - [ ] Create a route which allow to get blob metadata. Infos: path and size
