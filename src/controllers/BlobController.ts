@@ -36,7 +36,7 @@ class BlobController {
     })
 
     // 'filename' is the name of our file input field in the HTML form
-    let upload = multer({ storage: storage }).single('mys3-upload')
+    const upload = multer({ storage: storage }).single('mys3-upload')
 
     return upload(
       req,
