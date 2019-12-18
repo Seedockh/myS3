@@ -17,6 +17,6 @@ router.post('/add', /*[checkJwt],*/ BlobController.addBlob)
 router.post('/duplicate/:id([0-9]+)', [checkJwt], BlobController.duplicateBlob)
 
 // Delete a blob
-router.delete('/delete/:id([0-9]+)', [checkJwt], BlobController.deleteBlob)
+router.delete('/delete/:id([0-9]+)', /*[checkJwt],*/ BlobController.deleteBlob)
 
 export default router

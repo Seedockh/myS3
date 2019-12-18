@@ -68,4 +68,13 @@ export default class FileManager {
       return `Folder ${this.defaultPath}/${path} deleted successfully.`
     }
   }
+
+  deleteFile(path: string): string {
+    if (!fs.existsSync(`${this.defaultPath}/${path}`)) {
+      return `File ${this.defaultPath}/${path} does not exist.`
+    } else {
+      fs.unlinkSync(`${this.defaultPath}/${path}`)
+      return `File ${this.defaultPath}/${path} deleted successfully.`
+    }
+  }
 }

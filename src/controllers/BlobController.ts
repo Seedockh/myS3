@@ -41,9 +41,9 @@ class BlobController {
     return upload(
       req,
       res,
-      (err: string): Response => {
+      async (err: string): Promise<Response> => {
         // req.file contains information of uploaded file
-        if (err) return res.send({ message: `ERROR: ${err.message}` })
+        if (err) return res.send(err)
         if (!req.file)
           return res.send({ message: 'Please select a file to upload' })
 
@@ -72,7 +72,21 @@ class BlobController {
     req: Request,
     res: Response,
   ): Promise<Response> => {
-    return res.status(200).send({ message: 'Init' })
+    const blobRepository: Repository<Blob> = getRepository(Blob)
+    const blob = await blobRepository.findOne({
+      where: { id: req.params.id },
+    })
+    if (blob === undefined) {
+      return res
+        .status(400)
+        .send({ message: "ERROR: Blob doesn't exists in database" })
+    }
+    return blobRepository.delete(req.params.id).then(
+      (result): Response => {
+        console.log(getEnvFolder.deleteFile(blob.name))
+        return res.send(result)
+      },
+    )
   }
 }
 
