@@ -26,16 +26,26 @@ class BlobController {
       destination: (req, file, callback) =>
         callback(null, getEnvFolder.defaultPath),
       filename: (req, file, callback) =>
-        callback(null, path.parse(file.originalname).name + '-' + Date.now() + path.extname(file.originalname) )
+        callback(
+          null,
+          path.parse(file.originalname).name +
+            '-' +
+            Date.now() +
+            path.extname(file.originalname),
+        ),
     })
 
     // 'filename' is the name of our file input field in the HTML form
-    let upload = multer({ storage: storage }).single('mys3-upload');
+    let upload = multer({ storage: storage }).single('mys3-upload')
 
-    return upload(req, res, (err:string): Response => {
+    return upload(
+      req,
+      res,
+      (err: string): Response => {
         // req.file contains information of uploaded file
         if (err) return res.send({ message: `ERROR: ${err.message}` })
-        if (!req.file) return res.send({ message: 'Please select a file to upload' })
+        if (!req.file)
+          return res.send({ message: 'Please select a file to upload' })
 
         const blobRepository: Repository<Blob> = getRepository(Blob)
         const { filename, destination, size } = req.file
@@ -47,7 +57,8 @@ class BlobController {
           .save(blob)
           .then((result): Response => res.send(result))
           .catch(error => res.send(error))
-    })
+      },
+    )
   }
 
   static duplicateBlob = async (
