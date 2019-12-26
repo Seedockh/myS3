@@ -4,6 +4,8 @@ import { getEnvFolder } from '../main'
 import multer from 'multer'
 import path from 'path'
 import Authentifier from '../services/authentifier'
+import User from '../entity/User'
+import Bucket from '../entity/Bucket'
 import Blob from '../entity/Blob'
 
 class BlobController {
@@ -22,43 +24,66 @@ class BlobController {
   }
 
   static addBlob = async (req: Request, res: Response): Promise<Response> => {
-    const storage = multer.diskStorage({
-      destination: (req, file, callback) =>
-        callback(null, getEnvFolder.defaultPath),
-      filename: (req, file, callback) =>
-        callback(
-          null,
-          path.parse(file.originalname).name +
-            '-' +
-            Date.now() +
-            path.extname(file.originalname),
-        ),
-    })
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
 
-    // 'filename' is the name of our file input field in the HTML form
-    const upload = multer({ storage: storage }).single('mys3-upload')
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
 
-    return upload(
-      req,
-      res,
-      async (err: string): Promise<Response> => {
-        // req.file contains information of uploaded file
-        if (err) return res.send(err)
-        if (!req.file)
-          return res.send({ message: 'Please select a file to upload' })
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: req.body.bucketiId },
+      })
+      if (bucket === undefined) {
+        return res
+          .status(400)
+          .send({ message: "Bucket doesn't exists in database" })
+      }
 
-        const blobRepository: Repository<Blob> = getRepository(Blob)
-        const { filename, destination, size } = req.file
-        const blob = new Blob()
-        blob.name = filename
-        blob.path = destination
-        blob.size = size
-        return blobRepository
-          .save(blob)
-          .then((result): Response => res.send(result))
-          .catch(error => res.send(error))
-      },
-    )
+      const storage = multer.diskStorage({
+        destination: (req, file, callback) =>
+          callback(null, `${authUser.user.id}/${bucket.name}/`),
+        filename: (req, file, callback) =>
+          callback(
+            null,
+            path.parse(file.originalname).name +
+              '-' +
+              Date.now() +
+              path.extname(file.originalname),
+          ),
+      })
+
+      // 'filename' is the name of our file input field in the HTML form
+      const upload = multer({ storage: storage }).single('mys3-upload')
+
+      return upload(
+        req,
+        res,
+        async (err: string): Promise<Response> => {
+          // req.file contains information of uploaded file
+          if (err) return res.send(err)
+          if (!req.file)
+            return res.send({ message: 'Please select a file to upload' })
+
+          const blobRepository: Repository<Blob> = getRepository(Blob)
+          const { filename, destination, size } = req.file
+          const blob = new Blob()
+          blob.name = filename
+          blob.path = destination
+          blob.size = size
+          return blobRepository
+            .save(blob)
+            .then((result): Response => res.send(result))
+            .catch(error => res.send(error))
+        },
+      )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
   }
 
   static duplicateBlob = async (
