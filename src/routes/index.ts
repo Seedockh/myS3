@@ -8,7 +8,7 @@ import blob from './blob'
 const routes = Router()
 
 routes.get('/', (req, res, next) => {
-  res.send({ message: 'Welcome on mys3 homepage !'})
+  res.send({ message: 'Welcome on mys3 homepage !' })
 })
 routes.use('/auth', auth)
 routes.use('/user', user)
