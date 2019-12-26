@@ -8,7 +8,7 @@ import blob from './blob'
 const routes = Router()
 
 routes.get('/', (req, res, next) => {
-  res.sendFile(__dirname + '/client/login.html');
+  res.sendFile(__dirname + '/client/login.html')
 })
 routes.use('/auth', auth)
 routes.use('/user', user)
