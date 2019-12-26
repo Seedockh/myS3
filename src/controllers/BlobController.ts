@@ -42,9 +42,10 @@ class BlobController {
           .send({ message: "Bucket doesn't exists in database" })
       }
 
+      const user = authUser.user
       const storage = multer.diskStorage({
         destination: (req, file, callback) =>
-          callback(null, `${authUser.user.id}/${bucket.name}/`),
+          callback(null, `${user.id}/${bucket.name}/`),
         filename: (req, file, callback) =>
           callback(
             null,
