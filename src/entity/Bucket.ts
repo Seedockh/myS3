@@ -13,7 +13,7 @@ class Bucket {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: false, unique: true })
   name: string
 
   @ManyToOne(
