@@ -12,11 +12,17 @@ router.get(
   UserController.getAllUsers,
 )
 
+// Get one user
+router.get('/get', [checkJwt], UserController.getUser)
+
+// Get user buckets
+router.get('/getBuckets', [checkJwt], UserController.getBuckets)
+
 //Create a new user
 router.post('/createNew', UserController.createUser)
 
 //Edit one user
-router.put('/edit', [checkJwt, checkRole(['ADMIN'])], UserController.editUser)
+router.put('/edit', [checkJwt], UserController.editUser)
 
 //Delete one user
 router.delete(
