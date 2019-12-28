@@ -20,7 +20,7 @@ class UserController {
       return res.status(200).send({
         id: authUser.user.id,
         nickname: authUser.user.nickname,
-        email: authUser.user.email
+        email: authUser.user.email,
       })
     } else {
       return res.status(400).send({
@@ -30,7 +30,7 @@ class UserController {
   }
 
   // Get user buckets
-  static getBuckets = async (req: Request, res: Response): Promise<void> => {
+  static getBuckets = async (req: Request, res: Response): Promise<Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
@@ -38,7 +38,7 @@ class UserController {
       if (!authUser.user) return res.status(400).send(authUser.message)
 
       return res.status(200).send({
-        list: getEnvFolder.readFolder(`${authUser.user.id}`)
+        list: getEnvFolder.readFolder(`${authUser.user.id}`),
       })
     } else {
       return res.status(400).send({
