@@ -30,7 +30,10 @@ class UserController {
   }
 
   // Get user buckets
-  static getBuckets = async (req: Request, res: Response): Promise<Response> => {
+  static getBuckets = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
