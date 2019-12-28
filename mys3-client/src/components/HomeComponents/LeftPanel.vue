@@ -35,19 +35,29 @@
 
       getBuckets() {
         this.error = undefined
-        axios.get(
-          // URL
-          'http://localhost:1337/user/getBuckets',
-          // HEADERS
-          {
-            headers: { 'Authorization': `Bearer ${localStorage.token}` }
-          }
-        ).then( result => {
-          this.depth++
-          return this.currentFolders = result.data.list
-        }).catch( error => {
-          this.error = error.response.data.message
-        })
+        if (this.depth === 0) {
+          axios.get(
+            // URL
+            'http://localhost:1337/user/getBuckets',
+            // HEADERS
+            {
+              headers: { 'Authorization': `Bearer ${localStorage.token}` }
+            }
+          ).then( result => {
+            this.depth++
+            this.$root.$emit('eventing', result.data.list)
+            return this.currentFolders = result.data.list
+          }).catch( error => {
+            this.error = error.response.data.message
+          })
+        }
+
+        if (this.depth === 1) {
+          console.log('lower depth')
+          this.depth--
+          this.$root.$emit('eventing', [])
+          return this.currentFolders = []
+        }
       },
 
       getBlobs() {
@@ -60,8 +70,7 @@
             headers: { 'Authorization': `Bearer ${localStorage.token}` }
           }
         ).then( result => {
-          this.depth++
-          return this.currentFolders = result.data.list
+          return this.$root.$emit('eventing', result.data.list)
         }).catch( error => {
           this.error = error.response.data.message
         })
