@@ -33,8 +33,8 @@ export default {
         nickname: result.data.nickname,
         email: result.data.email
       }
-    }).catch( error => {
-      console.log(error.response.data.message)
+    }).catch( () => {
+      return this.$router.push({ name: 'login' })
     })
   }
 }
