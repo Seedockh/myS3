@@ -30,7 +30,6 @@
     data() {
       return {
         depth: 0,
-        error: undefined,
         currentFolders: [],
         editBucket: false,
         selected: null,
@@ -82,6 +81,7 @@
         if (this.depth === 1 && this.selected === null) {
           this.depth--
           this.selected = null
+          this.editBucket = false
           this.$root.$emit('sendDataToFileListComponent', {
             list: null,
             userId: null,
@@ -92,6 +92,7 @@
 
         if (this.depth === 1 && this.selected >= 0) {
           this.selected = null
+          this.editBucket = false
           return this.$root.$emit('sendDataToFileListComponent', {
             list: null,
             userId: this.result.id,
@@ -158,14 +159,13 @@
             }).catch(error => {
               if (error.response.status === 403)
                 return this.$router.push({ name: 'login' })
-              console.log(error) //.response.data.message
+              return swal(error.response.data.message, { icon: "warning" })
             })
           }
         })
       },
 
       getBlobs(bucket) {
-        this.error = undefined
         if (typeof bucket === 'object')
           bucket = bucket.toElement.innerText.trim()
 
@@ -202,7 +202,7 @@
             if (error.response.status === 403)
               return this.$router.push({ name: 'login' })
 
-            this.error = error.response.data.message
+              return swal(error.response.data.message, { icon: "warning" })
           })
         }
       }

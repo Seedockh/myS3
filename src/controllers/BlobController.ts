@@ -121,7 +121,7 @@ class BlobController {
     }
     return blobRepository.delete(req.params.id).then(
       (result): Response => {
-        console.log(getEnvFolder.deleteFile(blob.name))
+        getEnvFolder.deleteFile(blob.name)
         return res.send(result)
       },
     )

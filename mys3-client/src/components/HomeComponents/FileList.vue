@@ -4,13 +4,12 @@
       <div class="list-line" v-for="item in list.blobs" v-bind:key="item.id">
         <div class="list-item">
           <p class="item-detail">{{ item.name }}</p>
-          <p class="item-detail">{{ item.path }}</p>
           <p class="item-detail">{{ item.size/1000 }}kB</p>
         </div>
         <div class="list-buttons">
           <button type="button" v-on:click="downloadFile(item.id)" class="download-blob" name="download-blob">DOWNLOAD</button>
-          <button type="button" v-on:click="editFile" class="edit-blob" name="edit-blob">EDIT</button>
-          <button type="button" v-on:click="deleteFile" class="delete-blob" name="delete-blob">DELETE</button>
+          <button type="button" v-on:click="duplicateFile(item.id)" class="duplicate-blob" name="duplicate-blob">DUPLICATE</button>
+          <button type="button" v-on:click="deleteFile(item.id)" class="delete-blob" name="delete-blob">DELETE</button>
         </div>
       </div>
     </div>
@@ -132,16 +131,38 @@ export default {
       console.log('down called !')
       console.log(id)
     },
-    editFile() {
-      console.log('edit called !')
+    duplicateFile(id) {
+      console.log('duplicate called !')
+      console.log(id)
     },
-    deleteFile() {
-      this.success = null
-      this.error = null
-
-      console.log('deletefile called !')
-    }
-
+    deleteFile(id) {
+      swal(
+        'Are you sure you want to delete this file ?',
+        {
+          dangerMode: true,
+          buttons: true,
+        }
+      ).then( confirm => {
+        if (confirm) {
+          axios.delete(
+            `http://localhost:1337/blob/delete/${id}`,
+            // HEADERS
+            {
+              headers: { 'Authorization': `Bearer ${localStorage.token}` }
+            }
+          ).then(() => {
+            swal(`File deleted successfully !`, {
+              icon: "success",
+            })
+            this.$root.$emit('sendDataToLeftPanelComponent', this.selectedBucket)
+          }).catch(error => {
+            if (error.response.status === 403)
+              return this.$router.push({ name: 'login' })
+            return swal(error.response.data.message, { icon: "warning" })
+          })
+        }
+      })
+    },
   }
 }
 
@@ -208,10 +229,11 @@ export default {
     align-items: flex-end;
   }
 
-  .download-blob, .edit-blob, .delete-blob {
-    height: 30px;
+  .download-blob, .duplicate-blob, .delete-blob {
+    height: 25px;
     width: 100%;
     color: white;
+    font-size: 11px;
     border-radius: 5px;
     border-width: 1px;
     border-color: rgba(75,75,75,1);
@@ -221,7 +243,7 @@ export default {
   .list-line .download-blob {
     background: #005073;
   }
-  .list-line .edit-blob {
+  .list-line .duplicate-blob {
     background: #107dac;
   }
   .list-line .delete-blob {
@@ -275,20 +297,6 @@ export default {
     width: 25px;
     margin-right: .5em;
   }
-
-.success, .error {
-  font-size: 12px;
-  width: 90%;
-  text-align: right;
-}
-
-.success {
-  color: green;
-}
-
-.error {
-  color: red;
-}
 
 @media screen and (max-width: 640px) {
   #filelist-container {
