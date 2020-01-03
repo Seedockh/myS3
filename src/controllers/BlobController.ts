@@ -110,21 +110,49 @@ class BlobController {
     req: Request,
     res: Response,
   ): Promise<Response> => {
-    const blobRepository: Repository<Blob> = getRepository(Blob)
-    const blob = await blobRepository.findOne({
-      where: { id: req.params.id },
-    })
-    if (blob === undefined) {
-      return res
-        .status(400)
-        .send({ message: "ERROR: Blob doesn't exists in database" })
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
+
+      const user = authUser.user
+      const blobRepository: Repository<Blob> = getRepository(Blob)
+      const blob = await blobRepository.findOne({
+        where: { id: req.params.id },
+        relations: ['bucket']
+      })
+      if (blob === undefined) {
+        return res
+          .status(400)
+          .send({ message: "ERROR: File doesn't exists in database" })
+      }
+
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: blob.bucket.id },
+      })
+      if (bucket === undefined) {
+        return res
+          .status(400)
+          .send({ message: "Bucket doesn't exists in database" })
+      }
+
+      return blobRepository.delete(req.params.id).then(
+        (result): Response => {
+          getEnvFolder.deleteFile(`${user.id}/${bucket.name}/${blob.name}`)
+          return res.send(result)
+        },
+      )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
     }
-    return blobRepository.delete(req.params.id).then(
-      (result): Response => {
-        getEnvFolder.deleteFile(blob.name)
-        return res.send(result)
-      },
-    )
+
+
   }
 }
 
