@@ -101,9 +101,7 @@
       },
 
       renameBucket(name) {
-        if (name === '' || !name)
-          return swal(`No name specified !`, { icon: "error" })
-
+        if (name === '' || !name) return
         axios.put(
           // URL
           `http://localhost:1337/bucket/edit/${this.selectedBucket}`,

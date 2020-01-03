@@ -1,21 +1,27 @@
 <template>
   <div id="filelist-container">
-    <div v-if="list && list.length > 0" class="list-section">
-      <div class="list-line" v-for="item in list" v-bind:key="item">
-        <div class="list-item">{{ item }}</div>
-        <button type="button"  v-on:click="downloadFile" class="download-blob" name="download-blob">DL</button>
-        <button type="button"  v-on:click="editFile" class="edit-blob" name="edit-blob">EDIT</button>
-        <button type="button"  v-on:click="deleteFile" class="delete-blob" name="delete-blob">DELETE</button>
+    <div v-if="list && list.files && list.files.length > 0" class="list-section">
+      <div class="list-line" v-for="item in list.blobs" v-bind:key="item.id">
+        <div class="list-item">
+          <p class="item-detail">{{ item.name }}</p>
+          <p class="item-detail">{{ item.path }}</p>
+          <p class="item-detail">{{ item.size/1000 }}kB</p>
+        </div>
+        <div class="list-buttons">
+          <button type="button" v-on:click="downloadFile(item.id)" class="download-blob" name="download-blob">DOWNLOAD</button>
+          <button type="button" v-on:click="editFile" class="edit-blob" name="edit-blob">EDIT</button>
+          <button type="button" v-on:click="deleteFile" class="delete-blob" name="delete-blob">DELETE</button>
+        </div>
       </div>
     </div>
     <div v-else-if="list && list.length === 0" class="list-section">
-      <p>Bucket "{{ selectedBucket }}" is empty.</p>
+      <p class="list-information">Bucket "{{ selectedBucket }}" is empty.</p>
     </div>
     <div v-else-if="!userId" class="list-section">
-      <p>Please click on your account folder.</p>
+      <p class="list-information">Please click on your account folder.</p>
     </div>
     <div v-else class="list-section">
-      <p>Please click on a bucket's name to list files.</p>
+      <p class="list-information">Please click on a bucket's name to list files.</p>
     </div>
     <div v-if="selectedBucket" class="upload-blob-form">
       <input type="file" ref="file" v-on:change="handleFile" name="mys3-upload" class="input-file"/>
@@ -63,7 +69,7 @@ export default {
     },
 
     createBucket() {
-      if (!this.newBucket) return swal(`No name specified !`, { icon: "warning", time: 2 })
+      if (!this.newBucket) return swal(`No name specified !`, { icon: "warning" })
       axios.post(
         // URL
         `http://localhost:1337/bucket/createNew`,
@@ -94,8 +100,7 @@ export default {
     },
 
     uploadFile() {
-      this.success = null
-      this.error = null
+      if (!this.file) return swal(`No file selected !`, { icon: "warning" })
       const formData = new FormData()
       formData.append('mys3-upload', this.file)
       if (!this.file) return this.error = `No file selected !`
@@ -119,13 +124,13 @@ export default {
           if (error.response.status === 403)
             return this.$router.push({ name: 'login' })
 
-          this.error = error.response.data.message
-          setTimeout(() => { return this.error = null }, 3000)
+          return swal(error.response.data.message, { icon: "warning" })
         })
     },
 
-    downloadFile() {
+    downloadFile(id) {
       console.log('down called !')
+      console.log(id)
     },
     editFile() {
       console.log('edit called !')
@@ -163,7 +168,7 @@ export default {
 .list-section::-webkit-scrollbar {
   display: none;
 }
-  .list-section p {
+  .list-section .list-information {
     font-size: 20px;
     color: grey;
     text-align: center;
@@ -189,11 +194,23 @@ export default {
     }
 
   .list-line .list-item {
-    width: 55%;
+    width: 80%;
   }
-  .list-line .download-blob, .list-line .edit-blob, .list-line .delete-blob {
+    .item-detail {
+      text-align: center;
+    }
+
+  .list-line .list-buttons {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    justify-content: space-around;
+    align-items: flex-end;
+  }
+
+  .download-blob, .edit-blob, .delete-blob {
     height: 30px;
-    width: 12%;
+    width: 100%;
     color: white;
     border-radius: 5px;
     border-width: 1px;

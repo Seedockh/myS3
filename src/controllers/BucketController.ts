@@ -36,6 +36,7 @@ class BucketController {
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
         where: { name: req.params.name },
+        relations: ['blobs']
       })
       if (bucket === undefined) {
         return res
@@ -43,9 +44,10 @@ class BucketController {
           .send({ message: "Bucket doesn't exists in database" })
       }
 
-      return res.send(
-        getEnvFolder.readFolder(`${authUser.user.id}/${bucket.name}`),
-      )
+      return res.send({
+        files: getEnvFolder.readFolder(`${authUser.user.id}/${bucket.name}`),
+        blobs: bucket.blobs
+      })
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
