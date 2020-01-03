@@ -15,10 +15,8 @@
       <p>Please click on your account folder.</p>
     </div>
     <div v-else class="list-section">
-      <p>Please click on a bucket to list files.</p>
+      <p>Please click on a bucket's name to list files.</p>
     </div>
-    <p class="success" v-if="success">{{ success }}</p>
-    <p class="error" v-if="error">{{ error }}</p>
     <div v-if="selectedBucket" class="upload-blob-form">
       <input type="file" ref="file" v-on:change="handleFile" name="mys3-upload" class="input-file"/>
       <button class="btn-submit" v-on:click="uploadFile" name="btn-mys3-upload">
@@ -39,6 +37,7 @@
 <script>
 import axios from 'axios'
 import querystring from 'querystring'
+import swal from 'sweetalert'
 
 export default {
   name: 'FileList',
@@ -49,8 +48,6 @@ export default {
       selectedBucket: null,
       file: null,
       newBucket: '',
-      error: null,
-      success: null,
     }
   },
   mounted() {
@@ -66,9 +63,7 @@ export default {
     },
 
     createBucket() {
-      this.success = null
-      this.error = null
-      if (!this.newBucket) return this.error = `No name specified !`
+      if (!this.newBucket) return swal(`No name specified !`, { icon: "warning", time: 2 })
       axios.post(
         // URL
         `http://localhost:1337/bucket/createNew`,
@@ -80,8 +75,9 @@ export default {
             'Authorization': `Bearer ${localStorage.token}`
           }
         }).then( () => {
-          this.success = `Bucket ${this.newBucket} created successfully !`
-          setTimeout(() => { return this.success = null }, 3000)
+          swal(`Bucket ${this.newBucket} created successfully !`, {
+            icon: "success",
+          })
           this.$root.$emit('sendDataToLeftPanelComponent', { new: this.newBucket })
         })
         .catch( error => {
@@ -114,8 +110,9 @@ export default {
             'Authorization': `Bearer ${localStorage.token}`
           }
         }).then( result => {
-          this.success = `File ${result.data.name} uploaded successfully !`
-          setTimeout(() => { return this.success = null }, 3000)
+          swal(`File ${result.data.name} uploaded successfully !`, {
+            icon: "success",
+          })
           this.$root.$emit('sendDataToLeftPanelComponent', this.selectedBucket)
         })
         .catch( error => {
@@ -136,7 +133,7 @@ export default {
     deleteFile() {
       this.success = null
       this.error = null
-      
+
       console.log('deletefile called !')
     }
 
@@ -202,6 +199,7 @@ export default {
     border-width: 1px;
     border-color: rgba(75,75,75,1);
     outline: 0;
+    cursor: pointer;
   }
   .list-line .download-blob {
     background: #005073;
@@ -215,7 +213,7 @@ export default {
 
 .upload-blob-form {
   width: 90%;
-  margin-top: 2em;
+  margin-top: 1em;
   display: flex;
   justify-content: space-around;
 }
@@ -265,7 +263,6 @@ export default {
   font-size: 12px;
   width: 90%;
   text-align: right;
-  margin-bottom: 3em;
 }
 
 .success {

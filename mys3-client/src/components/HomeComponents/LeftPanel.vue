@@ -8,10 +8,10 @@
       </li>
     </ul>
     <ul class="buckets-list" v-if="depth>=1">
-      <li v-for="(folder, index) in currentFolders" @click="selected = index" v-on:click="getBlobs" :class="{selected: index === selected}" v-bind:key="folder">
+      <li v-for="(folder, index) in currentFolders" @click="selected = index; selectedBucket = folder; editBucket = true" :class="{selected: index === selected}" v-bind:key="folder">
         <img src="../../assets/folder-icon.png" alt="folder picture">
-        {{ folder }}
-        <img src="../../assets/delete-icon.png" class="delete-icon" alt="folder picture">
+        <span v-on:click="getBlobs">{{ folder }}</span>
+        <img v-on:click="deleteBucket" src="../../assets/delete-icon.png" class="delete-icon" alt="folder picture">
       </li>
     </ul>
     <button type="button" name="logout" class="btn-submit" v-on:click="logout">Logout</button>
@@ -20,6 +20,8 @@
 
 <script>
   import axios from 'axios'
+  import querystring from 'querystring'
+  import swal from 'sweetalert'
 
   export default {
     name: 'LeftPanel',
@@ -30,11 +32,14 @@
         depth: 0,
         error: undefined,
         currentFolders: [],
+        editBucket: false,
         selected: null,
+        selectedBucket: null,
       }
     },
     mounted() {
       this.$root.$on('sendDataToLeftPanelComponent', bucket => {
+        this.editBucket = false
         if (bucket.new)
           return this.getBuckets()
 
@@ -68,7 +73,9 @@
           }).catch( error => {
             if (error.response.status === 403)
               return this.$router.push({ name: 'login' })
-            this.error = error.response.data.message
+            swal(error.response.data.message, {
+              icon: "error",
+            })
           })
         }
 
@@ -93,29 +100,113 @@
         }
       },
 
-      getBlobs(bucket) {
-        this.error = undefined
-        if (typeof bucket === 'object')
-          bucket = bucket.toElement.innerText.trim()
-        axios.get(
+      renameBucket(name) {
+        if (name === '' || !name)
+          return swal(`No name specified !`, { icon: "error" })
+
+        axios.put(
           // URL
-          `http://localhost:1337/bucket/listFiles/${bucket}`,
+          `http://localhost:1337/bucket/edit/${this.selectedBucket}`,
+          // BODY
+          querystring.stringify({
+            name: name,
+          }),
           // HEADERS
           {
-            headers: { 'Authorization': `Bearer ${localStorage.token}` }
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Authorization': `Bearer ${localStorage.token}`
+            }
           }
         ).then( result => {
-          return this.$root.$emit('sendDataToFileListComponent', {
-            list: result.data,
-            userId: this.result.id,
-            bucketName: bucket,
+          swal(`Bucket successfully renamed to ${result.data.name} !`, {
+            icon: "success",
           })
+          this.depth = 0
+          this.selected = null
+          this.getBuckets()
         }).catch( error => {
           if (error.response.status === 403)
             return this.$router.push({ name: 'login' })
 
-          this.error = error.response.data.message
+          swal(error.response.data, {
+            icon: "error",
+          })
         })
+      },
+
+      deleteBucket() {
+        swal(
+          'Are you sure you want to delete this bucket ?',
+          {
+            dangerMode: true,
+            buttons: true,
+          }
+        ).then( confirm => {
+          if (confirm) {
+            axios.delete(
+              `http://localhost:1337/bucket/delete/${this.selectedBucket}`,
+              // HEADERS
+              {
+                headers: { 'Authorization': `Bearer ${localStorage.token}` }
+              }
+            ).then(() => {
+              swal(`Bucket deleted successfully !`, {
+                icon: "success",
+              })
+              this.depth = 0
+              this.selected = null
+              this.getBuckets()
+            }).catch(error => {
+              if (error.response.status === 403)
+                return this.$router.push({ name: 'login' })
+              console.log(error) //.response.data.message
+            })
+          }
+        })
+      },
+
+      getBlobs(bucket) {
+        this.error = undefined
+        if (typeof bucket === 'object')
+          bucket = bucket.toElement.innerText.trim()
+
+        // Bucket is already selected when clicked
+        if (this.editBucket && bucket === this.selectedBucket) {
+          swal('Rename your bucket :', {
+            content: {
+              element: "input",
+              attributes: {
+                value: bucket,
+                placeholder: "Rename your bucket",
+                type: "text",
+              },
+            },
+          }).then( newName => {
+            this.renameBucket(newName)
+            this.editBucket = false
+          })
+        } else {
+          axios.get(
+            // URL
+            `http://localhost:1337/bucket/listFiles/${bucket}`,
+            // HEADERS
+            {
+              headers: { 'Authorization': `Bearer ${localStorage.token}` }
+            }
+          ).then( result => {
+            return this.$root.$emit('sendDataToFileListComponent', {
+              list: result.data,
+              userId: this.result.id,
+              bucketName: bucket,
+            })
+          }).catch( error => {
+            if (error.response.status === 403)
+              return this.$router.push({ name: 'login' })
+
+            this.error = error.response.data.message
+          })
+        }
       }
     },
   }
@@ -159,9 +250,14 @@ li {
     height: 10px;
     margin-right: .5em
   }
+  li span:hover {
+    font-size: 17px;
+  }
+
   .delete-icon {
     position: absolute;
     right: 0;
+    display: none;
   }
 
 .buckets-list {
@@ -201,6 +297,13 @@ li {
   .selected img {
     box-shadow: 1px 1px 2px black;
   }
+  .selected .delete-icon {
+    display: inline;
+  }
+
+.swal-modal {
+  background-color: red;
+}
 
 @media screen and (max-width: 640px) {
   #leftpanel-container {
