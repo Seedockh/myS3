@@ -193,6 +193,7 @@
               headers: { 'Authorization': `Bearer ${localStorage.token}` }
             }
           ).then( result => {
+            console.log(result.data)
             return this.$root.$emit('sendDataToFileListComponent', {
               list: result.data,
               userId: this.result.id,

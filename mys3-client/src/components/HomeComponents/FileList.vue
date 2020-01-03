@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div v-else-if="list && list.length === 0" class="list-section">
+    <div v-else-if="list && list.files && list.files.length === 0" class="list-section">
       <p class="list-information">Bucket "{{ selectedBucket }}" is empty.</p>
     </div>
     <div v-else-if="!userId" class="list-section">
