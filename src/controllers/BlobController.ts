@@ -77,7 +77,7 @@ class BlobController {
           blob.name = filename
           blob.path = destination
           blob.size = size
-          blob.bucket = bucket.id
+          blob.bucket = bucket
           return blobRepository
             .save(blob)
             .then(
