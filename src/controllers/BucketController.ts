@@ -36,7 +36,7 @@ class BucketController {
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
         where: { name: req.params.name },
-        relations: ['blobs']
+        relations: ['blobs'],
       })
       if (bucket === undefined) {
         return res
@@ -46,7 +46,7 @@ class BucketController {
 
       return res.send({
         files: getEnvFolder.readFolder(`${authUser.user.id}/${bucket.name}`),
-        blobs: bucket.blobs
+        blobs: bucket.blobs,
       })
     } else {
       return res.status(400).send({
