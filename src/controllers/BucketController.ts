@@ -35,7 +35,7 @@ class BucketController {
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
-        where: { id: req.params.id },
+        where: { name: req.params.name },
       })
       if (bucket === undefined) {
         return res
@@ -105,7 +105,7 @@ class BucketController {
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
-        where: { id: req.params.id },
+        where: { name: req.params.name },
       })
       if (bucket === undefined)
         return res
@@ -148,7 +148,7 @@ class BucketController {
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
-        where: { id: req.params.id },
+        where: { name: req.params.name },
       })
       if (bucket === undefined) {
         return res
@@ -157,12 +157,19 @@ class BucketController {
       }
 
       const user = authUser.user
-      return bucketRepository.delete(req.params.id).then(
-        (result): Response => {
-          getEnvFolder.deleteFolder(`${user.id}/${bucket.name}`)
-          return res.send(result)
-        },
-      )
+      return bucketRepository
+        .delete(bucket.id)
+        .then(
+          (result): Response => {
+            getEnvFolder.deleteFolder(`${user.id}/${bucket.name}`)
+            return res.send(result)
+          },
+        )
+        .catch(
+          (error): Response => {
+            return res.send(error)
+          },
+        )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',

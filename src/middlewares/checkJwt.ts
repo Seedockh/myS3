@@ -15,7 +15,6 @@ export const checkJwt = (
   if (typeof header !== 'undefined') {
     const bearer = header.split(' ')
     const token = bearer[1]
-
     jwt.verify(token, process.env.JWT_SECRET, (err, authorizedData) => {
       if (err) {
         // If error

@@ -34,7 +34,7 @@ class BlobController {
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
-        where: { id: req.body.bucketiId },
+        where: { name: req.params.bucketName },
       })
       if (bucket === undefined) {
         return res
@@ -45,7 +45,10 @@ class BlobController {
       const user = authUser.user
       const storage = multer.diskStorage({
         destination: (req, file, callback) =>
-          callback(null, `${user.id}/${bucket.name}/`),
+          callback(
+            null,
+            `${getEnvFolder.defaultPath}/${user.id}/${bucket.name}/`,
+          ),
         filename: (req, file, callback) =>
           callback(
             null,
@@ -74,10 +77,19 @@ class BlobController {
           blob.name = filename
           blob.path = destination
           blob.size = size
+          blob.bucket = bucket.id
           return blobRepository
             .save(blob)
-            .then((result): Response => res.send(result))
-            .catch(error => res.send(error))
+            .then(
+              (result): Response => {
+                return res.send(result)
+              },
+            )
+            .catch(
+              (error): Response => {
+                return res.send(error)
+              },
+            )
         },
       )
     } else {
