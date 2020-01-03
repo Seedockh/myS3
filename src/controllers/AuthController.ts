@@ -41,7 +41,7 @@ class AuthController {
     const token: string = jwt.sign(
       { userId: user.id, username: user.nickname },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' },
+      { expiresIn: '10m' },
     )
 
     if (!fs.existsSync(`${getEnvFolder.defaultPath}/${user.id}`)) {
