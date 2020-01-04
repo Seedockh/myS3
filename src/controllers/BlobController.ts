@@ -12,7 +12,7 @@ class BlobController {
   static retrieveBlob = async (
     req: Request,
     res: Response,
-  ): Promise<Response> => {
+  ): Promise<void|Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
@@ -43,11 +43,11 @@ class BlobController {
           .send({ message: "Bucket doesn't exists in database" })
       }
 
-      return res
-        .status(200)
-        .sendFile(
-          getEnvFolder.downloadFile(`${user.id}/${bucket.name}/${blob.name}`),
-        )
+      const getBinary = getEnvFolder.downloadFile(`${user.id}/${bucket.name}/${blob.name}`)
+
+      if (getBinary.file === null) return res.status(400).send(getBinary)
+
+      return res.status(200).sendFile(getBinary.file)
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
