@@ -1,5 +1,4 @@
-import express, { Router, Request, Response } from 'express'
-import path from 'path'
+import { Router } from 'express'
 import auth from './auth'
 import user from './user'
 import bucket from './bucket'
@@ -7,7 +6,7 @@ import blob from './blob'
 
 const routes = Router()
 
-routes.get('/', (req, res, next) => {
+routes.get('/', (req, res) => {
   res.send({ message: 'Welcome on mys3 homepage !' })
 })
 routes.use('/auth', auth)

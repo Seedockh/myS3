@@ -1,10 +1,9 @@
 import { Request, Response } from 'express'
-import { getRepository, Repository, getManager } from 'typeorm'
+import { getRepository, Repository } from 'typeorm'
 import { getEnvFolder } from '../main'
 import multer from 'multer'
 import path from 'path'
 import Authentifier from '../services/authentifier'
-import User from '../entity/User'
 import Bucket from '../entity/Bucket'
 import Blob from '../entity/Blob'
 
@@ -69,7 +68,6 @@ class BlobController {
       if (authUser.user === undefined)
         return res.status(400).send(authUser.message)
 
-      const user = authUser.user
       const blobRepository: Repository<Blob> = getRepository(Blob)
       const blob = await blobRepository.findOne({
         where: { id: req.params.id },
