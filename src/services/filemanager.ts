@@ -2,8 +2,8 @@ import fs from 'fs'
 import path from 'path'
 
 interface DownloadFile {
-  file: string|null
-  message: string|null
+  file: string | null
+  message: string | null
 }
 
 export default class FileManager {
@@ -79,12 +79,12 @@ export default class FileManager {
     if (fs.existsSync(`${this.defaultPath}/${filePath}`)) {
       return {
         file: path.resolve(`${this.defaultPath}/${filePath}`),
-        message: null
+        message: null,
       }
     } else {
       return {
         file: null,
-        message: 'This file does not exist.'
+        message: 'This file does not exist.',
       }
     }
   }
