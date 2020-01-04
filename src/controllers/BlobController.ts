@@ -13,14 +13,78 @@ class BlobController {
     req: Request,
     res: Response,
   ): Promise<Response> => {
-    return res.status(200).send({ message: 'Init' })
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
+
+      const user = authUser.user
+      const blobRepository: Repository<Blob> = getRepository(Blob)
+      const blob = await blobRepository.findOne({
+        where: { id: req.params.id },
+        relations: ['bucket'],
+      })
+      if (blob === undefined) {
+        return res
+          .status(400)
+          .send({ message: "ERROR: File doesn't exists in database" })
+      }
+
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: blob.bucket.id },
+      })
+      if (bucket === undefined) {
+        return res
+          .status(400)
+          .send({ message: "Bucket doesn't exists in database" })
+      }
+
+      return res
+        .status(200)
+        .sendFile(
+          getEnvFolder.downloadFile(`${user.id}/${bucket.name}/${blob.name}`),
+        )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
   }
 
   static getBlobInfos = async (
     req: Request,
     res: Response,
   ): Promise<Response> => {
-    return res.status(200).send({ message: 'Init' })
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
+
+      const user = authUser.user
+      const blobRepository: Repository<Blob> = getRepository(Blob)
+      const blob = await blobRepository.findOne({
+        where: { id: req.params.id },
+        relations: ['bucket'],
+      })
+      if (blob === undefined) {
+        return res
+          .status(400)
+          .send({ message: "ERROR: File doesn't exists in database" })
+      }
+
+      return res.status(200).send(blob)
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
   }
 
   static addBlob = async (req: Request, res: Response): Promise<Response> => {
@@ -103,7 +167,61 @@ class BlobController {
     req: Request,
     res: Response,
   ): Promise<Response> => {
-    return res.status(200).send({ message: 'Init' })
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
+
+      const user = authUser.user
+      const blobRepository: Repository<Blob> = getRepository(Blob)
+      const blob = await blobRepository.findOne({
+        where: { id: req.params.id },
+        relations: ['bucket'],
+      })
+      if (blob === undefined) {
+        return res
+          .status(400)
+          .send({ message: "ERROR: File doesn't exists in database" })
+      }
+
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: blob.bucket.id },
+      })
+      if (bucket === undefined) {
+        return res
+          .status(400)
+          .send({ message: "Bucket doesn't exists in database" })
+      }
+
+      const copyName = getEnvFolder.duplicateFile(
+        `${user.id}/${bucket.name}/${blob.name}`,
+      )
+      const copyBlob = new Blob()
+      copyBlob.name = copyName
+      copyBlob.path = blob.path
+      copyBlob.size = blob.size
+      copyBlob.bucket = blob.bucket
+      return blobRepository
+        .save(copyBlob)
+        .then(
+          (result): Response => {
+            return res.send(result)
+          },
+        )
+        .catch(
+          (error): Response => {
+            return res.send(error)
+          },
+        )
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
   }
 
   static deleteBlob = async (
@@ -122,7 +240,7 @@ class BlobController {
       const blobRepository: Repository<Blob> = getRepository(Blob)
       const blob = await blobRepository.findOne({
         where: { id: req.params.id },
-        relations: ['bucket']
+        relations: ['bucket'],
       })
       if (blob === undefined) {
         return res
@@ -151,8 +269,6 @@ class BlobController {
         message: 'ERROR : Missing Bearer token in your Authorizations',
       })
     }
-
-
   }
 }
 

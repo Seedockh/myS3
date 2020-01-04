@@ -1,4 +1,5 @@
 import fs from 'fs'
+import path from 'path'
 
 export default class FileManager {
   defaultPath: string
@@ -67,6 +68,42 @@ export default class FileManager {
       fs.rmdirSync(`${this.defaultPath}/${path}`, { recursive: true })
       return `Folder ${this.defaultPath}/${path} deleted successfully.`
     }
+  }
+
+  downloadFile(filePath: string): string {
+    if (fs.existsSync(`${this.defaultPath}/${filePath}`)) {
+      return path.resolve(`${this.defaultPath}/${filePath}`)
+    } else {
+      return res.status(200).send({
+        message: 'This file does not exist.',
+      })
+    }
+  }
+
+  duplicateFile(filePath: string): string {
+    if (!fs.existsSync(`${this.defaultPath}/${filePath}`))
+      return `File ${this.defaultPath}/${filePath} does not exist.`
+
+    const pathParts = filePath.split('/')
+    const blobFullName = pathParts[2]
+    const blobName = path.parse(blobFullName).name
+    const blobExt = path.parse(blobFullName).ext
+    let nbCopies = 1
+
+    while (
+      fs.existsSync(
+        `${this.defaultPath}/${pathParts[0]}/${pathParts[1]}/${blobName}.copy.${nbCopies}${blobExt}`,
+      )
+    ) {
+      nbCopies++
+    }
+
+    fs.copyFileSync(
+      `${this.defaultPath}/${filePath}`,
+      `${this.defaultPath}/${pathParts[0]}/${pathParts[1]}/${blobName}.copy.${nbCopies}${blobExt}`,
+    )
+
+    return `${blobName}.copy.${nbCopies}${blobExt}`
   }
 
   deleteFile(path: string): string {
