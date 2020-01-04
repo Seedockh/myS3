@@ -69,6 +69,9 @@ export default {
 
     createBucket() {
       if (!this.newBucket) return swal(`No name specified !`, { icon: "warning" })
+
+      this.newBucket = this.newBucket.replace(/ /g, '-')
+
       axios.post(
         // URL
         `http://localhost:1337/bucket/createNew`,
