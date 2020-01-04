@@ -30,6 +30,11 @@ MAIL_USER = one_of_your_gmail_address
 MAIL_PASSWORD = one_of_your_gmail_password
 ```
 
+Server can now be started with :
+```
+yarn dev
+```
+
 # Client-side Environment
 
 The client is located at `/mys3-client/` and can be started with :
@@ -42,6 +47,16 @@ yarn serve
 ```
 
 It will be launched at http://localhost:8081/ with **VueJS**
+
+
+# Testing Environment
+
+To run our testsuite, server (`yarn dev`) needs to be shut down.
+
+Once it is (with `**CTRL+C**` for instance), you can run on root directory :
+```
+yarn test
+```
 
 # Steps
 ### .step_01
