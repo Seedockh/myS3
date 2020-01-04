@@ -53,7 +53,7 @@ It will be launched at http://localhost:8081/ with **VueJS**
 
 To run our testsuite, server (`yarn dev`) needs to be shut down.
 
-Once it is (with `**CTRL+C**` for instance), you can run on root directory :
+Once it is (with **`CTRL+C`** for instance), you can run on root directory :
 ```
 yarn test
 ```
