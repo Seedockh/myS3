@@ -69,9 +69,9 @@ It will be launched at http://localhost:8081/ with **VueJS**
 ### .step_04
 - [X] An object or a blob is describe with: id, name, path, size and belongs to a bucket
 - [X] Create routes which allows to add and delete a blob using the package multer
-- [ ] Create a route which allows to retrieve a blob
-- [ ] Create a route which allows to duplicate a blob by adding .copy.$NB before the file extension
-- [ ] Create a route which allow to get blob metadata. Infos: path and size
+- [X] Create a route which allows to retrieve a blob
+- [X] Create a route which allows to duplicate a blob by adding .copy.$NB before the file extension
+- [X] Create a route which allow to get blob metadata. Infos: path and size
 
 ### .step_05
 - [X] Create a simple web interface with Vue 😎
