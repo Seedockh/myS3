@@ -1,6 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 
+interface DownloadFile {
+  file: string|null
+  message: string|null
+}
+
 export default class FileManager {
   defaultPath: string
   platform: string
@@ -70,13 +75,17 @@ export default class FileManager {
     }
   }
 
-  downloadFile(filePath: string): string {
+  downloadFile(filePath: string): DownloadFile {
     if (fs.existsSync(`${this.defaultPath}/${filePath}`)) {
-      return path.resolve(`${this.defaultPath}/${filePath}`)
+      return {
+        file: path.resolve(`${this.defaultPath}/${filePath}`),
+        message: null
+      }
     } else {
-      return res.status(200).send({
-        message: 'This file does not exist.',
-      })
+      return {
+        file: null,
+        message: 'This file does not exist.'
+      }
     }
   }
 
