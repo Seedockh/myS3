@@ -1,4 +1,4 @@
-import express, { Router } from 'express'
+import { Router } from 'express'
 import BlobController from '../controllers/BlobController'
 import { checkJwt } from '../middlewares/checkJwt'
 
