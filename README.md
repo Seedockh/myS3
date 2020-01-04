@@ -7,7 +7,7 @@ https://mys3.mhirba.now.sh/
 # Description
 The goal here is to recreate an **`AWS S3`** docker container, working only locally, using **TypeScript** and **TypeORM**.
 
-# Environment
+# Server-side Environment
 
 We're actually using **PostgreSQL** for handling databases.
 
@@ -30,6 +30,19 @@ MAIL_USER = one_of_your_gmail_address
 MAIL_PASSWORD = one_of_your_gmail_password
 ```
 
+# Client-side Environment
+
+The client is located at `/mys3-client/` and can be started with :
+```bash
+npm install
+  #or
+yarn install
+
+yarn serve
+```
+
+It will be launched at http://localhost:8081/ with **VueJS**
+
 # Steps
 ### .step_01
 - [X] Bootstrap an API server using express and typeORM with Typescript + Babel
@@ -49,23 +62,23 @@ MAIL_PASSWORD = one_of_your_gmail_password
 
 ### .step_03
 - [X] A bucket is describe with: id, name and belongs to a user
-- [X] Create routes which allows to create, edit and delete a bucket
+- [X] Create routes which allowshttp://localhost:8081/ to create, edit and delete a bucket
 - [X] Create a route which allow to list all objects from a bucket
-- [ ] Create a route which allow to check if a bucket exist with a head method that return 200 or 400
+- [X] Create a route which allow to check if a bucket exist with a head method that return 200 or 400
 
 ### .step_04
-- [ ] An object or a blob is describe with: id, name, path, size and belongs to a bucket
-- [ ] Create routes which allows to add and delete a blob using the package multer
-- [ ] Create a route which allows to retrieve a blob
-- [ ] Create a route which allows to duplicate a blob by adding .copy.$NB before the file extension
-- [ ] Create a route which allow to get blob metadata. Infos: path and size
+- [X] An object or a blob is describe with: id, name, path, size and belongs to a bucket
+- [X] Create routes which allows to add and delete a blob using the package multer
+- [X] Create a route which allows to retrieve a blob
+- [X] Create a route which allows to duplicate a blob by adding .copy.$NB before the file extension
+- [X] Create a route which allow to get blob metadata. Infos: path and size
 
 ### .step_05
-- [ ] Create a simple web interface with Vue 😎
+- [X] Create a simple web interface with Vue 😎
 - [ ] Optimistic UI : make UI responding instantaneously generating front before backend response, display will change only if response is different than front UI
 
 ### .step_06
-- [ ] Your client has to handle all user API actions. _From the authentication to the upload through browsing buckets and files_
+- [X] Your client has to handle all user API actions. _From the authentication to the upload through browsing buckets and files_
 
 ### .step_07
 - [ ] You HAVE TO transform you application to handle Server-side Rendering (SSR). _Maybe express has a kind of middleware_
@@ -77,7 +90,7 @@ MAIL_PASSWORD = one_of_your_gmail_password
 - [ ] One click sharing. _Well, on each blob, we can generate a static public link for the assets 😱😎_
 
 ### .step_10
-- [ ] Of course your app is responsive :)
+- [X] Of course your app is responsive :)
 
 ### bonus
 - [ ] Add bucket and|or blob sharing permission (read|write)

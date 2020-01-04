@@ -23,6 +23,7 @@ import userSecuredRoutes from './secured_routes/user'
 /*============== TESTS SETUPS =====================*/
 let testServer:Server
 let connection:Connection
+const dataDir = new FileManager(process.platform).init('myS3DATA/tests')
 export let userRepository: Repository<User>
 export let bucketRepository: Repository<Bucket>
 export let token: string
@@ -60,7 +61,7 @@ describe(':: Database & Environment initialization', (): void => {
   })
 
   it('RETURNS correct environment folder', done => {
-    const dataDir = new FileManager(process.platform).init('myS3DATA/tests')
+    new FileManager(process.platform).init('myS3DATA/tests')
     expect(fs.existsSync(dataDir)).equals(true)
 
     fs.rmdirSync(dataDir, { recursive: true })
@@ -98,25 +99,32 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/ describe(':: CheckJwt routes tests', checkJwt)
 /*===*/ describe(':: CheckRole routes tests', checkRole)
 /*===*/ describe(':: User public routes tests', userPublicRoutes)
-
+/*===*/
 /*===*/ describe(':: Authentication for tests', ():void => {
-/*===*/  it('LOGS IN successfully', done => {
+/*===*/  it('LOGS IN successfully', async done => {
 /*===*/    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
 /*===*/    const data = 'nickname=john&password=doe'
-
+/*===*/
+/*===*/    const user = await userRepository.findOne({where:{nickname:'john'}})
+/*===*/    expect(fs.existsSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`)).equals(true)
+/*===*/    fs.rmdirSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`, { recursive: true })
+/*===*/    expect(fs.existsSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`)).equals(false)
+/*===*/
 /*===*/    getData("http://localhost:7331/auth/login",
 /*===*/    { method: 'POST', headers: headers, body: data })
 /*===*/    .then( async result => {
 /*===*/      expect(!result.token).equals(false)
-
+/*===*/
 /*===*/      token = result.token
 /*===*/      let jwtPayload
-
+/*===*/
 /*===*/      jwt.verify(token, process.env.JWT_SECRET,
 /*===*/      (err, data) => err ? res.status(403).send({ message: 'ERROR: Wrong token sent'}) : jwtPayload = data )
 /*===*/      userToken = await userRepository.findOne({
 /*===*/         where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
 /*===*/      })
+/*===*/
+/*===*/      expect(fs.existsSync(`${process.env.HOME}/myS3DATA/tests/${user.id}`)).equals(true)
 /*===*/      done()
 /*===*/    })
 /*===*/  })

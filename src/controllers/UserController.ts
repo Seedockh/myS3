@@ -10,6 +10,46 @@ class UserController {
   static getAllUsers = async (req: Request, res: Response): Promise<Response> =>
     res.status(200).json({ users: await getManager().find(User) })
 
+  static getUser = async (req: Request, res: Response): Promise<Response> => {
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      return res.status(200).send({
+        id: authUser.user.id,
+        nickname: authUser.user.nickname,
+        email: authUser.user.email,
+      })
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
+  }
+
+  // Get user buckets
+  static getBuckets = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
+
+      return res.status(200).send({
+        list: getEnvFolder.readFolder(`${authUser.user.id}`),
+      })
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
+  }
+
   // Create user
   static createUser = async (req: Request, res: Response): Promise<void> => {
     const userRepository: Repository<User> = getRepository(User)
@@ -55,7 +95,7 @@ class UserController {
       if (!authUser.user) return res.status(400).send(authUser.message)
 
       userRepository.merge(authUser.user, req.body)
-      await userRepository.save(authUser.user).then(
+      userRepository.save(authUser.user).then(
         (result: User): Response => {
           return res.send(result)
         },
@@ -78,12 +118,11 @@ class UserController {
       const auth = new Authentifier(userToken)
       const authUser = await auth.getUser()
       if (!authUser.user) return res.status(400).send(authUser.message)
+      const user = authUser.user
 
-      await userRepository.delete(authUser.user.id).then(
+      userRepository.delete(user.id).then(
         (result): Response => {
-          if (authUser.user !== undefined)
-            getEnvFolder.deleteFolder(`${authUser.user.id}`)
-
+          getEnvFolder.deleteFolder(`${user.id}`)
           return res.send(result)
         },
       )

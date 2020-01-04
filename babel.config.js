@@ -2,6 +2,7 @@ module.exports = api => {
   api.cache(true)
 
   const presets = ['@babel/preset-typescript', '@babel/preset-env']
+
   const plugins = [
     ['@babel/plugin-proposal-decorators', { legacy: true }],
     ['@babel/plugin-proposal-class-properties'],
@@ -9,6 +10,7 @@ module.exports = api => {
     ['@babel/plugin-transform-runtime'],
     ['@babel/plugin-proposal-optional-chaining']
   ]
+
 
   return {
     presets,

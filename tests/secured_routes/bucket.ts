@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import { token, userToken, getData } from '../main.test'
+import fetch from 'node-fetch'
 import fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import BucketController from '../../src/controllers/BucketController'
@@ -72,11 +73,34 @@ const bucketSecuredRoutes = (): void => {
     })
   })
 
+  it('CHECKS if the previously bucket exists successfully', done => {
+    fetch("http://localhost:7331/bucket/exists/firstbucket",
+    { method: 'HEAD', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(result.status).equals(200)
+      done()
+    })
+  })
+
+  it('FAILS to find unknown bucket', done => {
+    fetch("http://localhost:7331/bucket/exists/firstbuckets",
+    { method: 'HEAD', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(result.status).equals(400)
+      done()
+    })
+  })
+
   it('LISTS all files of a correct folder', done => {
-    getData("http://localhost:7331/bucket/listfiles/3",
+    getData("http://localhost:7331/bucket/listfiles/firstbucket",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
-      expect(JSON.stringify(result)).equals(JSON.stringify([]))
+      expect(JSON.stringify(result)).equals(JSON.stringify(
+        {
+          files: [],
+          blobs: [],
+        }
+      ))
       done()
     })
   })
@@ -88,7 +112,7 @@ const bucketSecuredRoutes = (): void => {
       { expiresIn: '1h' },
     )
     const list = await BucketController.listFiles(
-      { params: { id: 3 }, headers: { authorization: `Bearer ${falseToken}` } },
+      { params: { name: 'firstbucket' }, headers: { authorization: `Bearer ${falseToken}` } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(list).equals("ERROR: User doesn't exists in database")
@@ -96,7 +120,7 @@ const bucketSecuredRoutes = (): void => {
   })
 
   it('FAILS to list files of an unknown folder', done => {
-    getData("http://localhost:7331/bucket/listfiles/99999999",
+    getData("http://localhost:7331/bucket/listfiles/wrongbucket",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
       expect(result.message).equals("Bucket doesn't exists in database")
@@ -106,7 +130,7 @@ const bucketSecuredRoutes = (): void => {
 
   it('FAILS to list files without token', async done => {
     const list = await BucketController.listFiles(
-      { params: { id: 3 }, headers: { } },
+      { params: { name: 'firstbucket' }, headers: { } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(list.message).equals("ERROR : Missing Bearer token in your Authorizations")
@@ -120,7 +144,7 @@ const bucketSecuredRoutes = (): void => {
     }
     // This is a temporary data encoding solution because JSON problems
     const data = `name=updatedbucket&userUuid=${userToken.id}`
-    getData(`http://localhost:7331/bucket/edit/3`,
+    getData(`http://localhost:7331/bucket/edit/firstbucket`,
     { method: 'PUT', headers: headers, body: data })
     .then(result => {
       expect(result.id).equals(3)
@@ -131,7 +155,7 @@ const bucketSecuredRoutes = (): void => {
 
   it('FAILS to update one bucket without token', async done => {
     const update = await BucketController.editBucket(
-      { body: { name: 'failbucket'}, params: { id: 3 }, headers: { } },
+      { body: { name: 'failbucket'}, params: { name: 'firstbucket' }, headers: { } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(update.message).equals("ERROR : Missing Bearer token in your Authorizations")
@@ -145,7 +169,7 @@ const bucketSecuredRoutes = (): void => {
       { expiresIn: '1h' },
     )
     const update = await BucketController.editBucket(
-      { body: { name: 'failbucket'}, headers: { authorization: `Bearer ${falseToken}` }, params: { id: 3 } },
+      { body: { name: 'failbucket'}, headers: { authorization: `Bearer ${falseToken}` }, params: { name: 'updatedbucket' } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(update).equals("ERROR: User doesn't exists in database")
@@ -158,8 +182,8 @@ const bucketSecuredRoutes = (): void => {
       'Authorization': `Bearer ${token}`
     }
     // This is a temporary data encoding solution because JSON problems
-    const data = 'name=updatebucket'
-    getData("http://localhost:7331/bucket/edit/99999",
+    const data = 'name=updatedbucket'
+    getData("http://localhost:7331/bucket/edit/wrongbucket",
     { method: 'PUT', headers: headers, body: data })
     .then(result => {
       expect(result.message).equals(`Bucket doesn't exists in database`)
@@ -174,15 +198,18 @@ const bucketSecuredRoutes = (): void => {
       { expiresIn: '1h' },
     )
     const deleteBucket = await BucketController.deleteBucket(
-      { body: { name: 'failbucket'}, headers: { authorization: `Bearer ${falseToken}` }, params: { id: 3 } },
+      { body: { name: 'failbucket'}, headers: { authorization: `Bearer ${falseToken}` }, params: { name: 'updatedbucket' } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(deleteBucket).equals("ERROR: User doesn't exists in database")
     done()
   })
 
+  /**
+  * @FIXME bucket shouldn't be 'failbucket', so one failes test is then passing
+  **/
   it('DELETES the previously created bucket successfully', done => {
-    getData("http://localhost:7331/bucket/delete/3",
+    getData("http://localhost:7331/bucket/delete/failbucket",
     { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
       expect(JSON.stringify(result))
@@ -193,7 +220,7 @@ const bucketSecuredRoutes = (): void => {
 
   it('FAILS to delete one bucket without token', async done => {
     const deleteBucket = await BucketController.deleteBucket(
-      { params: { id: 3 }, headers: { } },
+      { params: { name: 'updatedbucket' }, headers: { } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(deleteBucket.message).equals("ERROR : Missing Bearer token in your Authorizations")
@@ -201,7 +228,7 @@ const bucketSecuredRoutes = (): void => {
   })
 
   it('FAILS to delete unexistent bucket', async done => {
-    getData("http://localhost:7331/bucket/delete/999999",
+    getData("http://localhost:7331/bucket/delete/wrongbucket",
     { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
       expect(result.message).equals("ERROR: Bucket doesn't exists in database")
