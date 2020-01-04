@@ -12,7 +12,7 @@ class BlobController {
   static retrieveBlob = async (
     req: Request,
     res: Response,
-  ): Promise<void|Response> => {
+  ): Promise<void | Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
@@ -43,7 +43,9 @@ class BlobController {
           .send({ message: "Bucket doesn't exists in database" })
       }
 
-      const getBinary = getEnvFolder.downloadFile(`${user.id}/${bucket.name}/${blob.name}`)
+      const getBinary = getEnvFolder.downloadFile(
+        `${user.id}/${bucket.name}/${blob.name}`,
+      )
 
       if (getBinary.file === null) return res.status(400).send(getBinary)
 
