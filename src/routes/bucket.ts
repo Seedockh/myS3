@@ -20,10 +20,6 @@ router.post('/createNew', [checkJwt], BucketController.createBucket)
 router.put('/edit/:name', [checkJwt], BucketController.editBucket)
 
 //Delete one bucket
-router.delete(
-  '/delete/:name',
-  [checkJwt],
-  BucketController.deleteBucket,
-)
+router.delete('/delete/:name', [checkJwt], BucketController.deleteBucket)
 
 export default router
