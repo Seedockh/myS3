@@ -128,12 +128,65 @@ export default {
     },
 
     downloadFile(id) {
-      console.log('down called !')
-      console.log(id)
+      axios.get(
+        // URL
+        `http://localhost:1337/blob/retrieve/${id}`,
+        // HEADERS
+        {
+          headers: { 'Authorization': `Bearer ${localStorage.token}` },
+          responseType: 'arraybuffer',
+        }
+      ).then( result => {
+        axios.get(
+          // URL
+          `http://localhost:1337/blob/getInfos/${id}`,
+          // HEADERS
+          {
+            headers: { 'Authorization': `Bearer ${localStorage.token}` },
+          }
+        ).then( blobInfos => {
+          console.log(blobInfos)
+          const url = window.URL.createObjectURL(new Blob([result.data]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', blobInfos.data.name)
+          document.body.appendChild(link)
+          link.click()
+
+        }).catch( error => {
+          if (error.response.status === 403)
+            return this.$router.push({ name: 'login' })
+
+            return swal(error.response.data.message, { icon: "warning" })
+        })
+      }).catch( error => {
+        if (error.response.status === 403)
+          return this.$router.push({ name: 'login' })
+
+          return swal(error.response.data.message, { icon: "warning" })
+      })
     },
     duplicateFile(id) {
-      console.log('duplicate called !')
-      console.log(id)
+      axios.post(
+        // URL
+        `http://localhost:1337/blob/duplicate/${id}`,
+        {},
+        // HEADERS
+        { headers: {
+            'Authorization': `Bearer ${localStorage.token}`
+          }
+        }).then( result => {
+          swal(`File ${result.data.name} successfully created !`, {
+            icon: "success",
+          })
+          this.$root.$emit('sendDataToLeftPanelComponent', this.selectedBucket)
+        })
+        .catch( error => {
+          if (error.response.status === 403)
+            return this.$router.push({ name: 'login' })
+
+          return swal(error.response.data.message, { icon: "warning" })
+        })
     },
     deleteFile(id) {
       swal(
