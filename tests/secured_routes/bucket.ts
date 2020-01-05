@@ -12,7 +12,6 @@ const bucketSecuredRoutes = (): void => {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': `Bearer ${token}`
     }
-    // This is a temporary data encoding solution because JSON problems
     const data = `name=firstbucket`
 
     getData("http://localhost:7331/bucket/createNew",
@@ -29,7 +28,6 @@ const bucketSecuredRoutes = (): void => {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': `Bearer ${token}`
     }
-    // This is a temporary data encoding solution because JSON problems
     const data = 'nickname=failbucket'
 
     await getData("http://localhost:7331/bucket/createNew",
@@ -142,7 +140,6 @@ const bucketSecuredRoutes = (): void => {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': `Bearer ${token}`
     }
-    // This is a temporary data encoding solution because JSON problems
     const data = `name=updatedbucket&userUuid=${userToken.id}`
     getData(`http://localhost:7331/bucket/edit/firstbucket`,
     { method: 'PUT', headers: headers, body: data })
@@ -155,7 +152,7 @@ const bucketSecuredRoutes = (): void => {
 
   it('FAILS to update one bucket without token', async done => {
     const update = await BucketController.editBucket(
-      { body: { name: 'failbucket'}, params: { name: 'firstbucket' }, headers: { } },
+      { body: { name: 'failupdatebucket'}, params: { name: 'firstbucket' }, headers: { } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(update.message).equals("ERROR : Missing Bearer token in your Authorizations")
@@ -169,7 +166,7 @@ const bucketSecuredRoutes = (): void => {
       { expiresIn: '1h' },
     )
     const update = await BucketController.editBucket(
-      { body: { name: 'failbucket'}, headers: { authorization: `Bearer ${falseToken}` }, params: { name: 'updatedbucket' } },
+      { body: { name: 'failupdatebucket'}, headers: { authorization: `Bearer ${falseToken}` }, params: { name: 'updatedbucket' } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(update).equals("ERROR: User doesn't exists in database")
@@ -181,7 +178,6 @@ const bucketSecuredRoutes = (): void => {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': `Bearer ${token}`
     }
-    // This is a temporary data encoding solution because JSON problems
     const data = 'name=updatedbucket'
     getData("http://localhost:7331/bucket/edit/wrongbucket",
     { method: 'PUT', headers: headers, body: data })
@@ -198,18 +194,15 @@ const bucketSecuredRoutes = (): void => {
       { expiresIn: '1h' },
     )
     const deleteBucket = await BucketController.deleteBucket(
-      { body: { name: 'failbucket'}, headers: { authorization: `Bearer ${falseToken}` }, params: { name: 'updatedbucket' } },
+      { body: { name: 'updatedbucket'}, headers: { authorization: `Bearer ${falseToken}` }, params: { name: 'updatedbucket' } },
       { status: status => { return { send: message => message, status: status } } }
     )
     expect(deleteBucket).equals("ERROR: User doesn't exists in database")
     done()
   })
 
-  /**
-  * @FIXME bucket shouldn't be 'failbucket', so one failes test is then passing
-  **/
   it('DELETES the previously created bucket successfully', done => {
-    getData("http://localhost:7331/bucket/delete/failbucket",
+    getData("http://localhost:7331/bucket/delete/updatedbucket",
     { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
       expect(JSON.stringify(result))
