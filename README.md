@@ -113,4 +113,4 @@ yarn test
 
 ### required
 - [ ] Make sure test coverage is 100%
-- [ ] Don't forget to add .crew and .oav.name files
+- [X] Don't forget to add .crew and .oav.name files

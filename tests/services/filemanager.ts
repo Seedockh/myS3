@@ -16,7 +16,7 @@ const envFolder = new FileManager(process.platform)
 envFolder.init('myS3DATA/tests')
 
 const filemanager = (): void => {
-  // FOLDERS TESTS
+/***********  FOLDERS TESTS  **********/
   it('CREATES a folder successfully', async done => {
     expect(envFolder.defaultPath).equals(`${process.env.HOME}/myS3DATA/tests`)
 
@@ -75,7 +75,7 @@ const filemanager = (): void => {
     done()
   })
 
-  // FILES TESTS
+/*******  FILES TESTS  *********/
   it('DOWNLOADS a file successfully', async done => {
     expect(envFolder.defaultPath).equals(`${process.env.HOME}/myS3DATA/tests`)
     envFolder.createFolder('testuser')
@@ -120,9 +120,9 @@ const filemanager = (): void => {
   })
 
   it('DELETES a file successfully', async done => {
-    const file = envFolder.deleteFile('testuser/testbucket/test-file.txt')
-    expect(file).equals(`File ${process.env.HOME}/myS3DATA/tests/testuser/testbucket/test-file.txt deleted successfully.`)
-    expect(fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)).equals(false)
+    const file = envFolder.deleteFile('testuser/testbucket/test-file.copy.2.txt')
+    expect(file).equals(`File ${process.env.HOME}/myS3DATA/tests/testuser/testbucket/test-file.copy.2.txt deleted successfully.`)
+    expect(fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.copy.2.txt`)).equals(false)
     done()
   })
 
