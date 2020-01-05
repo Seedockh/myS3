@@ -160,14 +160,12 @@ class BucketController {
       }
 
       const user = authUser.user
-      return bucketRepository
-        .delete(bucket.id)
-        .then(
-          (result): Response => {
-            getEnvFolder.deleteFolder(`${user.id}/${bucket.name}`)
-            return res.send(result)
-          },
-        )
+      return bucketRepository.delete(bucket.id).then(
+        (result): Response => {
+          getEnvFolder.deleteFolder(`${user.id}/${bucket.name}`)
+          return res.send(result)
+        },
+      )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
