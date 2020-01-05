@@ -98,6 +98,7 @@ export default {
     },
 
     handleFile() {
+      console.log(this.$refs.file.files)
       this.file = this.$refs.file.files[0]
     },
 
@@ -105,7 +106,6 @@ export default {
       if (!this.file) return swal(`No file selected !`, { icon: "warning" })
       const formData = new FormData()
       formData.append('mys3-upload', this.file)
-      if (!this.file) return this.error = `No file selected !`
       axios.post(
         // URL
         `http://localhost:1337/blob/add/${this.selectedBucket}`,

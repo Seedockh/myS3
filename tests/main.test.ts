@@ -6,6 +6,7 @@ import { createConnection, getConnection, Connection, Server, Repository } from 
 import { initializeConnection, app, server, getEnvFolder } from '../src/main'
 import User from '../src/entity/User'
 import Bucket from '../src/entity/Bucket'
+import Blob from '../src/entity/Blob'
 import FileManager from '../src/services/filemanager'
 
 import mail from './services/mail'
@@ -27,6 +28,7 @@ let connection:Connection
 const dataDir = new FileManager(process.platform).init('myS3DATA/tests')
 export let userRepository: Repository<User>
 export let bucketRepository: Repository<Bucket>
+export let blobRepository: Repository<Blob>
 export let token: string
 export let userToken: User | undefined
 export const getData = async (url, options) => {
@@ -43,6 +45,7 @@ beforeAll(async () => {
   connection = await connection.synchronize(true).then(async () => {
     userRepository = await connection.getRepository(User)
     bucketRepository = await connection.getRepository(Bucket)
+    blobRepository = await connection.getRepository(Blob)
   })
   return await [userRepository, bucketRepository]
 })

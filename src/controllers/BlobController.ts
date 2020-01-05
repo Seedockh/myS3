@@ -131,7 +131,7 @@ class BlobController {
         res,
         async (err: string): Promise<Response> => {
           // req.file contains information of uploaded file
-          if (err) return res.send(err)
+          if (err) return res.send({ message: err })
           if (!req.file)
             return res.send({ message: 'Please select a file to upload' })
 
@@ -151,7 +151,7 @@ class BlobController {
             )
             .catch(
               (error): Response => {
-                return res.send(error)
+                return res.send({ message: error })
               },
             )
         },
