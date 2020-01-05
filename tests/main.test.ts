@@ -18,6 +18,7 @@ import checkRole from './middlewares/checkRole'
 import userPublicRoutes from './public_routes/user'
 import authRoutes from './public_routes/auth'
 import bucketSecuredRoutes from './secured_routes/bucket'
+import blobSecuredRoutes from './secured_routes/blob'
 import userSecuredRoutes from './secured_routes/user'
 
 /*============== TESTS SETUPS =====================*/
@@ -100,7 +101,7 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/ describe(':: CheckRole routes tests', checkRole)
 /*===*/ describe(':: User public routes tests', userPublicRoutes)
 /*===*/
-/*===*/ describe(':: Authentication for tests', ():void => {
+/*===*/ describe(':: Authentication for tests setup', ():void => {
 /*===*/  it('LOGS IN successfully', async done => {
 /*===*/    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
 /*===*/    const data = 'nickname=john&password=doe'
@@ -133,6 +134,7 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/ describe(':: Authentifier tests', authentifier)
 /*===*/ describe(':: FileManager tests', filemanager)
 /*===*/ describe(':: Bucket secured routes tests', bucketSecuredRoutes)
+/*===*/ describe(':: Blob secured routes tests', blobSecuredRoutes)
 /*===*/ describe(':: User secured routes tests', userSecuredRoutes)
 /*===*/ describe(':: Mailing tests', mail)
 /*=================================================*/

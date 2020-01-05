@@ -16,6 +16,7 @@ const envFolder = new FileManager(process.platform)
 envFolder.init('myS3DATA/tests')
 
 const filemanager = (): void => {
+  // FOLDERS TESTS
   it('CREATES a folder successfully', async done => {
     expect(envFolder.defaultPath).equals(`${process.env.HOME}/myS3DATA/tests`)
 
@@ -71,6 +72,63 @@ const filemanager = (): void => {
   it('FAILS to delete a folder that does not exist', async done => {
     const folder = envFolder.deleteFolder('failfolder')
     expect(folder).equals(`Folder ${process.env.HOME}/myS3DATA/tests/failfolder does not exist.`)
+    done()
+  })
+
+  // FILES TESTS
+  it('DOWNLOADS a file successfully', async done => {
+    expect(envFolder.defaultPath).equals(`${process.env.HOME}/myS3DATA/tests`)
+    envFolder.createFolder('testuser')
+    envFolder.createFolder('testuser/testbucket')
+
+    if (!fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)) {
+      fs.writeFileSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`, 'This is a test file')
+    }
+    const file = envFolder.downloadFile('testuser/testbucket/test-file.txt')
+    expect(JSON.stringify(file)).equals(JSON.stringify({
+      file: `${process.env.HOME}/myS3DATA/tests/testuser/testbucket/test-file.txt`,
+      message: null
+    }))
+    done()
+  })
+
+  it('FAILS to download unexistent file', async done => {
+    const file = envFolder.downloadFile('testuser/testbucket/unexistent-file.txt')
+    expect(JSON.stringify(file)).equals(JSON.stringify({
+      file: null,
+      message: 'This file does not exist.'
+    }))
+    done()
+  })
+
+  it('DUPLICATES a file successfully', async done => {
+    expect(fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)).equals(true)
+    const firstCopy = envFolder.duplicateFile('testuser/testbucket/test-file.txt')
+    expect(firstCopy).equals(`test-file.copy.1.txt`)
+    expect(fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.copy.1.txt`)).equals(true)
+    const secondCopy = envFolder.duplicateFile(`testuser/testbucket/test-file.txt`)
+    expect(secondCopy).equals(`test-file.copy.2.txt`)
+    expect(fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.copy.2.txt`)).equals(true)
+    done()
+  })
+
+  it('FAILS to duplicate a file that does not exist', async done => {
+    const wrongCopy = envFolder.duplicateFile(`testuser/testbucket/wrong-file.txt`)
+    expect(wrongCopy).equals(`File ${envFolder.defaultPath}/testuser/testbucket/wrong-file.txt does not exist.`)
+    expect(fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/wrong-file.copy.1.txt`)).equals(false)
+    done()
+  })
+
+  it('DELETES a file successfully', async done => {
+    const file = envFolder.deleteFile('testuser/testbucket/test-file.txt')
+    expect(file).equals(`File ${process.env.HOME}/myS3DATA/tests/testuser/testbucket/test-file.txt deleted successfully.`)
+    expect(fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)).equals(false)
+    done()
+  })
+
+  it('FAILS to delete a file that does not exist', async done => {
+    const file = envFolder.deleteFile('testuser/testbucket/wrong-file.txt')
+    expect(file).equals(`File ${process.env.HOME}/myS3DATA/tests/testuser/testbucket/wrong-file.txt does not exist.`)
     done()
   })
 
