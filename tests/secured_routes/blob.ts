@@ -25,68 +25,83 @@ const blobSecuredRoutes = (): void => {
     })
     .then(bucket => {
       expect(bucket.name).equals("blobbucket")
-      getData("http://localhost:7331/user/get",
-      { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
-      .then(user => {
-        // Add a blob
-        // POST /add/:bucketName -> BlobController.addBlob
-        const stats = fs.statSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)
-        const file = fs.createReadStream(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)
+      const stats = fs.statSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)
+      const file = fs.createReadStream(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)
 
-        let formData = new FormData()
-        formData.append('mys3-upload', file)
-        formData.pipe(concat(data => {
-          axios.post(
-            // URL
-            `http://localhost:1337/blob/add/blobbucket`,
-            // BODY
-            data,
-            // HEADERS
-            { headers: {
-                'Authorization': `Bearer ${token}`,
-                ...formData.getHeaders()
-              }
-            })
-          .then(uploadedFile => {
-            expect(fs.existsSync(`${uploadedFile.data.path}${uploadedFile.data.name}`)).equals(true)
-            done()
+      let formData = new FormData()
+      formData.append('mys3-upload', file)
+      formData.pipe(concat(data => {
+        axios.post(
+          // URL
+          `http://localhost:1337/blob/add/blobbucket`,
+          // BODY
+          data,
+          // HEADERS
+          { headers: {
+              'Authorization': `Bearer ${token}`,
+              ...formData.getHeaders()
+            }
           })
-        }))
-      })
+        .then(uploadedFile => {
+          expect(fs.existsSync(`${uploadedFile.data.path}${uploadedFile.data.name}`)).equals(true)
+          done()
+        })
+      }))
     })
   })
 
   it('RETRIEVES a blob successfully', async done => {
-    // Retrieve a blob
-    // GET /retrieve/:id -> BlobController.retrieveBlob
-    /*getData("http://localhost:7331/blob/retrieve/1",
-    { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
+    axios.get('http://localhost:7331/blob/retrieve/1', { headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
-      expect(result).equals(1)
+      expect(result.data).equals('This is a test file')
       done()
-    })*/
-    done()
+    })
   })
 
   it('GETS a blob infos successfully', async done => {
-    // Get blob metadatas infos
-    // GET /getinfos/:id -> BlobController.getBlobInfos
-
-    done()
+    getData(`http://localhost:7331/blob/getinfos/1`,
+    {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` },
+    })
+    .then( result => {
+      expect(result.id).equals(1)
+      expect(/test-file-/.test(result.name)).equals(true)
+      expect(result.bucket.name).equals('blobbucket')
+      expect(/\/myS3DATA\/tests\//.test(result.path)).equals(true)
+      expect(/\/blobbucket\//.test(result.path)).equals(true)
+      expect(result.size).equals('19')
+      done()
+    })
   })
 
   it('DUPLICATES a blob successfully', async done => {
-    // Duplicate a blob
-    // POST /duplicate/:id -> BlobController.duplicateBlob
+    let user = null
+    getData(
+      "http://localhost:7331/user/get",
+      { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } },
+    ).then(res => user = res)
 
-    done()
+    getData("http://localhost:7331/blob/duplicate/1", {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+    }).then(result => {
+      expect(/test-file-[0-9]+\.copy\.1\.txt/.test(result.name)).equals(true)
+      expect(fs.existsSync(`${envFolder.defaultPath}/${user.id}/blobbucket/${result.name}`)).equals(true)
+      done()
+    })
   })
 
   it('DELETES a blob successfully', async done => {
     // Delete a blob
     // DELETE /delete/:id -> BlobController.deleteBlob
-
-    done()
+    getData("http://localhost:7331/blob/delete/1", {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+    }).then(result => {
+      expect(JSON.stringify(result)).equals(JSON.stringify({raw: [], affected: 1}))
+      done()
+    })
   })
 }
 
