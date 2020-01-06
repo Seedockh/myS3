@@ -85,4 +85,25 @@ hr {
     justify-content: space-between;
   }
 
+@media screen and (max-width: 640px) {
+  .content {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    max-width: 100vw;
+  }
+  hr { border: 0; }
+  .content {
+    height: 75%;
+  }
+  .header {
+    height: 50px;
+  }
+  .footer {
+    height: 100px;
+  }
+  .credits {
+    width: 100%;
+  }
+}
 </style>
