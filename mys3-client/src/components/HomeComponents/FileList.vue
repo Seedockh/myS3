@@ -92,13 +92,14 @@ export default {
           if (error.response.status === 403)
             return this.$router.push({ name: 'login' })
 
-          this.error = error.response.data.message
-          setTimeout(() => { return this.error = null }, 3000)
+          if (/duplicate key value violates unique constraint/g.test(error.response.data.message))
+            return swal('Bucket with this name already exists !', { icon: "warning" })
+
+          return swal(error.response.data.message, { icon: "warning" })
         })
     },
 
     handleFile() {
-      console.log(this.$refs.file.files)
       this.file = this.$refs.file.files[0]
     },
 
@@ -148,7 +149,6 @@ export default {
             headers: { 'Authorization': `Bearer ${localStorage.token}` },
           }
         ).then( blobInfos => {
-          console.log(blobInfos)
           const url = window.URL.createObjectURL(new Blob([result.data]))
           const link = document.createElement('a')
           link.href = url
@@ -354,22 +354,42 @@ export default {
     margin-right: .5em;
   }
 
+@media screen and (max-width: 767px) {
+  #filelist-container {
+    width: 100%;
+    padding: 1em;
+  }
+  .list-section {
+    width: 100%;
+  }
+    .list-section .list-line {
+      width: 100%;
+    }
+      .list-line .list-buttons {
+        width: 30%;
+        margin-right: .5em;
+      }
+  .create-bucket-form, .upload-blob-form {
+    width: 100%;
+  }
+}
+
 @media screen and (max-width: 640px) {
   #filelist-container {
-    overflow: scroll;
-    width: 95%;
-    padding-left: 1em;
+    width: 100%;
+    padding: 1em 0;
+    min-height: 50%;
   }
-  .create-bucket-form {
-    left: 1em;
-    bottom: 1em;
+  .list-section, .create-bucket-form, .upload-blob-form {
+    max-width: 100%;
   }
-    .create-bucket {
-      width: 40%;
-    }
-    .create-bucket {
-
-    }
+  .list-line {
+    max-width: 97%;
+  }
+  .list-line .list-buttons {
+    width: 20%;
+    margin-right: .5em;
+  }
 }
 
 </style>
