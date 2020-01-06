@@ -214,7 +214,8 @@
 #leftpanel-container {
   position: relative;
   width: 200px;
-  height: 100%;
+  min-height: 100%;
+  float: left;
   background: rgba(25,25,25,1);
   padding: 0 1em 0 1em;
   border-radius: 7px 0 0 7px;
@@ -305,15 +306,32 @@ li {
 
 @media screen and (max-width: 640px) {
   #leftpanel-container {
-    width: 90%;
-    height: 400px;
+    position: inherit;
+    padding: 0;
+    float: left;
+    width: 100%;
+    min-height: 100px;
+    border-radius: 7px 7px 0 0;
   }
   .leftpanel-title {
-    margin-top: 1em;
+    padding: 1em;
+    margin: 0;
   }
   ul {
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+  }
+  ul::-webkit-scrollbar {
+    display: none;
+  }
+  .buckets-list {
     max-height: 100px;
-    overflow: scroll;
+
+  }
+  .btn-submit {
+    height: 53px;
+    background: rgba(40,58,98,1);
+    border-radius: 0;
   }
 }
 

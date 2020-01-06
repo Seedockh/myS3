@@ -49,6 +49,7 @@ export default {
 
 @media screen and (max-width: 640px) {
   #home-container {
+    min-height: 100%;
     flex-direction: column;
   }
 }
