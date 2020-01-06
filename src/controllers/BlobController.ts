@@ -36,17 +36,13 @@ class BlobController {
       const bucket = await bucketRepository.findOne({
         where: { id: blob.bucket.id },
       })
-      if (bucket === undefined) {
-        return res
-          .status(400)
-          .send({ message: "Bucket doesn't exists in database" })
-      }
 
       const getBinary = getEnvFolder.downloadFile(
-        `${user.id}/${bucket.name}/${blob.name}`,
+        `${user.id}/${bucket!.name}/${blob.name}`,
       )
 
-      if (getBinary.file === null) return res.status(400).send(getBinary)
+      if (getBinary.file === null)
+        return res.status(400).send({ message: getBinary.message })
 
       return res.status(200).sendFile(getBinary.file)
     } else {
@@ -131,8 +127,9 @@ class BlobController {
         res,
         async (err: string): Promise<Response> => {
           // req.file contains information of uploaded file
-          if (err) return res.send(err)
-          if (!req.file)
+          if (err) return res.send({ message: `ERROR: ${err}` })
+
+          if (req.file === undefined)
             return res.send({ message: 'Please select a file to upload' })
 
           const blobRepository: Repository<Blob> = getRepository(Blob)
@@ -142,18 +139,11 @@ class BlobController {
           blob.path = destination
           blob.size = size
           blob.bucket = bucket
-          return blobRepository
-            .save(blob)
-            .then(
-              (result): Response => {
-                return res.send(result)
-              },
-            )
-            .catch(
-              (error): Response => {
-                return res.send(error)
-              },
-            )
+          return blobRepository.save(blob).then(
+            (result): Response => {
+              return res.send(result)
+            },
+          )
         },
       )
     } else {
@@ -191,32 +181,20 @@ class BlobController {
       const bucket = await bucketRepository.findOne({
         where: { id: blob.bucket.id },
       })
-      if (bucket === undefined) {
-        return res
-          .status(400)
-          .send({ message: "Bucket doesn't exists in database" })
-      }
 
       const copyName = getEnvFolder.duplicateFile(
-        `${user.id}/${bucket.name}/${blob.name}`,
+        `${user.id}/${bucket!.name}/${blob.name}`,
       )
       const copyBlob = new Blob()
       copyBlob.name = copyName
       copyBlob.path = blob.path
       copyBlob.size = blob.size
       copyBlob.bucket = blob.bucket
-      return blobRepository
-        .save(copyBlob)
-        .then(
-          (result): Response => {
-            return res.send(result)
-          },
-        )
-        .catch(
-          (error): Response => {
-            return res.send(error)
-          },
-        )
+      return blobRepository.save(copyBlob).then(
+        (result): Response => {
+          return res.send(result)
+        },
+      )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
@@ -252,15 +230,10 @@ class BlobController {
       const bucket = await bucketRepository.findOne({
         where: { id: blob.bucket.id },
       })
-      if (bucket === undefined) {
-        return res
-          .status(400)
-          .send({ message: "Bucket doesn't exists in database" })
-      }
 
       return blobRepository.delete(req.params.id).then(
         (result): Response => {
-          getEnvFolder.deleteFile(`${user.id}/${bucket.name}/${blob.name}`)
+          getEnvFolder.deleteFile(`${user.id}/${bucket!.name}/${blob.name}`)
           return res.send(result)
         },
       )

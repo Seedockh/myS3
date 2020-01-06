@@ -104,6 +104,9 @@ class BucketController {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
       const authUser = await auth.getUser()
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
+      const user = authUser.user
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
@@ -118,12 +121,10 @@ class BucketController {
       bucketRepository.merge(bucket, req.body)
       return bucketRepository.save(bucket).then(
         (result): Response => {
-          if (authUser.user === undefined)
-            return res.status(400).send(authUser.message)
           // Rename folder with new bucket name
           getEnvFolder.renameFolder(
-            `${authUser.user.id}/${oldName}`,
-            `${authUser.user.id}/${bucket.name}`,
+            `${user.id}/${oldName}`,
+            `${user.id}/${bucket.name}`,
           )
           return res.send(result)
         },
@@ -159,19 +160,12 @@ class BucketController {
       }
 
       const user = authUser.user
-      return bucketRepository
-        .delete(bucket.id)
-        .then(
-          (result): Response => {
-            getEnvFolder.deleteFolder(`${user.id}/${bucket.name}`)
-            return res.send(result)
-          },
-        )
-        .catch(
-          (error): Response => {
-            return res.send(error)
-          },
-        )
+      return bucketRepository.delete(bucket.id).then(
+        (result): Response => {
+          getEnvFolder.deleteFolder(`${user.id}/${bucket.name}`)
+          return res.send(result)
+        },
+      )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',

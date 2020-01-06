@@ -6,6 +6,7 @@ import { createConnection, getConnection, Connection, Server, Repository } from 
 import { initializeConnection, app, server, getEnvFolder } from '../src/main'
 import User from '../src/entity/User'
 import Bucket from '../src/entity/Bucket'
+import Blob from '../src/entity/Blob'
 import FileManager from '../src/services/filemanager'
 
 import mail from './services/mail'
@@ -18,6 +19,7 @@ import checkRole from './middlewares/checkRole'
 import userPublicRoutes from './public_routes/user'
 import authRoutes from './public_routes/auth'
 import bucketSecuredRoutes from './secured_routes/bucket'
+import blobSecuredRoutes from './secured_routes/blob'
 import userSecuredRoutes from './secured_routes/user'
 
 /*============== TESTS SETUPS =====================*/
@@ -26,6 +28,7 @@ let connection:Connection
 const dataDir = new FileManager(process.platform).init('myS3DATA/tests')
 export let userRepository: Repository<User>
 export let bucketRepository: Repository<Bucket>
+export let blobRepository: Repository<Blob>
 export let token: string
 export let userToken: User | undefined
 export const getData = async (url, options) => {
@@ -42,6 +45,7 @@ beforeAll(async () => {
   connection = await connection.synchronize(true).then(async () => {
     userRepository = await connection.getRepository(User)
     bucketRepository = await connection.getRepository(Bucket)
+    blobRepository = await connection.getRepository(Blob)
   })
   return await [userRepository, bucketRepository]
 })
@@ -100,7 +104,7 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/ describe(':: CheckRole routes tests', checkRole)
 /*===*/ describe(':: User public routes tests', userPublicRoutes)
 /*===*/
-/*===*/ describe(':: Authentication for tests', ():void => {
+/*===*/ describe(':: Authentication for tests setup', ():void => {
 /*===*/  it('LOGS IN successfully', async done => {
 /*===*/    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
 /*===*/    const data = 'nickname=john&password=doe'
@@ -133,6 +137,7 @@ describe(':: Database & Environment initialization', (): void => {
 /*===*/ describe(':: Authentifier tests', authentifier)
 /*===*/ describe(':: FileManager tests', filemanager)
 /*===*/ describe(':: Bucket secured routes tests', bucketSecuredRoutes)
+/*===*/ describe(':: Blob secured routes tests', blobSecuredRoutes)
 /*===*/ describe(':: User secured routes tests', userSecuredRoutes)
 /*===*/ describe(':: Mailing tests', mail)
 /*=================================================*/

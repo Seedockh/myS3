@@ -16,6 +16,72 @@ const userSecuredRoutes = (): void => {
     })
   })
 
+  it('GETS one user', done => {
+    getData("http://localhost:7331/user/get",
+    { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(result.nickname).equals('john')
+      expect(result.email).equals('johndoe@gmail.com')
+      expect(result.password).equals(undefined)
+      done()
+    })
+  })
+
+  it('FAILS to get one user without token', async done => {
+    const getUser = await UserController.getUser(
+      { headers: { } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(getUser.message).equals("ERROR : Missing Bearer token in your Authorizations")
+    done()
+  })
+
+  it('FAILS to get one user with wrong token', async done => {
+    const falseToken: string = jwt.sign(
+      { userId: 'cd1efe69-6735-403b-a47d-f585042d271e', username: 'johnny' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' },
+    )
+    const getUser = await UserController.getUser(
+      { headers: { authorization: `Bearer ${falseToken}`} },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(getUser).equals("ERROR: User doesn't exists in database")
+    done()
+  })
+
+  it('GETS user buckets', done => {
+    getData("http://localhost:7331/user/getBuckets",
+    { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(JSON.stringify(result)).equals(JSON.stringify({ list: ["blobbucket"] }))
+      done()
+    })
+  })
+
+  it('FAILS to get user buckets without token', async done => {
+    const getBuckets = await UserController.getBuckets(
+      { headers: { } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(getBuckets.message).equals("ERROR : Missing Bearer token in your Authorizations")
+    done()
+  })
+
+  it('FAILS to get user buckets with wrong token', async done => {
+    const falseToken: string = jwt.sign(
+      { userId: 'cd1efe69-6735-403b-a47d-f585042d271e', username: 'johnny' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' },
+    )
+    const getUser = await UserController.getBuckets(
+      { headers: { authorization: `Bearer ${falseToken}`} },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(getUser).equals("ERROR: User doesn't exists in database")
+    done()
+  })
+
   it('UPDATES the previously created user successfully', done => {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
