@@ -7,18 +7,44 @@ https://mys3.mhirba.now.sh/
 # Description
 The goal here is to recreate an **`AWS S3`** docker container, working only locally, using **TypeScript** and **TypeORM**.
 
-# Server-side Environment
+# Databases
 
 We're actually using **PostgreSQL** for handling databases.
 
-For mailing, we're using `gmail` system so you'll need to use one of your **`Gmail`** address & password, and make sure you **_Grant the access to less secured applications_** in your Account Management panel / Security tab.
+You will need to create 2 databases : 
+  - 1 for **dev** environment
+  - 1 for **testing** environment
+  
+For convenience, we advise you to name your database this way :
+  - **dev** : `mys3`
+  - **testing** : `test_mys3`
+
+You can provide both `dev & testing` database names in environment files :
+```console
+DB_DATABASE= your_postgres_dev_or_test_database_name
+```
+
+# Mailing service
+
+For mailing, we're using `gmail` system. You'll need to use :
+- One of your **`Gmail`** address
+- The associated password
+- Make sure you **_Grant the access to less secured applications_** in your Account Management panel / Security tab
+
+You can provide both `email & password` in environment files :
+```console
+MAIL_USER = one_of_your_gmail_address
+MAIL_PASSWORD = one_of_your_gmail_password
+```
+
+# Server-side Environment
 
 You'll need 2 environment files :
 - **.env.dev**
 - **.env.testing**
 
 Each one will follow this structure :
-```env
+```console
 NODE_ENV = dev_or_test
 DB_HOST = localhost
 DB_USER = your_postgres_user
@@ -31,32 +57,36 @@ MAIL_PASSWORD = one_of_your_gmail_password
 ```
 
 Server can now be started with :
-```
+```console
 yarn dev
 ```
 
 # Client-side Environment
 
 The client is located at `/mys3-client/` and can be started with :
-```bash
+```console
 npm install
-  #or
+#or
 yarn install
 
 yarn serve
 ```
 
-It will be launched at http://localhost:8081/ with **VueJS**
+It will be launched at http://localhost:8081/ with **VueJS** :
+![https://image.noelshack.com/fichiers/2020/02/1/1578272919-screenshot-from-2020-01-06-02-08-16.png](https://image.noelshack.com/fichiers/2020/02/1/1578272919-screenshot-from-2020-01-06-02-08-16.png)
 
 
 # Testing Environment
 
-To run our testsuite, server (`yarn dev`) needs to be shut down.
+To run our testsuite, the **dev server** (`yarn dev`) needs to be **`shut down`** (with **`CTRL+C`** for instance).
 
-Once it is (with **`CTRL+C`** for instance), you can run on root directory :
-```
+Once it is closed, you can run this command in root directory :
+```console
 yarn test
 ```
+
+This project has a **100% Tests coverage** :
+![https://image.noelshack.com/fichiers/2020/02/1/1578272721-screenshot-from-2020-01-06-02-04-58.png](https://image.noelshack.com/fichiers/2020/02/1/1578272721-screenshot-from-2020-01-06-02-04-58.png)
 
 # Steps
 ### .step_01
@@ -112,5 +142,5 @@ yarn test
 - [ ] Front : PRPL
 
 ### required
-- [ ] Make sure test coverage is 100%
+- [X] Make sure test coverage is 100%
 - [X] Don't forget to add .crew and .oav.name files
