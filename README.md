@@ -24,6 +24,16 @@ You can provide both `dev & testing` database names in environment files :
 DB_DATABASE= your_postgres_dev_or_test_database_name
 ```
 
+## Windows Setup
+
+On Windows, you might need to make sure of 2 steps :
+- Create a SUPERUSER to manage your tables, like so : `psql -U postgres -c "CREATE ROLE mys3 LOGIN SUPERUSER INHERIT CREATEDB CREATEROLE;" mys3`
+- Or if you need to update it to SUPERUSER : `psql -U postgres -c "ALTER ROLE mys3 WITH SUPERUSER"`
+- You might also need to install `uuid-ossp`, compulsory for our project. To do so, just CREATE the extension like so :
+   ```SQL
+   CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+   ```
+
 # Mailing service
 
 For mailing, we're using `gmail` system. You'll need to use :
