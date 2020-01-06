@@ -47,7 +47,7 @@ beforeAll(async () => {
     bucketRepository = await connection.getRepository(Bucket)
     blobRepository = await connection.getRepository(Blob)
   })
-  return await [userRepository, bucketRepository]
+  return await [userRepository, bucketRepository, blobRepository]
 })
 
 afterAll(async () => {
