@@ -139,13 +139,11 @@ class BlobController {
           blob.path = destination
           blob.size = size
           blob.bucket = bucket
-          return blobRepository
-            .save(blob)
-            .then(
-              (result): Response => {
-                return res.send(result)
-              },
-            )
+          return blobRepository.save(blob).then(
+            (result): Response => {
+              return res.send(result)
+            },
+          )
         },
       )
     } else {
@@ -192,13 +190,11 @@ class BlobController {
       copyBlob.path = blob.path
       copyBlob.size = blob.size
       copyBlob.bucket = blob.bucket
-      return blobRepository
-        .save(copyBlob)
-        .then(
-          (result): Response => {
-            return res.send(result)
-          },
-        )
+      return blobRepository.save(copyBlob).then(
+        (result): Response => {
+          return res.send(result)
+        },
+      )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
