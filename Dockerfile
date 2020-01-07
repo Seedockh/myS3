@@ -9,8 +9,8 @@ WORKDIR /home/app/
 RUN npm install -g yarn
 COPY package.json .
 ADD . /home/app/
-RUN npm install
-RUN cd ./mys3-client && npm install
+RUN npm install --silent
+RUN cd ./mys3-client && npm install --silent
 EXPOSE 1337 8181
 
 COPY ./docker/start.sh /home/app/start.sh
