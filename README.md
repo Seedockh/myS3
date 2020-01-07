@@ -7,7 +7,7 @@ https://mys3.mhirba.now.sh/
 # Description
 The goal here is to recreate an **`AWS S3`** docker container, working only locally, using **TypeScript** and **TypeORM**.
 
-# Run with Docker
+# Run with Docker-Compose
 
 **`Dockerfile`** and **`docker-compose.yml`** are configured so you don't have any database configuration to deal with.
 
@@ -39,8 +39,8 @@ Then both server & client will be accessible :
   - Server on http://localhost:1337
   - Client on http://localhost:8181
 
-
-# Databases
+# Run manually
+## Databases
 
 We're actually using **PostgreSQL** for handling databases.
 
@@ -57,7 +57,7 @@ You can provide both `dev & testing` database names in environment files :
 DB_DATABASE= your_postgres_dev_or_test_database_name
 ```
 
-## Windows Setup
+### Windows Setup
 
 On Windows, you might need to make sure of 2 steps :
 - Create a SUPERUSER to manage your tables, like so : `psql -U postgres -c "CREATE ROLE mys3 LOGIN SUPERUSER INHERIT CREATEDB CREATEROLE;" mys3`
@@ -67,7 +67,7 @@ On Windows, you might need to make sure of 2 steps :
    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
    ```
 
-# Mailing service
+## Mailing service
 
 For mailing, we're using `gmail` system. You'll need to use :
 - One of your **`Gmail`** address
@@ -80,7 +80,7 @@ MAIL_USER = one_of_your_gmail_address
 MAIL_PASSWORD = one_of_your_gmail_password
 ```
 
-# Server-side Environment
+## Server-side Environment
 
 You'll need 2 environment files :
 - **.env.dev**
@@ -104,7 +104,7 @@ Server can now be started with :
 yarn dev
 ```
 
-# Client-side Environment
+## Client-side Environment
 
 The client is located at `/mys3-client/` and can be started with :
 ```console
@@ -119,7 +119,7 @@ It will be launched at http://localhost:8081/ with **VueJS** :
 ![https://image.noelshack.com/fichiers/2020/02/1/1578272919-screenshot-from-2020-01-06-02-08-16.png](https://image.noelshack.com/fichiers/2020/02/1/1578272919-screenshot-from-2020-01-06-02-08-16.png)
 
 
-# Testing Environment
+## Testing Environment
 
 To run our testsuite, the **dev server** (`yarn dev`) needs to be **`shut down`** (with **`CTRL+C`** for instance).
 
@@ -136,7 +136,7 @@ This project has a **100% Tests coverage** :
 - [X] Bootstrap an API server using express and typeORM with Typescript + Babel
 - [X] You HAVE TO use snakecase and lowercase table names
 - [X] Setup tests with **Jest**
-- [ ] Setup docker container
+- [X] Setup docker container
 
 ### .step_02
 - [X] A user is described with: uuid, nickname, email, password
