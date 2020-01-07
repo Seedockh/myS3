@@ -40,7 +40,9 @@ export const getData = async (url, options) => {
 
 /*------------------------------------------------*/
 beforeAll(async () => {
+  // This condition is only useful for Docker image
   if (process.env.NODE_ENV==='dev') process.env.NODE_ENV = 'test'
+  
   testServer = await app.listen(7331)
   connection = await createConnection()
   connection = await connection.synchronize(true).then(async () => {
