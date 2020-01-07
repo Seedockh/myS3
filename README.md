@@ -17,15 +17,15 @@ You'll just need 2 environment files :
 
 Each one will follow this structure :
 ```console
-NODE_ENV = dev_or_test
+NODE_ENV=dev_or_test
 DB_HOST=localhost
 DB_USER=mys3
 DB_PASSWORD=mys3
 DB_DATABASE=mys3_or_test_mys3
 DB_PORT=5432
-JWT_SECRET = some_secret
-MAIL_USER = one_of_your_gmail_address
-MAIL_PASSWORD = one_of_your_gmail_password
+JWT_SECRET=some_secret
+MAIL_USER=one_of_your_gmail_address
+MAIL_PASSWORD=one_of_your_gmail_password
 ```
 
 Once you have your 2 `.env` files, you're good to build & run the docker image :
@@ -88,15 +88,15 @@ You'll need 2 environment files :
 
 Each one will follow this structure :
 ```console
-NODE_ENV = dev_or_test
-DB_HOST = localhost
-DB_USER = your_postgres_user
-DB_PASSWORD = your_postgres_password
-DB_DATABASE= your_postgres_dev_or_test_database_name
-DB_PORT = 5432
-JWT_SECRET = some_secret
-MAIL_USER = one_of_your_gmail_address
-MAIL_PASSWORD = one_of_your_gmail_password
+NODE_ENV=dev_or_test
+DB_HOST=localhost
+DB_USER=your_postgres_user
+DB_PASSWORD=your_postgres_password
+DB_DATABASE=your_postgres_dev_or_test_database_name
+DB_PORT=5432
+JWT_SECRET=some_secret
+MAIL_USER=one_of_your_gmail_address
+MAIL_PASSWORD=one_of_your_gmail_password
 ```
 
 Server can now be started with :
