@@ -1,23 +1,18 @@
 FROM node:12-alpine
 
 USER root
-RUN npm install -g yarn
-ENV NODE_ENV dev
+ADD ./docker/initdb.sql /docker-entrypoint-initdb.d
+
+WORKDIR /home/app/
 
 # Setup server
-WORKDIR /home/app/mys3-server
+RUN npm install -g yarn
 COPY package.json .
+ADD . /home/app/
 RUN npm install
-ADD . /home/app/mys3-server
-CMD ["yarn", "dev"]
-EXPOSE 1337
+RUN cd ./mys3-client && npm install
+EXPOSE 1337 8181
 
-#RUN cd ./mys3-client/
-
-# Setup client
-#WORKDIR /home/app/mys3-client
-#COPY mys3-client/package.json .
-#RUN npm install
-#ADD ./mys3-client /home/app/mys3-client
-#CMD ["yarn", "serve"]
-#EXPOSE 8181
+COPY ./docker/start.sh /home/app/start.sh
+RUN chmod +x /home/app/start.sh
+CMD /bin/sh /home/app/start.sh
