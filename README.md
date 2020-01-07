@@ -7,14 +7,47 @@ https://mys3.mhirba.now.sh/
 # Description
 The goal here is to recreate an **`AWS S3`** docker container, working only locally, using **TypeScript** and **TypeORM**.
 
+# Run with Docker
+
+**`Dockerfile`** and **`docker-compose.yml`** are configured so you don't have any database configuration to deal with.
+
+You'll just need 2 environment files :
+- **.env.dev**
+- **.env.testing**
+
+Each one will follow this structure :
+```console
+NODE_ENV = dev_or_test
+DB_HOST=localhost
+DB_USER=mys3
+DB_PASSWORD=mys3
+DB_DATABASE=mys3_or_test_mys3
+DB_PORT=5432
+JWT_SECRET = some_secret
+MAIL_USER = one_of_your_gmail_address
+MAIL_PASSWORD = one_of_your_gmail_password
+```
+
+Once you have your 2 `.env` files, you're good to build & run the docker image :
+```console
+sudo docker-compose up --build
+```
+
+  `Note : Tests suite will run during the build so you can check if everything is alright and well covered.`
+
+Then both server & client will be accessible :
+  - Server on http://localhost:1337
+  - Client on http://localhost:8181
+
+
 # Databases
 
 We're actually using **PostgreSQL** for handling databases.
 
-You will need to create 2 databases : 
+You will need to create 2 databases :
   - 1 for **dev** environment
   - 1 for **testing** environment
-  
+
 For convenience, we advise you to name your database this way :
   - **dev** : `mys3`
   - **testing** : `test_mys3`
