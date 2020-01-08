@@ -16,9 +16,11 @@
 <script>
 import axios from 'axios'
 import querystring from 'querystring'
+import tokenManager from '../../mixins/tokenManager'
 
 export default {
   name: 'Login',
+  mixins: [tokenManager],
   props: {
     reloadToken: { type: Function }
   },
@@ -41,8 +43,7 @@ export default {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       ).then( result => {
-        localStorage.token = result.data.token
-        return this.$router.push({ name: 'home' })
+        this.createToken(result.data.token)
       }).catch( error => {
         this.error = error.response.data.message
       })

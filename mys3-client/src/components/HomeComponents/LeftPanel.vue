@@ -8,13 +8,14 @@
       </li>
     </ul>
     <ul class="buckets-list" v-if="depth>=1">
-      <li v-for="(folder, index) in currentFolders" @click="selected = index; selectedBucket = folder; editBucket = true" :class="{selected: index === selected}" v-bind:key="folder">
+      <li v-for="(folder, index) in currentFolders" @click="handleChangeBucket(folder,index)"
+        :class="{selected: index === selectedIndex}" v-bind:key="folder">
         <img src="../../assets/folder-icon.png" alt="folder picture">
         <span v-on:click="getBlobs">{{ folder }}</span>
         <img v-on:click="deleteBucket" src="../../assets/delete-icon.png" class="delete-icon" alt="folder picture">
       </li>
     </ul>
-    <button type="button" name="logout" class="btn-submit" v-on:click="logout">Logout</button>
+    <button type="button" name="logout" class="btn-submit" v-on:click="destroyToken">Logout</button>
   </div>
 </template>
 
@@ -22,21 +23,24 @@
   import axios from 'axios'
   import querystring from 'querystring'
   import swal from 'sweetalert'
+  import tokenManager from '../../mixins/tokenManager'
 
   export default {
     name: 'LeftPanel',
-    // mixins: [listFolders(0)],
+    mixins: [tokenManager],
     props: ['result'],
     data() {
       return {
+        token: null,
         depth: 0,
         currentFolders: [],
         editBucket: false,
-        selected: null,
+        selectedIndex: null,
         selectedBucket: null,
       }
     },
-    mounted() {
+    async mounted() {
+      this.token = await this.getToken()
       this.$root.$on('sendDataToLeftPanelComponent', bucket => {
         this.editBucket = false
         if (bucket.new)
@@ -46,19 +50,24 @@
       })
     },
     methods: {
-      logout() {
-        localStorage.removeItem('token')
-        this.$router.push({ name: 'login' })
+      handleChangeBucket(folder, index) {
+        if (this.selectedIndex === index && this.selectedBucket === folder)
+          this.editBucket = true
+        else this.editBucket = false
+        
+        this.selectedIndex = index
+        this.selectedBucket = folder
       },
 
-      getBuckets() {
+      async getBuckets() {
+        this.token = await this.getToken()
         if (this.depth === 0) {
           axios.get(
             // URL
             'http://localhost:1337/user/getBuckets',
             // HEADERS
             {
-              headers: { 'Authorization': `Bearer ${localStorage.token}` }
+              headers: { 'Authorization': `Bearer ${this.token}` }
             }
           ).then( result => {
             this.depth++
@@ -69,17 +78,14 @@
             })
             return this.currentFolders = result.data.list
           }).catch( error => {
-            if (error.response.status === 403)
-              return this.$router.push({ name: 'login' })
             swal(error.response.data.message, {
               icon: "error",
             })
           })
         }
 
-        if (this.depth === 1 && this.selected === null) {
+        if (this.depth === 1 && this.selectedIndex === null) {
           this.depth--
-          this.selected = null
           this.editBucket = false
           this.$root.$emit('sendDataToFileListComponent', {
             list: null,
@@ -89,8 +95,8 @@
           return this.currentFolders = []
         }
 
-        if (this.depth === 1 && this.selected >= 0) {
-          this.selected = null
+        if (this.depth === 1 && this.selectedIndex >= 0) {
+          this.selectedIndex = null
           this.editBucket = false
           return this.$root.$emit('sendDataToFileListComponent', {
             list: null,
@@ -103,7 +109,8 @@
       /**
        * @implements Optimistic UI
        */
-      renameBucket(name) {
+      async renameBucket(name) {
+        this.token = await this.getToken()
         if (name === '' || !name) return
         name = name.replace(/ /g, '-')
 
@@ -124,7 +131,7 @@
           {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              'Authorization': `Bearer ${localStorage.token}`
+              'Authorization': `Bearer ${this.token}`
             }
           }
         ).then( result => {
@@ -141,9 +148,6 @@
             this.getBuckets()
           }
         }).catch( error => {
-          if (error.response.status === 403)
-            return this.$router.push({ name: 'login' })
-
           swal(error.response.data, {
             icon: "error",
           })
@@ -153,7 +157,8 @@
       /**
        * @implements Optimistic UI
        */
-      deleteBucket() {
+      async deleteBucket() {
+        this.token = await this.getToken()
         swal(
           'Are you sure you want to delete this bucket ?',
           {
@@ -171,16 +176,13 @@
               `http://localhost:1337/bucket/delete/${this.selectedBucket}`,
               // HEADERS
               {
-                headers: { 'Authorization': `Bearer ${localStorage.token}` }
+                headers: { 'Authorization': `Bearer ${this.token}` }
               }
             ).then(() => {
               swal(`Bucket deleted successfully !`, {
                 icon: "success",
               })
             }).catch(error => {
-              if (error.response.status === 403)
-                return this.$router.push({ name: 'login' })
-
               // OPTIMISTIC FAILED
               this.currentFolders = bucketsBackup
               this.getBuckets()
@@ -190,12 +192,32 @@
         })
       },
 
-      getBlobs(bucket) {
+      async getBlobs(bucket) {
+        this.token = await this.getToken()
         if (typeof bucket === 'object')
           bucket = bucket.toElement.innerText.trim()
 
-        // Bucket is already selected when clicked
-        if (this.editBucket && bucket === this.selectedBucket) {
+        // If Bucket is not already selected when clicked
+        if (!this.editBucket) {
+          this.editBucket = true
+          axios.get(
+            // URL
+            `http://localhost:1337/bucket/listFiles/${bucket}`,
+            // HEADERS
+            {
+              headers: { 'Authorization': `Bearer ${this.token}` }
+            }
+          ).then( result => {
+            return this.$root.$emit('sendDataToFileListComponent', {
+              list: result.data,
+              userId: this.result.id,
+              bucketName: bucket,
+            })
+          }).catch( error => {
+              return swal(error.response.data.message, { icon: "warning" })
+          })
+        // If Bucket is already selected when clicked
+        } else if (this.editBucket) {
           swal('Rename your bucket :', {
             content: {
               element: "input",
@@ -208,26 +230,6 @@
           }).then( newName => {
             this.renameBucket(newName)
             this.editBucket = false
-          })
-        } else {
-          axios.get(
-            // URL
-            `http://localhost:1337/bucket/listFiles/${bucket}`,
-            // HEADERS
-            {
-              headers: { 'Authorization': `Bearer ${localStorage.token}` }
-            }
-          ).then( result => {
-            return this.$root.$emit('sendDataToFileListComponent', {
-              list: result.data,
-              userId: this.result.id,
-              bucketName: bucket,
-            })
-          }).catch( error => {
-            if (error.response.status === 403)
-              return this.$router.push({ name: 'login' })
-
-              return swal(error.response.data.message, { icon: "warning" })
           })
         }
       }

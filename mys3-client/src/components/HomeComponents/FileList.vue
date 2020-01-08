@@ -43,9 +43,11 @@
 import axios from 'axios'
 import querystring from 'querystring'
 import swal from 'sweetalert'
+import tokenManager from '../../mixins/tokenManager'
 
 export default {
   name: 'FileList',
+  mixins: [tokenManager],
   data() {
     return {
       list: null,
@@ -55,7 +57,8 @@ export default {
       newBucket: '',
     }
   },
-  mounted() {
+  async mounted() {
+    this.token = await this.getToken()
     this.$root.$on('sendDataToFileListComponent', data => {
       this.list = data.list
       this.userId = data.userId
@@ -70,9 +73,9 @@ export default {
     /**
      * @implements Optimistic UI
      */
-    createBucket() {
+    async createBucket() {
+      this.token = await this.getToken()
       if (!this.newBucket) return swal(`No name specified !`, { icon: "warning" })
-
       this.newBucket = this.newBucket.replace(/ /g, '-')
 
       // OPTIMISTIC DATA SENT FOR NEW BUCKET
@@ -86,7 +89,7 @@ export default {
         // HEADERS
         { headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Bearer ${localStorage.token}`
+            'Authorization': `Bearer ${this.token}`
           }
         }).then( () => {
           // NOTHING MORE TO DO HERE BECAUSE OPTIMISM :)
@@ -95,9 +98,6 @@ export default {
           })
         })
         .catch( error => {
-          if (error.response.status === 403)
-            return this.$router.push({ name: 'login' })
-
           // LEFT PANEL WILL UPDATE ACCORDING TO THE DB SO NOTHING MORE TO SEND HERE
           if (/duplicate key value violates unique constraint/g.test(error.response.data.message))
             return swal('Bucket with this name already exists !', { icon: "warning" })
@@ -110,10 +110,12 @@ export default {
       this.file = this.$refs.file.files[0]
     },
 
-    uploadFile() {
+    async uploadFile() {
+      this.token = await this.getToken()
       if (!this.file) return swal(`No file selected !`, { icon: "warning" })
       const formData = new FormData()
       formData.append('mys3-upload', this.file)
+
       axios.post(
         // URL
         `http://localhost:1337/blob/add/${this.selectedBucket}`,
@@ -122,7 +124,7 @@ export default {
         // HEADERS
         { headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${localStorage.token}`
+            'Authorization': `Bearer ${this.token}`
           }
         }).then( result => {
           swal(`File ${result.data.name} uploaded successfully !`, {
@@ -131,20 +133,18 @@ export default {
           this.$root.$emit('sendDataToLeftPanelComponent', this.selectedBucket)
         })
         .catch( error => {
-          if (error.response.status === 403)
-            return this.$router.push({ name: 'login' })
-
           return swal(error.response.data.message, { icon: "warning" })
         })
     },
 
-    downloadFile(id) {
+    async downloadFile(id) {
+      this.token = await this.getToken()
       axios.get(
         // URL
         `http://localhost:1337/blob/retrieve/${id}`,
         // HEADERS
         {
-          headers: { 'Authorization': `Bearer ${localStorage.token}` },
+          headers: { 'Authorization': `Bearer ${this.token}` },
           responseType: 'arraybuffer',
         }
       ).then( result => {
@@ -153,7 +153,7 @@ export default {
           `http://localhost:1337/blob/getInfos/${id}`,
           // HEADERS
           {
-            headers: { 'Authorization': `Bearer ${localStorage.token}` },
+            headers: { 'Authorization': `Bearer ${this.token}` },
           }
         ).then( blobInfos => {
           const url = window.URL.createObjectURL(new Blob([result.data]))
@@ -162,28 +162,22 @@ export default {
           link.setAttribute('download', blobInfos.data.name)
           document.body.appendChild(link)
           link.click()
-
         }).catch( error => {
-          if (error.response.status === 403)
-            return this.$router.push({ name: 'login' })
-
             return swal(error.response.data.message, { icon: "warning" })
         })
       }).catch( error => {
-        if (error.response.status === 403)
-          return this.$router.push({ name: 'login' })
-
           return swal(error.response.data.message, { icon: "warning" })
       })
     },
-    duplicateFile(id) {
+    async duplicateFile(id) {
+      this.token = await this.getToken()
       axios.post(
         // URL
         `http://localhost:1337/blob/duplicate/${id}`,
         {},
         // HEADERS
         { headers: {
-            'Authorization': `Bearer ${localStorage.token}`
+            'Authorization': `Bearer ${this.token}`
           }
         }).then( result => {
           swal(`File ${result.data.name} successfully created !`, {
@@ -192,13 +186,11 @@ export default {
           this.$root.$emit('sendDataToLeftPanelComponent', this.selectedBucket)
         })
         .catch( error => {
-          if (error.response.status === 403)
-            return this.$router.push({ name: 'login' })
-
           return swal(error.response.data.message, { icon: "warning" })
         })
     },
-    deleteFile(id) {
+    async deleteFile(id) {
+      this.token = await this.getToken()
       swal(
         'Are you sure you want to delete this file ?',
         {
@@ -211,7 +203,7 @@ export default {
             `http://localhost:1337/blob/delete/${id}`,
             // HEADERS
             {
-              headers: { 'Authorization': `Bearer ${localStorage.token}` }
+              headers: { 'Authorization': `Bearer ${this.token}` }
             }
           ).then(() => {
             swal(`File deleted successfully !`, {
@@ -219,8 +211,6 @@ export default {
             })
             this.$root.$emit('sendDataToLeftPanelComponent', this.selectedBucket)
           }).catch(error => {
-            if (error.response.status === 403)
-              return this.$router.push({ name: 'login' })
             return swal(error.response.data.message, { icon: "warning" })
           })
         }

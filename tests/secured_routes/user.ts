@@ -4,6 +4,39 @@ import * as jwt from 'jsonwebtoken'
 import UserController from '../../src/controllers/UserController'
 
 const userSecuredRoutes = (): void => {
+  it('CHECKS that token is correct', done => {
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // This is a temporary data encoding solution because JSON problems
+    const data = `token=${token}`
+    getData(`http://localhost:7331/checktoken`, { method: 'POST', headers: headers, body: data})
+    .then(result => {
+      expect(result.valid).equals(true)
+      done()
+    })
+  })
+
+  it('FAILS to check that fake token is correct', done => {
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // This is a temporary data encoding solution because JSON problems
+    const data = `token=${token}e`
+    getData(`http://localhost:7331/checktoken`, { method: 'POST', headers: headers, body: data})
+    .then(result => {
+      expect(result.valid).equals(false)
+      done()
+    })
+  })
+
+  it('GETS one user', done => {
+    getData("http://localhost:7331/user/get",
+    { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
+    .then(result => {
+      expect(result.nickname).equals('john')
+      expect(result.email).equals('johndoe@gmail.com')
+      expect(result.password).equals(undefined)
+      done()
+    })
+  })
+
   it('READS the previously created user successfully', done => {
     getData("http://localhost:7331/user/getAll",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })

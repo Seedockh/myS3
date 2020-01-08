@@ -18,7 +18,7 @@ export const checkJwt = (
     jwt.verify(token, process.env.JWT_SECRET, (err, authorizedData) => {
       if (err) {
         // If error
-        res.status(403).send({ message: 'ERROR: Wrong token sent' })
+        res.status(403).send({ message: 'Your session has expired !' })
       } else {
         // If token is successfully verified
         jwtPayload = authorizedData
