@@ -378,7 +378,7 @@ export default {
   #filelist-container {
     width: 100%;
     padding: 1em 0;
-    min-height: 50%;
+    max-height: 50%;
   }
   .list-section, .create-bucket-form, .upload-blob-form {
     max-width: 100%;
