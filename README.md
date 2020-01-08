@@ -163,7 +163,7 @@ This project has a **100% Tests coverage** :
 
 ### .step_05
 - [X] Create a simple web interface with Vue 😎
-- [ ] Optimistic UI : make UI responding instantaneously generating front before backend response, display will change only if response is different than front UI
+- [X] Optimistic UI : make UI responding instantaneously generating front before backend response, display will change only if response is different than front UI
 
 ### .step_06
 - [X] Your client has to handle all user API actions. _From the authentication to the upload through browsing buckets and files_

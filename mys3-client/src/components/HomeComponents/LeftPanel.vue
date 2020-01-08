@@ -1,7 +1,7 @@
 <template>
   <div id="leftpanel-container">
-    <p class="leftpanel-title">Logged in as : {{ this.result.nickname }}</p>
-    <ul>
+    <p class="leftpanel-title">{{ this.result.nickname }}</p>
+    <ul class="userid">
       <li v-on:click="getBuckets">
         <img src="../../assets/folder-icon.png" alt="folder picture">
         {{ this.result.id }}
@@ -52,7 +52,6 @@
       },
 
       getBuckets() {
-        this.error = undefined
         if (this.depth === 0) {
           axios.get(
             // URL
@@ -101,8 +100,19 @@
         }
       },
 
+      /**
+       * @implements Optimistic UI
+       */
       renameBucket(name) {
         if (name === '' || !name) return
+        name = name.replace(/ /g, '-')
+
+        // OPTIMISTIC RENAME
+        this.currentFolders[this.currentFolders.indexOf(this.selectedBucket)] = name
+        const optimisticName = this.currentFolders[this.currentFolders.indexOf(this.selectedBucket)]
+        this.getBuckets()
+
+        // FETCHING REAL DATA
         axios.put(
           // URL
           `http://localhost:1337/bucket/edit/${this.selectedBucket}`,
@@ -118,12 +128,18 @@
             }
           }
         ).then( result => {
-          swal(`Bucket successfully renamed to ${result.data.name} !`, {
-            icon: "success",
-          })
-          this.depth = 0
-          this.selected = null
-          this.getBuckets()
+          // IF PREDICTION WAS TRUE
+          if (result.data.name !== optimisticName) {
+            swal(`Bucket successfully renamed to ${result.data.name} !`, {
+              icon: "success",
+            })
+          } else {
+            // IF NAME HAS BEEN FORMATTED
+            swal(`Bucket successfully renamed, but to ${result.data.name} !`, {
+              icon: "warning",
+            })
+            this.getBuckets()
+          }
         }).catch( error => {
           if (error.response.status === 403)
             return this.$router.push({ name: 'login' })
@@ -134,6 +150,9 @@
         })
       },
 
+      /**
+       * @implements Optimistic UI
+       */
       deleteBucket() {
         swal(
           'Are you sure you want to delete this bucket ?',
@@ -143,6 +162,11 @@
           }
         ).then( confirm => {
           if (confirm) {
+            // OPTIMISTIC DELETE
+            const bucketsBackup = this.currentFolders
+            this.currentFolders.splice(this.currentFolders.indexOf(this.selectedBucket), 1)
+            this.getBuckets()
+
             axios.delete(
               `http://localhost:1337/bucket/delete/${this.selectedBucket}`,
               // HEADERS
@@ -153,12 +177,13 @@
               swal(`Bucket deleted successfully !`, {
                 icon: "success",
               })
-              this.depth = 0
-              this.selected = null
-              this.getBuckets()
             }).catch(error => {
               if (error.response.status === 403)
                 return this.$router.push({ name: 'login' })
+
+              // OPTIMISTIC FAILED
+              this.currentFolders = bucketsBackup
+              this.getBuckets()
               return swal(error.response.data.message, { icon: "warning" })
             })
           }
@@ -213,19 +238,33 @@
 <style scoped>
 #leftpanel-container {
   position: relative;
-  width: 200px;
+  width: 300px;
   min-height: 100%;
-  float: left;
-  background: rgba(25,25,25,1);
-  padding: 0 1em 0 1em;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0,0,0,1);
+  padding: 0;
   border-radius: 7px 0 0 7px;
+  border-bottom: 1px solid #193d63;
+  border-right: 1px solid #193d63;
+}
+
+.userid {
+  margin: 0;
+  border-bottom: 1px solid #193d63;
+  cursor: pointer;
+  min-height: 50px;
 }
 
 .leftpanel-title {
+  background: rgba(11,156,49,0.7);
   font-weight: bold;
   border-bottom: 1px solid #193d63;
-  padding-bottom: .5em;
-  margin-top: 3em;
+  padding: 1em;
+  margin-top: 0;
+  border-radius: 7px 0 0 0;
+  text-align: center;
 }
 
 ul {
@@ -235,19 +274,29 @@ ul {
 li {
   width: 100%;
   margin-left: -2em;
-  padding: .3em .5em;
+  margin-bottom: .5em;
+  padding: .5em .5em;
   border-radius: 3px;
   white-space: pre-line;
-  cursor: pointer;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   position: relative;
 }
+  .buckets-list li:hover {
+    background: rgba(50,68,108,1);
+  }
   li img {
     width: 10px;
     height: 10px;
     margin-right: .5em
+  }
+  li span {
+    cursor: pointer;
+    position: absolute;
+    padding-left: 1.7em;
+    left: 0;
+    width: 90%;
   }
   li span:hover {
     font-size: 17px;
@@ -261,7 +310,8 @@ li {
 
 .buckets-list {
   margin-left: 1em;
-  max-height: 50%;
+  margin-bottom: 3.5em;
+  max-height: 100%;
   overflow: scroll;
     -ms-overflow-style: none;
   }
@@ -304,18 +354,30 @@ li {
   background-color: red;
 }
 
+@media screen and (max-with: 767px) {
+  #leftpanel-container {
+    width: 200px;
+  }
+}
+
 @media screen and (max-width: 640px) {
   #leftpanel-container {
     position: inherit;
     padding: 0;
-    float: left;
     width: 100%;
-    min-height: 100px;
+    min-height: 0;
+    max-height: 250px;
     border-radius: 7px 7px 0 0;
+    border-right: 0;
   }
   .leftpanel-title {
     padding: 1em;
     margin: 0;
+    border-radius: 0;
+    border: 0;
+  }
+  .userid {
+    padding-top: 1em;
   }
   ul {
     overflow-y: scroll;
@@ -325,8 +387,8 @@ li {
     display: none;
   }
   .buckets-list {
-    max-height: 100px;
-
+    max-height: 100%;
+    margin-bottom: 1em;
   }
   .btn-submit {
     height: 53px;
