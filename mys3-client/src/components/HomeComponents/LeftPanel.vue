@@ -52,7 +52,6 @@
       },
 
       getBuckets() {
-        this.error = undefined
         if (this.depth === 0) {
           axios.get(
             // URL
@@ -101,6 +100,9 @@
         }
       },
 
+      /**
+       * @implements Optimistic UI
+       */
       renameBucket(name) {
         if (name === '' || !name) return
         name = name.replace(/ /g, '-')
@@ -148,6 +150,9 @@
         })
       },
 
+      /**
+       * @implements Optimistic UI
+       */
       deleteBucket() {
         swal(
           'Are you sure you want to delete this bucket ?',
@@ -157,6 +162,11 @@
           }
         ).then( confirm => {
           if (confirm) {
+            // OPTIMISTIC DELETE
+            const bucketsBackup = this.currentFolders
+            this.currentFolders.splice(this.currentFolders.indexOf(this.selectedBucket), 1)
+            this.getBuckets()
+
             axios.delete(
               `http://localhost:1337/bucket/delete/${this.selectedBucket}`,
               // HEADERS
@@ -167,12 +177,13 @@
               swal(`Bucket deleted successfully !`, {
                 icon: "success",
               })
-              this.depth = 0
-              this.selected = null
-              this.getBuckets()
             }).catch(error => {
               if (error.response.status === 403)
                 return this.$router.push({ name: 'login' })
+
+              // OPTIMISTIC FAILED
+              this.currentFolders = bucketsBackup
+              this.getBuckets()
               return swal(error.response.data.message, { icon: "warning" })
             })
           }
@@ -229,6 +240,7 @@
   position: relative;
   width: 300px;
   min-height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   background: rgba(0,0,0,1);
@@ -298,7 +310,8 @@ li {
 
 .buckets-list {
   margin-left: 1em;
-  margin-bottom: 4em;
+  margin-bottom: 3.5em;
+  max-height: 100%;
   overflow: scroll;
     -ms-overflow-style: none;
   }

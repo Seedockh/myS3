@@ -67,10 +67,16 @@ export default {
       this.newBucket = this.$refs.newBucket.value
     },
 
+    /**
+     * @implements Optimistic UI
+     */
     createBucket() {
       if (!this.newBucket) return swal(`No name specified !`, { icon: "warning" })
 
       this.newBucket = this.newBucket.replace(/ /g, '-')
+
+      // OPTIMISTIC DATA SENT FOR NEW BUCKET
+      this.$root.$emit('sendDataToLeftPanelComponent', { new: this.newBucket })
 
       axios.post(
         // URL
@@ -83,15 +89,16 @@ export default {
             'Authorization': `Bearer ${localStorage.token}`
           }
         }).then( () => {
+          // NOTHING MORE TO DO HERE BECAUSE OPTIMISM :)
           swal(`Bucket ${this.newBucket} created successfully !`, {
             icon: "success",
           })
-          this.$root.$emit('sendDataToLeftPanelComponent', { new: this.newBucket })
         })
         .catch( error => {
           if (error.response.status === 403)
             return this.$router.push({ name: 'login' })
 
+          // LEFT PANEL WILL UPDATE ACCORDING TO THE DB SO NOTHING MORE TO SEND HERE
           if (/duplicate key value violates unique constraint/g.test(error.response.data.message))
             return swal('Bucket with this name already exists !', { icon: "warning" })
 
