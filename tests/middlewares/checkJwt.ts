@@ -18,7 +18,7 @@ const checkJwt = (): void => {
     getData("http://localhost:7331/user/getAll",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}ee` } })
     .then(result => {
-      expect(result.message).equals('ERROR: Wrong token sent')
+      expect(result.message).equals('Your session has expired !')
       done()
     })
   })
