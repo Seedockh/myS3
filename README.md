@@ -182,7 +182,7 @@ This project has a **100% Tests coverage** :
 
 ### bonus
 - [ ] Add bucket and|or blob sharing permission (read|write)
-- [ ] Front : PRPL
+- [X] Front : PRPL
 
 ### required
 - [X] Make sure test coverage is 100%
