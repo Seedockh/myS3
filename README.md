@@ -7,6 +7,53 @@ https://mys3.mhirba.now.sh/
 # Description
 The goal here is to recreate an **`AWS S3`** docker container, working only locally, using **TypeScript** and **TypeORM**.
 
+# Client Functionnalities
+
+### Register
+
+![https://image.noelshack.com/fichiers/2020/02/4/1578571970-screenshot-from-2020-01-09-13-12-40.png](https://image.noelshack.com/fichiers/2020/02/4/1578571970-screenshot-from-2020-01-09-13-12-40.png)
+
+### Login
+
+![https://image.noelshack.com/fichiers/2020/02/4/1578572012-screenshot-from-2020-01-09-13-13-21.png](https://image.noelshack.com/fichiers/2020/02/4/1578572012-screenshot-from-2020-01-09-13-13-21.png)
+
+### Create bucket
+
+By clicking on your user ID folder :
+![https://image.noelshack.com/fichiers/2020/02/4/1578572079-screenshot-from-2020-01-09-13-14-25.png](https://image.noelshack.com/fichiers/2020/02/4/1578572079-screenshot-from-2020-01-09-13-14-25.png)
+
+### Get Buckets
+
+By clicking on your user ID folder :
+![https://image.noelshack.com/fichiers/2020/02/4/1578572120-screenshot-from-2020-01-09-13-15-07.png](https://image.noelshack.com/fichiers/2020/02/4/1578572120-screenshot-from-2020-01-09-13-15-07.png)
+
+### Rename Bucket
+
+By clicking **twice** on your bucket folder :
+![https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-04-27.png](https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-04-27.png)
+
+### Delete Bucket
+
+![https://image.noelshack.com/fichiers/2020/02/4/1578572182-screenshot-from-2020-01-09-13-16-11.png](https://image.noelshack.com/fichiers/2020/02/4/1578572182-screenshot-from-2020-01-09-13-16-11.png)
+
+### Get Blobs
+
+By clicking on your bucket folder :
+![https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-03-40.png](https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-03-40.png)
+
+### Upload Blob
+
+![https://image.noelshack.com/fichiers/2020/02/4/1578572220-screenshot-from-2020-01-09-13-16-46.png](https://image.noelshack.com/fichiers/2020/02/4/1578572220-screenshot-from-2020-01-09-13-16-46.png)
+
+### Download & Duplicate & Delete Blob
+
+![https://image.noelshack.com/fichiers/2020/02/4/1578572255-screenshot-from-2020-01-09-13-17-25.png](https://image.noelshack.com/fichiers/2020/02/4/1578572255-screenshot-from-2020-01-09-13-17-25.png)
+
+### Generate Share Link
+
+By clicking on your blob :
+![https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-06-40.png](https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-06-40.png)
+
 # Run with Docker-Compose
 
 **`Dockerfile`** and **`docker-compose.yml`** are configured so you don't have any database configuration to deal with.
