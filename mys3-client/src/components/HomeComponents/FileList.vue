@@ -2,7 +2,7 @@
   <div id="filelist-container">
     <div v-if="list && list.files && list.files.length > 0" class="list-section">
       <div class="list-line" v-for="item in list.blobs" v-bind:key="item.id">
-        <div class="list-item">
+        <div class="list-item" @click="shareFile(item)">
           <p class="item-detail">{{ item.name }}</p>
           <p class="item-detail">{{ item.size/1000 }}kB</p>
         </div>
@@ -137,6 +137,10 @@ export default {
         })
     },
 
+    shareFile(item) {
+      console.log(item)
+    },
+
     async downloadFile(id) {
       this.token = await this.getToken()
       axios.get(
@@ -269,6 +273,7 @@ export default {
 
   .list-line .list-item {
     width: 80%;
+    cursor: grab;
   }
     .item-detail {
       text-align: center;
