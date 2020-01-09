@@ -7,6 +7,7 @@ import fs from 'fs'
 import FormData from 'form-data'
 import * as jwt from 'jsonwebtoken'
 import BlobController from '../../src/controllers/BlobController'
+import BucketController from '../../src/controllers/BucketController'
 import FileManager from '../../src/services/filemanager'
 
 const envFolder = new FileManager(process.platform)
@@ -127,6 +128,20 @@ const blobSecuredRoutes = (): void => {
     })
   })
 
+  it('UPDATES the path of blob when renaming bucket', done => {
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Bearer ${token}`
+    }
+    const data = `name=updatedblobbucket&userUuid=${userToken.id}`
+    getData(`http://localhost:7331/bucket/edit/blobbucket`,
+    { method: 'PUT', headers: headers, body: data })
+    .then(result => {
+      expect(result.blobs[0].path).equals(`${envFolder.defaultPath}/${userToken.id}/updatedblobbucket/`)
+      done()
+    })
+  })
+
   it('RETRIEVES a blob successfully', async done => {
     axios.get('http://localhost:7331/blob/retrieve/1', { headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
@@ -176,9 +191,9 @@ const blobSecuredRoutes = (): void => {
     .then( result => {
       expect(result.id).equals(1)
       expect(/test-file-/.test(result.name)).equals(true)
-      expect(result.bucket.name).equals('blobbucket')
+      expect(result.bucket.name).equals('updatedblobbucket')
       expect(/\/myS3DATA\/tests\//.test(result.path)).equals(true)
-      expect(/\/blobbucket\//.test(result.path)).equals(true)
+      expect(/\/updatedblobbucket\//.test(result.path)).equals(true)
       expect(result.size).equals('19')
       done()
     })
@@ -228,7 +243,7 @@ const blobSecuredRoutes = (): void => {
       headers: { 'Authorization': `Bearer ${token}` },
     }).then(result => {
       expect(/test-file-[0-9]+\.copy\.1\.txt/.test(result.name)).equals(true)
-      expect(fs.existsSync(`${envFolder.defaultPath}/${user.id}/blobbucket/${result.name}`)).equals(true)
+      expect(fs.existsSync(`${envFolder.defaultPath}/${user.id}/updatedblobbucket/${result.name}`)).equals(true)
       done()
     })
   })
@@ -239,7 +254,7 @@ const blobSecuredRoutes = (): void => {
     .then(file => {
       const pathParts = file.path.split('/')
       const userId = pathParts[pathParts.length-3]
-      const manualDelete = envFolder.deleteFile(`${userId}/blobbucket/${file.name}`)
+      const manualDelete = envFolder.deleteFile(`${userId}/updatedblobbucket/${file.name}`)
       expect(manualDelete).equals(`File ${file.path}${file.name} deleted successfully.`)
 
       getData("http://localhost:7331/blob/retrieve/2",

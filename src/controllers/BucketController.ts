@@ -3,6 +3,7 @@ import { getRepository, Repository, getManager } from 'typeorm'
 import { getEnvFolder } from '../main'
 import Authentifier from '../services/authentifier'
 import Bucket from '../entity/Bucket'
+import Blob from '../entity/Blob'
 
 class BucketController {
   // Get all users
@@ -111,6 +112,7 @@ class BucketController {
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
         where: { name: req.params.name },
+        relations: ['blobs'],
       })
       if (bucket === undefined)
         return res
@@ -120,7 +122,15 @@ class BucketController {
       const oldName = bucket.name
       bucketRepository.merge(bucket, req.body)
       return bucketRepository.save(bucket).then(
-        (result): Response => {
+        async (result): Promise<Response> => {
+          if (bucket.blobs.length > 0) {
+            const blobRepository: Repository<Blob> = getRepository(Blob)
+            await bucket.blobs.map(async blob => {
+              const newPath = blob.path.replace(oldName, bucket.name)
+              blobRepository.merge(blob, { path: newPath })
+              return await blobRepository.save(blob)
+            })
+          }
           // Rename folder with new bucket name
           getEnvFolder.renameFolder(
             `${user.id}/${oldName}`,
