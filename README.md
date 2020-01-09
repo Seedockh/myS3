@@ -193,7 +193,7 @@ This project has a **100% Tests coverage** :
 - [X] Bootstrap all CRUD user operations
 - [x] You HAVE TO use JWT
 - [x] You HAVE TO send an email on user creation
-- [X] Add user password reset e-mail workflow
+- [ ] Add user password reset e-mail workflow
 
 ### interlude
 - [X] The file structure on your computer will be ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
