@@ -179,7 +179,7 @@ yarn test
 ```
 
 This project has a **100% Tests coverage** :
-![https://image.noelshack.com/fichiers/2020/02/1/1578272721-screenshot-from-2020-01-06-02-04-58.png](https://image.noelshack.com/fichiers/2020/02/1/1578272721-screenshot-from-2020-01-06-02-04-58.png)
+![https://image.noelshack.com/fichiers/2020/02/4/1578572599-screenshot-from-2020-01-09-13-23-00.png](https://image.noelshack.com/fichiers/2020/02/4/1578572599-screenshot-from-2020-01-09-13-23-00.png)
 
 # Steps
 ### .step_01
