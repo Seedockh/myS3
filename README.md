@@ -175,7 +175,7 @@ This project has a **100% Tests coverage** :
 - [X] You HAVE TO use at least one major feature from your front library. _Hook/Context with React, Observables with Angular or Mixins with Vue_
 
 ### .step_09
-- [ ] One click sharing. _Well, on each blob, we can generate a static public link for the assets 😱😎_
+- [X] One click sharing. _Well, on each blob, we can generate a static public link for the assets 😱😎_
 
 ### .step_10
 - [X] Of course your app is responsive :)

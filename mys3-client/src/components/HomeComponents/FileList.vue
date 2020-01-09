@@ -2,7 +2,7 @@
   <div id="filelist-container">
     <div v-if="list && list.files && list.files.length > 0" class="list-section">
       <div class="list-line" v-for="item in list.blobs" v-bind:key="item.id">
-        <div class="list-item" @click="shareFile(item)">
+        <div class="list-item" @click="shareFile(item.id)">
           <p class="item-detail">{{ item.name }}</p>
           <p class="item-detail">{{ item.size/1000 }}kB</p>
         </div>
@@ -70,6 +70,47 @@ export default {
       this.newBucket = this.$refs.newBucket.value
     },
 
+    async shareFile(id) {
+      this.token = await this.getToken()
+      axios.get(
+        // URL
+        `http://localhost:1337/blob/retrieve/${id}`,
+        // HEADERS
+        {
+          headers: { 'Authorization': `Bearer ${this.token}` },
+          responseType: 'arraybuffer',
+        }
+      ).then( result => {
+        axios.get(
+          // URL
+          `http://localhost:1337/blob/getInfos/${id}`,
+          // HEADERS
+          {
+            headers: { 'Authorization': `Bearer ${this.token}` },
+          }
+        ).then( blobInfos => {
+          const dlUrl = window.URL.createObjectURL(new Blob([result.data]))
+          const dlLink = document.createElement('a')
+          dlLink.href = dlUrl
+          dlLink.setAttribute('download', blobInfos.data.name)
+          document.body.appendChild(dlLink)
+
+          const clickableLink = document.createElement('a')
+          clickableLink.href = dlLink
+          clickableLink.innerHTML = `${blobInfos.data.name}`
+
+          swal({
+            title: "Share link :",
+            content: clickableLink,
+          })
+        }).catch( error => {
+            return swal(error.response.data.message, { icon: "warning" })
+        })
+      }).catch( error => {
+          return swal(error.response.data.message, { icon: "warning" })
+      })
+    },
+
     /**
      * @implements Optimistic UI
      */
@@ -135,10 +176,6 @@ export default {
         .catch( error => {
           return swal(error.response.data.message, { icon: "warning" })
         })
-    },
-
-    shareFile(item) {
-      console.log(item)
     },
 
     async downloadFile(id) {
