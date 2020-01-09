@@ -6,7 +6,7 @@ import Register from './components/AuthComponents/Register.vue'
 
 const router = new VueRouter({
   mode: 'history',
-  base: __dirname,
+  base: '.',
   routes: [
     { name: 'home', path: '/', component: Home, meta: { middleware: auth } },
     { name: 'login', path: '/login', component: Login },
