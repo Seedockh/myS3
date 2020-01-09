@@ -1,7 +1,7 @@
 {
   "publicPath": "/",
   "all": [
-    "css/main.eb1a6dde.css",
+    "css/main.26b1bb6e.css",
     "favicon.ico",
     "img/delete-icon.5dd65911.png",
     "img/folder-icon.1db02bee.png",
@@ -22,20 +22,20 @@
     "index.html",
     "js/chunk-vendors.818b1c25.js",
     "js/chunk-vendors.818b1c25.js.map",
-    "js/main.604f1886.js",
-    "js/main.604f1886.js.map",
+    "js/main.59793d9e.js",
+    "js/main.59793d9e.js.map",
     "manifest.json",
-    "precache-manifest.65700eeb4f510c2b64c2725d70cc16e0.js",
+    "precache-manifest.0af457173c0b521166841bc7e385471e.js",
     "robots.txt",
     "service-worker.js"
   ],
   "initial": [
     "js/chunk-vendors.818b1c25.js",
-    "css/main.eb1a6dde.css",
-    "js/main.604f1886.js"
+    "css/main.26b1bb6e.css",
+    "js/main.59793d9e.js"
   ],
   "async": [
-    "precache-manifest.65700eeb4f510c2b64c2725d70cc16e0.js",
+    "precache-manifest.0af457173c0b521166841bc7e385471e.js",
     "service-worker.js"
   ],
   "modules": {
@@ -100,7 +100,7 @@
       17,
       3
     ],
-    "6cfeb74c": [
+    "07c931dd": [
       0,
       21,
       -1,
@@ -125,6 +125,15 @@
     "3217dc45": [
       19,
       20
+    ],
+    "0c660645": [
+      0,
+      21,
+      -1,
+      22,
+      2,
+      17,
+      3
     ],
     "455cdc19": [
       19,
@@ -383,15 +392,6 @@
       19,
       20
     ],
-    "0621dabd": [
-      0,
-      21,
-      -1,
-      22,
-      2,
-      17,
-      3
-    ],
     "7d2faa41": [
       19,
       20
@@ -457,6 +457,15 @@
     "68150b48": [
       19,
       20
+    ],
+    "446a6840": [
+      0,
+      21,
+      -1,
+      22,
+      2,
+      17,
+      3
     ],
     "4b2b3fa2": [
       19,
@@ -686,15 +695,6 @@
     "7af0f225": [
       19,
       20
-    ],
-    "63c50e7c": [
-      0,
-      21,
-      -1,
-      22,
-      2,
-      17,
-      3
     ],
     "43a5308c": [
       19,
