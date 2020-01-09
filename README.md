@@ -25,6 +25,7 @@ By clicking on your user ID folder :
 ### Get Buckets
 
 By clicking on your user ID folder :
+
 ![https://image.noelshack.com/fichiers/2020/02/4/1578572120-screenshot-from-2020-01-09-13-15-07.png](https://image.noelshack.com/fichiers/2020/02/4/1578572120-screenshot-from-2020-01-09-13-15-07.png)
 
 ### Rename Bucket
@@ -39,6 +40,7 @@ By clicking **twice** on your bucket folder :
 ### Get Blobs
 
 By clicking on your bucket folder :
+
 ![https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-03-40.png](https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-03-40.png)
 
 ### Upload Blob
@@ -52,6 +54,7 @@ By clicking on your bucket folder :
 ### Generate Share Link
 
 By clicking on your blob :
+
 ![https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-06-40.png](https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-06-40.png)
 
 # Run with Docker-Compose
@@ -176,7 +179,8 @@ yarn test
 ```
 
 This project has a **100% Tests coverage** :
-![https://image.noelshack.com/fichiers/2020/02/1/1578272721-screenshot-from-2020-01-06-02-04-58.png](https://image.noelshack.com/fichiers/2020/02/1/1578272721-screenshot-from-2020-01-06-02-04-58.png)
+
+![https://image.noelshack.com/fichiers/2020/02/4/1578572599-screenshot-from-2020-01-09-13-23-00.png](https://image.noelshack.com/fichiers/2020/02/4/1578572599-screenshot-from-2020-01-09-13-23-00.png)
 
 # Steps
 ### .step_01
