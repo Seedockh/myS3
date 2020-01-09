@@ -6,7 +6,10 @@ import App from './App.vue'
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 
-new Vue({
-  router,
-  render: h => h(App),
-}).$mount('#app')
+export function createApp() {
+  const app = new Vue({
+    router,
+    render: h => h(App),
+  })
+  return { app, router }
+}

@@ -169,7 +169,7 @@ This project has a **100% Tests coverage** :
 - [X] Your client has to handle all user API actions. _From the authentication to the upload through browsing buckets and files_
 
 ### .step_07
-- [ ] You HAVE TO transform you application to handle Server-side Rendering (SSR). _Maybe express has a kind of middleware_
+- [X] You HAVE TO transform you application to handle Server-side Rendering (SSR). _Maybe express has a kind of middleware_
 
 ### .step_08
 - [X] You HAVE TO use at least one major feature from your front library. _Hook/Context with React, Observables with Angular or Mixins with Vue_
