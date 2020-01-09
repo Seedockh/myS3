@@ -122,22 +122,21 @@ class BucketController {
       const oldName = bucket.name
       bucketRepository.merge(bucket, req.body)
       return bucketRepository.save(bucket).then(
-        (result): Response => {
+        async (result): Promise<Response> => {
           if (bucket.blobs.length > 0) {
             const blobRepository: Repository<Blob> = getRepository(Blob)
-            bucket.blobs.map(blob => {
+            await bucket.blobs.map(async blob => {
               const newPath = blob.path.replace(oldName, bucket.name)
               blobRepository.merge(blob, { path: newPath })
-              return blobRepository.save(blob).then(blobResult => {
-                // Rename folder with new bucket name
-                getEnvFolder.renameFolder(
-                  `${user.id}/${oldName}`,
-                  `${user.id}/${bucket.name}`,
-                )
-                return res.send(result)
-              })
+              return await blobRepository.save(blob)
             })
           }
+          // Rename folder with new bucket name
+          getEnvFolder.renameFolder(
+            `${user.id}/${oldName}`,
+            `${user.id}/${bucket.name}`,
+          )
+          return res.send(result)
         },
       )
     } else {
