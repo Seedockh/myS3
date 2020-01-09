@@ -138,13 +138,8 @@ class UserController {
     req: Request,
     res: Response,
   ): Promise<void> => {
-<<<<<<< HEAD
-    req.body.password = Math.random()
-      .toString(36)
-      .substring(7)
-=======
-    req.body.password = Math.random().toString(36).substring(7);
->>>>>>> Add password reset + mail (tests missing)
+    req.body.password = Math.random().toString(36).substring(7)
+
     const newPass: string = req.body.password
     await UserController.editUser(req, res)
     const { email } = req.body
