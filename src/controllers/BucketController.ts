@@ -112,7 +112,7 @@ class BucketController {
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
         where: { name: req.params.name },
-        relations: ["blobs"],
+        relations: ['blobs'],
       })
       if (bucket === undefined)
         return res
