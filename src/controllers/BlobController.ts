@@ -111,8 +111,6 @@ class BlobController {
       const getSharedFile = getEnvFolder.shareFile(
         `${user.id}/${bucket!.name}/${blob.name}`,
       )
-      if (getSharedFile.file === null)
-        return res.status(400).send({ message: getSharedFile.message })
 
       return res.status(200).send(getSharedFile.file)
     } else {

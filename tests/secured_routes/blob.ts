@@ -128,6 +128,77 @@ const blobSecuredRoutes = (): void => {
     })
   })
 
+  it('SHARES a blob successfully', done => {
+    getData(`http://localhost:7331/blob/getinfos/1`,
+    {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` },
+    })
+    .then(blob => {
+      axios.get('http://localhost:7331/blob/share/1', { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(file => {
+        expect(file.data).equals(blob.name)
+        expect(fs.existsSync(`${envFolder.defaultPath}/public/${blob.name}`)).equals(true)
+        done()
+      })
+    })
+  })
+
+  it('FAILS to share a blob without token', async done => {
+    const shareBlob = await BlobController.shareBlob(
+      { params: { id: 1 }, headers: { } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(shareBlob.message).equals("ERROR : Missing Bearer token in your Authorizations")
+    done()
+  })
+
+  it('FAILS to share a blob with false token', async done => {
+    const falseToken: string = jwt.sign(
+      { userId: 'cd1efe69-6735-403b-a47d-f585042d271e', username: 'johnny' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' },
+    )
+    const shareBlob = await BlobController.shareBlob(
+      { params: { id: 1 }, headers: { authorization: `Bearer ${falseToken}` } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(shareBlob).equals("ERROR: User doesn't exists in database")
+    done()
+  })
+
+  it('FAILS to share unexistent blob', async done => {
+    const shareBlob = await BlobController.shareBlob(
+      { params: { id: 99999 }, headers: { authorization: `Bearer ${token}` } },
+      { status: status => { return { send: message => message, status: status } } }
+    )
+    expect(shareBlob.message).equals("ERROR: File doesn't exists in database")
+    done()
+  })
+
+  it('RETRIEVES a public blob successfully', async done => {
+    getData(`http://localhost:7331/blob/getinfos/1`,
+    {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` },
+    })
+    .then(blob => {
+      axios.get(`http://localhost:7331/blob/public/${blob.name}`)
+      .then(result => {
+        expect(result.data).equals('This is a test file')
+        done()
+      })
+    })
+  })
+
+  it('FAILS to retrieve a public blob successfully', async done => {
+    getData("http://localhost:7331/blob/public/failing-file.txt",
+    { method: 'GET' }).then(result => {
+      expect(result.message).equals("This file does not exist.")
+      done()
+    })
+  })
+
   it('UPDATES the path of blob when renaming bucket', done => {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
