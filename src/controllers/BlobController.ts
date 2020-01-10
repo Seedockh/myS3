@@ -83,6 +83,52 @@ class BlobController {
     }
   }
 
+  static shareBlob = async (req: Request, res: Response): Promise<Response> => {
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+
+      if (authUser.user === undefined)
+        return res.status(400).send(authUser.message)
+      const user = authUser.user
+
+      const blobRepository: Repository<Blob> = getRepository(Blob)
+      const blob = await blobRepository.findOne({
+        where: { id: req.params.id },
+        relations: ['bucket'],
+      })
+      if (blob === undefined)
+        return res.status(400).send({ message: "ERROR: File doesn't exists in database" })
+
+      const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+      const bucket = await bucketRepository.findOne({
+        where: { id: blob.bucket.id },
+      })
+
+      const getSharedFile = getEnvFolder.shareFile(
+        `${user.id}/${bucket!.name}/${blob.name}`,
+      )
+      if (getSharedFile.file === null)
+        return res.status(400).send({ message: getSharedFile.message })
+
+      return res.status(200).send(getSharedFile.file)
+
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
+  }
+
+  static getPublicBlob = async (req: Request, res: Response): Promise<Response> => {
+    const publicLink = getEnvFolder.downloadPublicFile(req.params.name)
+    if (publicLink.file === null)
+      return res.status(400).send({ message: publicLink.message })
+
+    return res.status(200).sendFile(publicLink.file)
+  }
+
   static addBlob = async (req: Request, res: Response): Promise<Response> => {
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')

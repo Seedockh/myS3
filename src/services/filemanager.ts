@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-interface DownloadFile {
+interface ProcessFile {
   file: string | null
   message: string | null
 }
@@ -75,10 +75,43 @@ export default class FileManager {
     }
   }
 
-  downloadFile(filePath: string): DownloadFile {
+  downloadFile(filePath: string): ProcessFile {
     if (fs.existsSync(`${this.defaultPath}/${filePath}`)) {
       return {
         file: path.resolve(`${this.defaultPath}/${filePath}`),
+        message: null,
+      }
+    } else {
+      return {
+        file: null,
+        message: 'This file does not exist.',
+      }
+    }
+  }
+
+  downloadPublicFile(filePath: string): ProcessFile {
+    if (fs.existsSync(`${this.defaultPath}/public/${filePath}`)) {
+      return {
+        file: path.resolve(`${this.defaultPath}/public/${filePath}`),
+        message: null,
+      }
+    } else {
+      return {
+        file: null,
+        message: 'This file does not exist.',
+      }
+    }
+  }
+
+  shareFile(filePath: string): ProcessFile {
+    if (fs.existsSync(`${this.defaultPath}/${filePath}`)) {
+      if (!fs.existsSync(`${this.defaultPath}/public`)) this.createFolder('public')
+
+      const pathParts = filePath.split('/')
+      const blobFullName = pathParts[2]
+      fs.copyFileSync( `${this.defaultPath}/${filePath}`,  `${this.defaultPath}/public/${blobFullName}`)
+      return {
+        file: `${blobFullName}`,
         message: null,
       }
     } else {
