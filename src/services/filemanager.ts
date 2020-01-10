@@ -105,11 +105,15 @@ export default class FileManager {
 
   shareFile(filePath: string): ProcessFile {
     if (fs.existsSync(`${this.defaultPath}/${filePath}`)) {
-      if (!fs.existsSync(`${this.defaultPath}/public`)) this.createFolder('public')
+      if (!fs.existsSync(`${this.defaultPath}/public`))
+        this.createFolder('public')
 
       const pathParts = filePath.split('/')
       const blobFullName = pathParts[2]
-      fs.copyFileSync( `${this.defaultPath}/${filePath}`,  `${this.defaultPath}/public/${blobFullName}`)
+      fs.copyFileSync(
+        `${this.defaultPath}/${filePath}`,
+        `${this.defaultPath}/public/${blobFullName}`,
+      )
       return {
         file: `${blobFullName}`,
         message: null,

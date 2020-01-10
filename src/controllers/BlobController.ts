@@ -99,7 +99,9 @@ class BlobController {
         relations: ['bucket'],
       })
       if (blob === undefined)
-        return res.status(400).send({ message: "ERROR: File doesn't exists in database" })
+        return res
+          .status(400)
+          .send({ message: "ERROR: File doesn't exists in database" })
 
       const bucketRepository: Repository<Bucket> = getRepository(Bucket)
       const bucket = await bucketRepository.findOne({
@@ -113,7 +115,6 @@ class BlobController {
         return res.status(400).send({ message: getSharedFile.message })
 
       return res.status(200).send(getSharedFile.file)
-
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
@@ -121,7 +122,10 @@ class BlobController {
     }
   }
 
-  static getPublicBlob = async (req: Request, res: Response): Promise<Response> => {
+  static getPublicBlob = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response> => {
     const publicLink = getEnvFolder.downloadPublicFile(req.params.name)
     if (publicLink.file === null)
       return res.status(400).send({ message: publicLink.message })
