@@ -187,7 +187,7 @@ It might happen that `Tests suite` fails to launch correctly because of a bad se
 ![https://image.noelshack.com/fichiers/2020/02/5/1578667494-screenshot-from-2020-01-10-15-44-23.png](https://image.noelshack.com/fichiers/2020/02/5/1578667494-screenshot-from-2020-01-10-15-44-23.png)
 
 Once your code or setup issue is resolved, you will need to :
-- Delete folder `~/myS3DATA
+- Delete folder `~/myS3DATA`
 - Rename folder `~/myS3DATAtest` to `~/myS3DATA`
 
 Then you will be able to run `yarn test` again !
