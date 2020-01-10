@@ -101,6 +101,58 @@ const filemanager = (): void => {
     done()
   })
 
+
+
+  it('SHARES a file successfully', async done => {
+    expect(envFolder.defaultPath).equals(`${process.env.HOME}/myS3DATA/tests`)
+    fs.rmdirSync(`${envFolder.defaultPath}/public`, { recursive: true })
+    expect(fs.existsSync(`${envFolder.defaultPath}/public`)).equals(false)
+
+    if (!fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)) {
+      fs.writeFileSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`, 'This is a test file')
+    }
+    const file = envFolder.shareFile('testuser/testbucket/test-file.txt')
+    expect(JSON.stringify(file)).equals(JSON.stringify({
+      file: `test-file.txt`,
+      message: null
+    }))
+    expect(fs.existsSync(`${envFolder.defaultPath}/public`)).equals(true)
+    envFolder.deleteFile('public/test-file.txt')
+    const secondFile = envFolder.shareFile('testuser/testbucket/test-file.txt')
+    expect(JSON.stringify(secondFile)).equals(JSON.stringify({
+      file: `test-file.txt`,
+      message: null
+    }))
+    done()
+  })
+
+  it('FAILS to share unexistent file', async done => {
+    const file = envFolder.shareFile('testuser/testbucket/unexistent-file.txt')
+    expect(JSON.stringify(file)).equals(JSON.stringify({
+      file: null,
+      message: 'This file does not exist.'
+    }))
+    done()
+  })
+
+  it('DOWNLOADS a public file successfully', async done => {
+    const file = envFolder.downloadPublicFile('test-file.txt')
+    expect(JSON.stringify(file)).equals(JSON.stringify({
+      file: `${process.env.HOME}/myS3DATA/tests/public/test-file.txt`,
+      message: null
+    }))
+    done()
+  })
+
+  it('FAILS to download unexistent file', async done => {
+    const file = envFolder.downloadPublicFile('unexistent-file.txt')
+    expect(JSON.stringify(file)).equals(JSON.stringify({
+      file: null,
+      message: 'This file does not exist.'
+    }))
+    done()
+  })
+
   it('DUPLICATES a file successfully', async done => {
     expect(fs.existsSync(`${envFolder.defaultPath}/testuser/testbucket/test-file.txt`)).equals(true)
     const firstCopy = envFolder.duplicateFile('testuser/testbucket/test-file.txt')

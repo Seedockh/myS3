@@ -122,10 +122,7 @@ class BlobController {
     }
   }
 
-  static getPublicBlob = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response> => {
+  static getPublicBlob = (req: Request, res: Response): Response | void => {
     const publicLink = getEnvFolder.downloadPublicFile(req.params.name)
     if (publicLink.file === null)
       return res.status(400).send({ message: publicLink.message })
