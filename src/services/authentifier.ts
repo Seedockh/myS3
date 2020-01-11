@@ -1,46 +1,95 @@
+import { IncomingHttpHeaders } from 'http'
 import * as jwt from 'jsonwebtoken'
+import * as Types from '../../types'
 import User from '../entity/User'
+import Bucket from '../entity/Bucket'
+import Blob from '../entity/Blob'
 import { getRepository, Repository } from 'typeorm'
-
-interface AuthResponse {
-  message: string | undefined
-  user: User | undefined
-}
 
 export default class Authentifier {
   token: string
-  repository: Repository<User> = getRepository(User)
   secret: string | undefined
+  payload: any
+  headers: IncomingHttpHeaders
 
-  constructor(token: string) {
-    this.token = token
-    this.secret = process.env.JWT_SECRET
+  constructor(headers: IncomingHttpHeaders) {
+    this.headers = headers
   }
 
-  async getUser(): Promise<AuthResponse> {
-    if (this.secret) {
-      let jwtPayload: string | object
-      try {
-        jwtPayload = jwt.verify(this.token, this.secret)
-      } catch (error) {
-        return { message: 'ERROR: Wrong token sent', user: undefined }
+  getToken(): Types.AuthResponse {
+    if (!process.env.JWT_SECRET)
+      return {
+        message: 'ERROR: Missing secret in your .env file',
+        result: undefined,
+      }
+    if (!this.headers.authorization)
+      return {
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+        result: undefined,
       }
 
-      const user = await this.repository.findOne({
-        where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
+    try {
+      this.payload = jwt.verify(
+        this.headers.authorization.replace('Bearer ', ''),
+        process.env.JWT_SECRET
+      )
+    }
+    catch (error) {
+      return { message: 'ERROR: Wrong token sent', result: undefined }
+    }
+
+    return { message: undefined, result: this.headers.authorization.replace('Bearer ', '')}
+  }
+
+  async getUser(): Promise<Types.AuthResponse> {
+    const userRepository: Repository<User> = getRepository(User)
+    const { userId } = this.payload
+    const user: User | undefined = await userRepository.findOne({
+      where: { id: userId },
+    })
+
+    if (user === undefined)
+      return {
+        message: "ERROR: User does not exist in database",
+        result: undefined,
+      }
+
+    return { message: undefined, result: user }
+  }
+
+  async getBucket(identifier: number|string): Promise<Types.AuthResponse> {
+    const bucketRepository: Repository<Bucket> = getRepository(Bucket)
+    let bucket: Types.RelBucket | undefined = undefined
+    if (typeof identifier === 'number')
+      bucket = await bucketRepository.findOne({
+        where: { id: identifier },
+        relations: ['blobs'],
       })
+    else if (typeof identifier === 'string')
+      bucket = await bucketRepository.findOne({
+        where: { name: identifier },
+      })
+    if (bucket === undefined)
+      return {
+        message: "ERROR: Bucket does not exist in database",
+        result: undefined
+      }
 
-      if (user === undefined)
-        return {
-          message: "ERROR: User doesn't exists in database",
-          user: undefined,
-        }
+    return { message: undefined, result: bucket }
+  }
 
-      return { message: undefined, user: user }
-    }
-    return {
-      message: 'ERROR: Missing secret in your .env file',
-      user: undefined,
-    }
+  async getBlob(id: string): Promise<Types.AuthResponse> {
+    const blobRepository: Repository<Blob> = getRepository(Blob)
+    const blob: Types.RelBlob | undefined = await blobRepository.findOne({
+      where: { id: parseInt(id) },
+      relations: ['bucket'],
+    })
+    if (blob === undefined)
+      return {
+        message: "ERROR: Blob does not exist in database",
+        result: undefined
+      }
+
+    return { message: undefined, result: blob}
   }
 }

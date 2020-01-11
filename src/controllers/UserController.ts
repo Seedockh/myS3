@@ -11,22 +11,20 @@ class UserController {
     res.status(200).json({ users: await getManager().find(User) })
 
   static getUser = async (req: Request, res: Response): Promise<Response> => {
-    if (req.headers.authorization) {
-      const userToken = req.headers.authorization.replace('Bearer ', '')
-      const auth = new Authentifier(userToken)
-      const authUser = await auth.getUser()
-      if (!authUser.user) return res.status(400).send(authUser.message)
+    const authentifier: Authentifier = new Authentifier(req.headers)
+    const token = authentifier.getToken()
+    if (token.result === undefined)
+      return res.status(400).send(token.message)
 
-      return res.status(200).send({
-        id: authUser.user.id,
-        nickname: authUser.user.nickname,
-        email: authUser.user.email,
-      })
-    } else {
-      return res.status(400).send({
-        message: 'ERROR : Missing Bearer token in your Authorizations',
-      })
-    }
+    const user = await authentifier.getUser()
+    if (user.result === undefined)
+      return res.status(400).send(user.message)
+
+    return res.status(200).send({
+      id: user.result.id,
+      nickname: user.result.nickname,
+      email: user.result.email,
+    })
   }
 
   // Get user buckets
@@ -34,20 +32,18 @@ class UserController {
     req: Request,
     res: Response,
   ): Promise<Response> => {
-    if (req.headers.authorization) {
-      const userToken = req.headers.authorization.replace('Bearer ', '')
-      const auth = new Authentifier(userToken)
-      const authUser = await auth.getUser()
-      if (!authUser.user) return res.status(400).send(authUser.message)
+    const authentifier: Authentifier = new Authentifier(req.headers)
+    const token = authentifier.getToken()
+    if (token.result === undefined)
+      return res.status(400).send(token.message)
 
-      return res.status(200).send({
-        list: getEnvFolder.readFolder(`${authUser.user.id}`),
-      })
-    } else {
-      return res.status(400).send({
-        message: 'ERROR : Missing Bearer token in your Authorizations',
-      })
-    }
+    const user = await authentifier.getUser()
+    if (user.result === undefined)
+      return res.status(400).send(user.message)
+
+    return res.status(200).send({
+      list: getEnvFolder.readFolder(`${user.result.id}`),
+    })
   }
 
   // Create user
@@ -87,24 +83,22 @@ class UserController {
     req: Request,
     res: Response,
   ): Promise<void | Response> => {
-    const userRepository: Repository<User> = getRepository(User)
-    if (req.headers.authorization) {
-      const userToken = req.headers.authorization.replace('Bearer ', '')
-      const auth = new Authentifier(userToken)
-      const authUser = await auth.getUser()
-      if (!authUser.user) return res.status(400).send(authUser.message)
+    const authentifier: Authentifier = new Authentifier(req.headers)
+    const token = authentifier.getToken()
+    if (token.result === undefined)
+      return res.status(400).send(token.message)
 
-      userRepository.merge(authUser.user, req.body)
-      userRepository.save(authUser.user).then(
-        (result: User): Response => {
-          return res.send(result)
-        },
-      )
-    } else {
-      return res.status(400).send({
-        message: 'ERROR : Missing Bearer token in your Authorizations',
-      })
-    }
+    const user = await authentifier.getUser()
+    if (user.result === undefined)
+      return res.status(400).send(user.message)
+
+    const userRepository: Repository<User> = getRepository(User)
+    userRepository.merge(user.result, req.body)
+    userRepository.save(user.result).then(
+      (result: User): Response => {
+        return res.send(result)
+      },
+    )
   }
 
   // Delete user
@@ -112,25 +106,22 @@ class UserController {
     req: Request,
     res: Response,
   ): Promise<Response | void> => {
-    const userRepository: Repository<User> = getRepository(User)
-    if (req.headers.authorization) {
-      const userToken = req.headers.authorization.replace('Bearer ', '')
-      const auth = new Authentifier(userToken)
-      const authUser = await auth.getUser()
-      if (!authUser.user) return res.status(400).send(authUser.message)
-      const user = authUser.user
+    const authentifier: Authentifier = new Authentifier(req.headers)
+    const token = authentifier.getToken()
+    if (token.result === undefined)
+      return res.status(400).send(token.message)
 
-      userRepository.delete(user.id).then(
-        (result): Response => {
-          getEnvFolder.deleteFolder(`${user.id}`)
-          return res.send(result)
-        },
-      )
-    } else {
-      return res.status(400).send({
-        message: 'ERROR : Missing Bearer token in your Authorizations',
-      })
-    }
+    const user = await authentifier.getUser()
+    if (user.result === undefined)
+      return res.status(400).send(user.message)
+
+    const userRepository: Repository<User> = getRepository(User)
+    userRepository.delete(user.result.id).then(
+      (result): Response => {
+        getEnvFolder.deleteFolder(`${user.result.id}`)
+        return res.send(result)
+      },
+    )
   }
 }
 

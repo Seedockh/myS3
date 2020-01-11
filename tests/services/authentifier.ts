@@ -5,10 +5,12 @@ import Authentifier from '../../src/services/authentifier'
 
 const authentifier = (): void => {
   it('AUTHENTICATES correct user token', async done => {
-    const auth = new Authentifier(token)
-    const authUser = await auth.getUser()
-    expect(authUser.user).not.to.be.undefined
-    expect(authUser.message).equals(undefined)
+    const authentifier: Authentifier = new Authentifier({ authorization: `Bearer ${token}` })
+    const token = authentifier.getToken()
+    const user = await authentifier.getUser()
+
+    expect(user.result).not.to.be.undefined
+    expect(user.message).equals(undefined)
     done()
   })
 
