@@ -80,15 +80,35 @@ export default {
           headers: { 'Authorization': `Bearer ${this.token}` },
         }
       ).then( result => {
-        const url = `http://localhost:1337/blob/public/${result.data}`
-        const clickableLink = document.createElement('a')
-        clickableLink.href = url
-        clickableLink.innerHTML = url
-        clickableLink.setAttribute('download', result.data)
+        const container = document.createElement('div')
+
+        // This file will have READ + WRITE access
+        const publicText = document.createTextNode('Public link : ')
+        const publicUrl = `http://localhost:1337/blob/public/${result.data}`
+        const publicLink = document.createElement('a')
+        publicLink.href = publicUrl
+        publicLink.innerHTML = publicUrl
+        publicLink.setAttribute('download', result.data)
+
+        const newLine = document.createElement('br')
+
+        // This file will have only READ access
+        const privateText = document.createTextNode('Private link : ')
+        const privateUrl = `http://localhost:1337/blob/private/${result.data}`
+        const privateLink = document.createElement('a')
+        privateLink.href = privateUrl
+        privateLink.innerHTML = privateUrl
+        privateLink.setAttribute('download', result.data)
+
+        container.appendChild(publicText)
+        container.appendChild(publicLink)
+        container.appendChild(newLine)
+        container.appendChild(privateText)
+        container.appendChild(privateLink)
 
         swal({
-          title: "Share link :",
-          content: clickableLink,
+          title: "Share links :",
+          content: container,
         })
       }).catch( error => {
           return swal(error.response.data.message, { icon: "warning" })
@@ -194,6 +214,7 @@ export default {
           return swal(error.response.data.message, { icon: "warning" })
       })
     },
+
     async duplicateFile(id) {
       this.token = await this.getToken()
       axios.post(
@@ -214,6 +235,7 @@ export default {
           return swal(error.response.data.message, { icon: "warning" })
         })
     },
+
     async deleteFile(id) {
       this.token = await this.getToken()
       swal(
