@@ -13,35 +13,32 @@ class BucketController {
   ): Promise<Response> =>
     res.status(200).json({ buckets: await getManager().find(Bucket) })
 
-  static bucketExists = async (req: Request, res: Response): Promise<Response|void> => {
+  static bucketExists = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response | void> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const bucket = await authentifier.getBucket(req.params.name)
-    if (bucket.result === undefined)
-      return res.status(400).end()
+    if (bucket.result === undefined) return res.status(400).end()
     return res.status(200).end()
   }
 
   static listFiles = async (req: Request, res: Response): Promise<Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const bucket = await authentifier.getBucket(req.params.name)
-    if (bucket.result === undefined)
-      return res.status(400).send(bucket.message)
+    if (bucket.result === undefined) return res.status(400).send(bucket.message)
 
     return res.status(200).send({
       files: getEnvFolder.readFolder(`${user.result.id}/${bucket.result.name}`),
@@ -56,12 +53,10 @@ class BucketController {
   ): Promise<void | Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
     const bucket = new Bucket()
@@ -91,16 +86,13 @@ class BucketController {
   ): Promise<void | Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const bucket = await authentifier.getBucket(req.params.name)
-    if (bucket.result === undefined)
-      return res.status(400).send(bucket.message)
+    if (bucket.result === undefined) return res.status(400).send(bucket.message)
 
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
     const oldName = bucket.result.name
@@ -132,16 +124,13 @@ class BucketController {
   ): Promise<void | Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const bucket = await authentifier.getBucket(req.params.name)
-    if (bucket.result === undefined)
-      return res.status(400).send(bucket.message)
+    if (bucket.result === undefined) return res.status(400).send(bucket.message)
 
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
     return bucketRepository.delete(bucket.result.id).then(

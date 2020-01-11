@@ -31,14 +31,16 @@ export default class Authentifier {
     try {
       this.payload = jwt.verify(
         this.headers.authorization.replace('Bearer ', ''),
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
       )
-    }
-    catch (error) {
+    } catch (error) {
       return { message: 'ERROR: Wrong token sent', result: undefined }
     }
 
-    return { message: undefined, result: this.headers.authorization.replace('Bearer ', '')}
+    return {
+      message: undefined,
+      result: this.headers.authorization.replace('Bearer ', ''),
+    }
   }
 
   async getUser(): Promise<Types.AuthResponse> {
@@ -50,14 +52,14 @@ export default class Authentifier {
 
     if (user === undefined)
       return {
-        message: "ERROR: User does not exist in database",
+        message: 'ERROR: User does not exist in database',
         result: undefined,
       }
 
     return { message: undefined, result: user }
   }
 
-  async getBucket(identifier: number|string): Promise<Types.AuthResponse> {
+  async getBucket(identifier: number | string): Promise<Types.AuthResponse> {
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
     let bucket: Types.RelBucket | undefined = undefined
     if (typeof identifier === 'number')
@@ -71,8 +73,8 @@ export default class Authentifier {
       })
     if (bucket === undefined)
       return {
-        message: "ERROR: Bucket does not exist in database",
-        result: undefined
+        message: 'ERROR: Bucket does not exist in database',
+        result: undefined,
       }
 
     return { message: undefined, result: bucket }
@@ -86,10 +88,10 @@ export default class Authentifier {
     })
     if (blob === undefined)
       return {
-        message: "ERROR: Blob does not exist in database",
-        result: undefined
+        message: 'ERROR: Blob does not exist in database',
+        result: undefined,
       }
 
-    return { message: undefined, result: blob}
+    return { message: undefined, result: blob }
   }
 }

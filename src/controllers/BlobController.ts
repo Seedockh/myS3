@@ -15,20 +15,16 @@ class BlobController {
   ): Promise<void | Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const blob = await authentifier.getBlob(req.params.id)
-    if (blob.result === undefined)
-      return res.status(400).send(blob.message)
+    if (blob.result === undefined) return res.status(400).send(blob.message)
 
     const bucket = await authentifier.getBucket(blob.result.bucket.id)
-    if (bucket.result === undefined)
-      return res.status(400).send(bucket.message)
+    if (bucket.result === undefined) return res.status(400).send(bucket.message)
 
     const getBinary = getEnvFolder.downloadFile(
       `${user.result.id}/${bucket!.result!.name}/${blob.result.name}`,
@@ -45,16 +41,13 @@ class BlobController {
   ): Promise<Response> => {
     const authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const blob = await authentifier.getBlob(req.params.id)
-    if (blob.result === undefined)
-      return res.status(400).send(blob.message)
+    if (blob.result === undefined) return res.status(400).send(blob.message)
 
     return res.status(200).send(blob)
   }
@@ -62,20 +55,16 @@ class BlobController {
   static shareBlob = async (req: Request, res: Response): Promise<Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const blob = await authentifier.getBlob(req.params.id)
-    if (blob.result === undefined)
-      return res.status(400).send(blob.message)
+    if (blob.result === undefined) return res.status(400).send(blob.message)
 
     const bucket = await authentifier.getBucket(blob.result.bucket.id)
-    if (bucket.result === undefined)
-      return res.status(400).send(bucket.message)
+    if (bucket.result === undefined) return res.status(400).send(bucket.message)
 
     const getSharedFile = getEnvFolder.shareFile(
       `${user.result.id}/${bucket!.result.name}/${blob.result.name}`,
@@ -95,16 +84,13 @@ class BlobController {
   static addBlob = async (req: Request, res: Response): Promise<Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const bucket = await authentifier.getBucket(req.params.name)
-    if (bucket.result === undefined)
-      return res.status(400).send(bucket.message)
+    if (bucket.result === undefined) return res.status(400).send(bucket.message)
 
     const storage = multer.diskStorage({
       destination: (req, file, callback) =>
@@ -154,23 +140,19 @@ class BlobController {
   static duplicateBlob = async (
     req: Request,
     res: Response,
-  ): Promise<Blob|Response> => {
+  ): Promise<Blob | Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const blob = await authentifier.getBlob(req.params.id)
-    if (blob.result === undefined)
-      return res.status(400).send(blob.message)
+    if (blob.result === undefined) return res.status(400).send(blob.message)
 
     const bucket = await authentifier.getBucket(blob.result.bucket.id)
-    if (bucket.result === undefined)
-      return res.status(400).send(bucket.message)
+    if (bucket.result === undefined) return res.status(400).send(bucket.message)
 
     const copyName = getEnvFolder.duplicateFile(
       `${user.result.id}/${bucket.result.name}/${blob.result.name}`,
@@ -194,25 +176,23 @@ class BlobController {
   ): Promise<Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const blob = await authentifier.getBlob(req.params.id)
-    if (blob.result === undefined)
-      return res.status(400).send(blob.message)
+    if (blob.result === undefined) return res.status(400).send(blob.message)
 
     const bucket = await authentifier.getBucket(blob.result.bucket.id)
-    if (bucket.result === undefined)
-      return res.status(400).send(bucket.message)
+    if (bucket.result === undefined) return res.status(400).send(bucket.message)
 
     const blobRepository: Repository<Blob> = getRepository(Blob)
     return blobRepository.delete(req.params.id).then(
       (result): Response => {
-        getEnvFolder.deleteFile(`${user.result.id}/${bucket.result.name}/${blob.result.name}`)
+        getEnvFolder.deleteFile(
+          `${user.result.id}/${bucket.result.name}/${blob.result.name}`,
+        )
         return res.send(result)
       },
     )

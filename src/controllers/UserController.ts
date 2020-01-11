@@ -13,12 +13,10 @@ class UserController {
   static getUser = async (req: Request, res: Response): Promise<Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     return res.status(200).send({
       id: user.result.id,
@@ -34,12 +32,10 @@ class UserController {
   ): Promise<Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     return res.status(200).send({
       list: getEnvFolder.readFolder(`${user.result.id}`),
@@ -85,12 +81,10 @@ class UserController {
   ): Promise<void | Response> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const userRepository: Repository<User> = getRepository(User)
     userRepository.merge(user.result, req.body)
@@ -108,12 +102,10 @@ class UserController {
   ): Promise<Response | void> => {
     const authentifier: Authentifier = new Authentifier(req.headers)
     const token = authentifier.getToken()
-    if (token.result === undefined)
-      return res.status(400).send(token.message)
+    if (token.result === undefined) return res.status(400).send(token.message)
 
     const user = await authentifier.getUser()
-    if (user.result === undefined)
-      return res.status(400).send(user.message)
+    if (user.result === undefined) return res.status(400).send(user.message)
 
     const userRepository: Repository<User> = getRepository(User)
     userRepository.delete(user.result.id).then(
