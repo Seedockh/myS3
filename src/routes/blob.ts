@@ -10,6 +10,12 @@ router.get('/retrieve/:id([0-9]+)', [checkJwt], BlobController.retrieveBlob)
 // Get blob metadatas infos
 router.get('/getinfos/:id([0-9]+)', [checkJwt], BlobController.getBlobInfos)
 
+// Share a blob to the assets
+router.get('/share/:id([0-9]+)', [checkJwt], BlobController.shareBlob)
+
+// Get a public blob
+router.get('/public/:name', BlobController.getPublicBlob)
+
 // Add a blob
 router.post('/add/:bucketName', [checkJwt], BlobController.addBlob)
 

@@ -74,37 +74,21 @@ export default {
       this.token = await this.getToken()
       axios.get(
         // URL
-        `http://localhost:1337/blob/retrieve/${id}`,
+        `http://localhost:1337/blob/share/${id}`,
         // HEADERS
         {
           headers: { 'Authorization': `Bearer ${this.token}` },
-          responseType: 'arraybuffer',
         }
       ).then( result => {
-        axios.get(
-          // URL
-          `http://localhost:1337/blob/getInfos/${id}`,
-          // HEADERS
-          {
-            headers: { 'Authorization': `Bearer ${this.token}` },
-          }
-        ).then( blobInfos => {
-          const dlUrl = window.URL.createObjectURL(new Blob([result.data]))
-          const dlLink = document.createElement('a')
-          dlLink.href = dlUrl
-          dlLink.setAttribute('download', blobInfos.data.name)
-          document.body.appendChild(dlLink)
+        const url = `http://localhost:1337/blob/public/${result.data}`
+        const clickableLink = document.createElement('a')
+        clickableLink.href = url
+        clickableLink.innerHTML = url
+        clickableLink.setAttribute('download', result.data)
 
-          const clickableLink = document.createElement('a')
-          clickableLink.href = dlLink
-          clickableLink.innerHTML = `${blobInfos.data.name}`
-
-          swal({
-            title: "Share link :",
-            content: clickableLink,
-          })
-        }).catch( error => {
-            return swal(error.response.data.message, { icon: "warning" })
+        swal({
+          title: "Share link :",
+          content: clickableLink,
         })
       }).catch( error => {
           return swal(error.response.data.message, { icon: "warning" })

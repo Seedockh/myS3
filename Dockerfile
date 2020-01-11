@@ -6,7 +6,7 @@ ADD ./docker/initdb.sql /docker-entrypoint-initdb.d
 WORKDIR /home/app/
 
 # Setup server
-RUN npm install -g yarn
+RUN npm install -g yarn npx
 COPY package.json .
 ADD . /home/app/
 RUN npm install --silent

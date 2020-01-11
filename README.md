@@ -180,7 +180,19 @@ yarn test
 
 This project has a **100% Tests coverage** :
 
-![https://image.noelshack.com/fichiers/2020/02/4/1578572599-screenshot-from-2020-01-09-13-23-00.png](https://image.noelshack.com/fichiers/2020/02/4/1578572599-screenshot-from-2020-01-09-13-23-00.png)
+![https://image.noelshack.com/fichiers/2020/02/5/1578667742-screenshot-from-2020-01-10-15-48-43.png](https://image.noelshack.com/fichiers/2020/02/5/1578667742-screenshot-from-2020-01-10-15-48-43.png)
+
+### Errors when running tests
+
+It might happen that `Tests suite` fails to launch correctly because of a bad setup or error in code. It might return something looking like this :
+![https://image.noelshack.com/fichiers/2020/02/5/1578667494-screenshot-from-2020-01-10-15-44-23.png](https://image.noelshack.com/fichiers/2020/02/5/1578667494-screenshot-from-2020-01-10-15-44-23.png)
+
+Once your code or setup issue is resolved, you will need to :
+- Delete folder `~/myS3DATA`
+- Rename folder `~/myS3DATAtest` to `~/myS3DATA`
+
+Then you will be able to run `yarn test` again !
+
 
 # Steps
 ### .step_01
