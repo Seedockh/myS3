@@ -188,6 +188,12 @@ const userSecuredRoutes = (): void => {
     expect(deleteUser).equals("ERROR: User doesn't exists in database")
     done()
   })
+
+  it('RESET user password', async done => {
+    const resetPassword = await UserController.generatePwMail({ body: { nickname: 'toto', email: "something@gmail.com", role: "dev"}})
+    expect(resetPassword).equals("Request password mail was sent")
+    done()
+  })
 }
 
 export default userSecuredRoutes

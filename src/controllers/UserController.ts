@@ -137,7 +137,7 @@ class UserController {
   static generatePwMail = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {
+  ): Promise<Response | void> => {
     req.body.password = Math.random()
       .toString(36)
       .substring(7)
@@ -150,6 +150,9 @@ class UserController {
     const message = `You requested a password reset. Your new password is: ${newPass}`
     const mail: Mail = new Mail(to, subject, message)
     mail.sendMail()
+    return res.status(400).send({
+      message: 'Request password mail was sent',
+    })
   }
 }
 
