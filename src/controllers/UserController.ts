@@ -172,8 +172,9 @@ class UserController {
       where: { email: req.body.email },
     })
     if (user === undefined)
-      return res.status(400).send({ message: 'Sorry, this email address is unknown'})
-
+      return res
+        .status(400)
+        .send({ message: 'Sorry, this email address is unknown' })
 
     if (user !== undefined) {
       const newPass: string = Math.random()
