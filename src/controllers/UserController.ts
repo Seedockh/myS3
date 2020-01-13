@@ -171,12 +171,16 @@ class UserController {
     const user = await userRepository.findOne({
       where: { email: req.body.email },
     })
+    if (user === undefined)
+      return res.status(400).send({ message: 'Sorry, this email address is unknown'})
 
-    if (user != undefined) {
+
+    if (user !== undefined) {
       const newPass: string = Math.random()
         .toString(36)
         .substring(7)
       user.password = newPass
+      user.hashPassword()
 
       userRepository.save(user).then(
         (): Response => {
