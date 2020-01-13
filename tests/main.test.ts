@@ -80,7 +80,7 @@ describe(':: Database & Environment initialization', (): void => {
     expect(new FileManager('darwin').init('myS3DATA/tests'))
       .equals(`${process.env.HOME}/Library/Preferences/myS3DATA/tests`)
 
-    expect(new FileManager('windows').init('myS3DATA/tests'))
+    expect(new FileManager('win32').init('myS3DATA/tests'))
       .equals(`${process.env.HOME}/myS3DATA/tests`)
 
     expect(fs.existsSync(dataDir)).equals(true)
