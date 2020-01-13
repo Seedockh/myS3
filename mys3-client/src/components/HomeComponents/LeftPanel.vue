@@ -48,8 +48,9 @@
 
         this.getBlobs(bucket)
       })
-      this.$root.$on('updateNickname', nickname => {
-        this.result.nickname = nickname
+      this.$root.$on('updateUserInfos', data => {
+        this.result.nickname = data.nickname
+        this.result.email = data.email
       })
     },
     methods: {

@@ -6,7 +6,7 @@
     <input type="password" name="oldPassword" placeholder="Old password" v-model="oldPassword">
     <input type="password" name="newPassword" placeholder="New password" v-model="newPassword">
     <input type="password" name="newPasswordConfirm" placeholder="New password confirmation" v-model="newPasswordConfirm">
-    <button class="btn-submit" v-on:click="handleEdit" name="btn-mys3-edituser">Upload a file</button>
+    <button class="btn-submit" v-on:click="handleEdit" name="btn-mys3-edituser">Update</button>
   </div>
 </template>
 
@@ -51,28 +51,34 @@ export default {
         data.email = this.email
       }
 
-      if (this.oldPassword.length > 0 && this.newPassword.length > 0) {
-        const isValid = await this.checkPassword()
+      if (this.newPassword.length > 0) {
+        if (this.oldPassword.length > 0) {
+          const isValid = await this.checkPassword()
+          if (isValid.data) {
+            if (this.newPassword.length < 3)
+              return swal(`Password must be 3 characters long`, {
+                icon: "warning",
+              })
 
-        if (isValid) {
-          if (this.newPassword.length < 3)
-            return swal(`Password must be 3 characters long`, {
+            if (this.newPassword !== this.newPasswordConfirm)
+              return swal(`Password confirmation is wrong`, {
+                icon: "warning",
+              })
+            data.password = this.newPassword
+          } else {
+            return swal(`Old password is wrong !`, {
               icon: "warning",
             })
-
-          if (this.newPassword !== this.newPasswordConfirm)
-            return swal(`Password confirmation is wrong`, {
-              icon: "warning",
-            })
-          data.password = this.newPassword
+          }
         } else {
-          return swal(`Old password is wrong !`, {
+          return swal(`Old password is required !`, {
             icon: "warning",
           })
         }
       }
 
-      return await this.editUser(data)
+      await this.editUser(data)
+      if (this.oldPassword.length > 0 && this.newPassword.length > 0) this.destroyToken()
     },
 
     async checkPassword() {
@@ -104,7 +110,7 @@ export default {
           }
         }
       ).then( result => {
-        this.$root.$emit('updateNickname', result.data.nickname)
+        this.$root.$emit('updateUserInfos', result.data)
         return swal(`User successfully updated !`, {
           icon: "success",
         })
