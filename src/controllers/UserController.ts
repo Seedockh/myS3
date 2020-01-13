@@ -93,7 +93,11 @@ class UserController {
       const auth = new Authentifier(userToken)
       const authUser = await auth.getUser()
       if (!authUser.user) return res.status(400).send(authUser.message)
-      return res.status(200).send(authUser.user.checkIfUnencryptedPasswordIsValid(req.body.password))
+      return res
+        .status(200)
+        .send(
+          authUser.user.checkIfUnencryptedPasswordIsValid(req.body.password),
+        )
     } else {
       return res.status(400).send({
         message: 'ERROR : Missing Bearer token in your Authorizations',
