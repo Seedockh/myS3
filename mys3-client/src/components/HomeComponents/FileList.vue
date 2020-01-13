@@ -1,6 +1,6 @@
 <template>
   <div id="filelist-container">
-    <div v-if="list && list.files && list.files.length > 0" class="list-section">
+    <div v-if="list && list.files && list.files.length > 0 && !editUser" class="list-section">
       <div class="list-line" v-for="item in list.blobs" v-bind:key="item.id">
         <div class="list-item" @click="shareFile(item.id)">
           <p class="item-detail">{{ item.name }}</p>
@@ -13,23 +13,26 @@
         </div>
       </div>
     </div>
-    <div v-else-if="list && list.files && list.files.length === 0" class="list-section">
+    <div v-else-if="list && list.files && list.files.length === 0 && !editUser" class="list-section">
       <p class="list-information">Bucket "{{ selectedBucket }}" is empty.</p>
     </div>
-    <div v-else-if="!userId" class="list-section">
+    <div v-else-if="!userId  && !editUser" class="list-section">
       <p class="list-information">Please click on your account folder.</p>
+    </div>
+    <div v-else-if="user && editUser" class="edit-user-form">
+      <EditUser :user="user" />
     </div>
     <div v-else class="list-section">
       <p class="list-information">Please click on a bucket's name to list files.</p>
     </div>
-    <div v-if="selectedBucket" class="upload-blob-form">
+    <div v-if="selectedBucket && !editUser" class="upload-blob-form">
       <input type="file" ref="file" v-on:change="handleFile" name="mys3-upload" class="input-file"/>
       <button class="btn-submit" v-on:click="uploadFile" name="btn-mys3-upload">
         <img src="../../assets/upload-icon.png" alt="add file">
         Upload a file
       </button>
     </div>
-    <div v-if="userId && !selectedBucket" class="create-bucket-form">
+    <div v-if="userId && !selectedBucket && !editUser" class="create-bucket-form">
       <input type="text" placeholder="Enter bucket name here..." ref="newBucket" v-on:change="handleNewBucket" name="newBucket" />
       <button class="create-bucket" v-on:click="createBucket">
         <img src="../../assets/add-icon.png" alt="add bucket">
@@ -40,6 +43,7 @@
 </template>
 
 <script>
+import EditUser from './EditUser'
 import axios from 'axios'
 import querystring from 'querystring'
 import swal from 'sweetalert'
@@ -47,11 +51,14 @@ import tokenManager from '../../mixins/tokenManager'
 
 export default {
   name: 'FileList',
+  components: { EditUser },
   mixins: [tokenManager],
   data() {
     return {
       list: null,
       userId: null,
+      user: null,
+      editUser: false,
       selectedBucket: null,
       file: null,
       newBucket: '',
@@ -63,6 +70,11 @@ export default {
       this.list = data.list
       this.userId = data.userId
       this.selectedBucket = data.bucketName
+    })
+
+    this.$root.$on('userEdition', data => {
+      this.user = data.user
+      this.editUser = data.editUser
     })
   },
   methods: {
@@ -255,6 +267,10 @@ export default {
   align-items: flex-start;
   justify-content: space-between;
   padding: 2em;
+}
+
+.edit-user-form {
+  width: 100%;
 }
 
 .list-section {

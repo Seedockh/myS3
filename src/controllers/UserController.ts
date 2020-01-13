@@ -82,6 +82,25 @@ class UserController {
       })
   }
 
+  // Check Password
+  static checkPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<void | Response> => {
+    const userRepository: Repository<User> = getRepository(User)
+    if (req.headers.authorization) {
+      const userToken = req.headers.authorization.replace('Bearer ', '')
+      const auth = new Authentifier(userToken)
+      const authUser = await auth.getUser()
+      if (!authUser.user) return res.status(400).send(authUser.message)
+      return res.status(200).send(authUser.user.checkIfUnencryptedPasswordIsValid(req.body.password))
+    } else {
+      return res.status(400).send({
+        message: 'ERROR : Missing Bearer token in your Authorizations',
+      })
+    }
+  }
+
   // Edit user
   static editUser = async (
     req: Request,
@@ -94,10 +113,17 @@ class UserController {
       const authUser = await auth.getUser()
       if (!authUser.user) return res.status(400).send(authUser.message)
 
-      userRepository.merge(authUser.user, req.body)
+      const { nickname, email, password, role } = req.body
+      const user = new User()
+      if (nickname) user.nickname = nickname
+      if (email) user.email = email
+      if (password) user.password = password
+      user.hashPassword()
+
+      userRepository.merge(authUser.user, user)
       userRepository.save(authUser.user).then(
         (result: User): Response => {
-          return res.send(result)
+          return res.status(200).send(result)
         },
       )
     } else {
