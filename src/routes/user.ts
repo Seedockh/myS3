@@ -32,6 +32,6 @@ router.delete(
 )
 
 // Change password
-router.put('/generatePwMail/:uuid([0-9]+)', UserController.generatePwMail)
+router.put('/generatePwMail', UserController.generatePwMail)
 
 export default router
