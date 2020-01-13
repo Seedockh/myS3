@@ -87,7 +87,6 @@ class UserController {
     req: Request,
     res: Response,
   ): Promise<void | Response> => {
-    const userRepository: Repository<User> = getRepository(User)
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
       const auth = new Authentifier(userToken)
@@ -117,7 +116,7 @@ class UserController {
       const authUser = await auth.getUser()
       if (!authUser.user) return res.status(400).send(authUser.message)
 
-      const { nickname, email, password, role } = req.body
+      const { nickname, email, password } = req.body
       const user = new User()
       if (nickname) user.nickname = nickname
       if (email) user.email = email
