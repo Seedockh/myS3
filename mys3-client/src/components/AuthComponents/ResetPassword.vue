@@ -1,15 +1,14 @@
 <template>
-  <div id="login-container">
-    <div class="login-form">
-      <h3>Login</h3>
-      <label>Nickname</label>
-      <input type="text" v-model="nickname" name="nickname" />
-      <label>Password</label>
-      <input type="password" v-model="password" name="password" />
+  <div id="reset-password-container">
+    <div class="reset-form">
+      <h3>Reset password</h3>
+      <label>Email</label>
+      <input type="text" v-model="email" name="email" />
       <p class="errorMessage" v-if="error">{{ error }}</p>
-      <input type="submit" class="btn-submit" name="btn-mys3-login" value="Login" v-on:click="login()" />
+      <p class="successMessage" v-if="success">{{ success }}</p>
+      <input type="submit" class="btn-submit" name="btn-mys3-reset-password" value="Send" v-on:click="resetPassword()" />
       <a href="" v-on:click="goToRegister">Create account</a>
-      <a href="" v-on:click="goToResetPassword">Forgot password?</a>
+      <a href="" v-on:click="goToLogin">Login</a>
     </div>
   </div>
 </template>
@@ -20,31 +19,33 @@ import querystring from 'querystring'
 import tokenManager from '../../mixins/tokenManager'
 
 export default {
-  name: 'Login',
+  name: 'ResetPassword',
   mixins: [tokenManager],
   props: {
     reloadToken: { type: Function }
   },
   data() {
-    return { nickname: '', password: '', error: undefined }
+    return { email: '', error: null, success: null }
   },
   methods: {
-    login() {
+    resetPassword() {
       this.error = undefined
-      axios.post(
+      if (!/.+@.+\..+/.test(this.email))
+        return this.error = `Email is incorrect`
+
+      axios.put(
         // URL
-        'http://localhost:1337/auth/login',
+        'http://localhost:1337/user/generatePwMail',
         // BODY
         querystring.stringify({
-          nickname: this.nickname,
-          password: this.password
+          email: this.email
         }),
         // HEADERS
         {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
-      ).then( result => {
-        this.createToken(result.data.token)
+      ).then(() => {
+        this.success = `Email successfully sent to your mailbox !`
       }).catch( error => {
         this.error = error.response.data.message
       })
@@ -55,9 +56,9 @@ export default {
       return this.$router.push({ name: 'register' })
     },
 
-    goToResetPassword(e) {
+    goToLogin(e) {
       e.preventDefault
-      return this.$router.push({ name: 'resetPassword' })
+      return this.$router.push({ name: 'login' })
     }
   }
 }
@@ -65,7 +66,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#login-container {
+#reset-password-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -76,7 +77,7 @@ label {
   margin-bottom: .5em;
 }
 
-.login-form {
+.reset-form {
   display: flex;
   flex-direction: column;
   width: 300px;
@@ -85,7 +86,7 @@ label {
   h3 {
     text-align: center;
   }
-  .login-form input {
+  .reset-form input {
     border-radius: 5px;
     padding: .5em 1em;
     outline: 0;
@@ -94,6 +95,12 @@ label {
 
 .errorMessage {
   color: red;
+  font-size: 12px;
+  text-align: right;
+}
+
+.successMessage {
+  color: green;
   font-size: 12px;
   text-align: right;
 }

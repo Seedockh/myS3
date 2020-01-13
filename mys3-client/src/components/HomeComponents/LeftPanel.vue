@@ -1,6 +1,7 @@
 <template>
   <div id="leftpanel-container">
-    <p class="leftpanel-title">{{ this.result.nickname }}</p>
+    <!--<p class="leftpanel-title" @click="updateUser">{{ this.result.nickname }}</p>-->
+    <p class="leftpanel-title" @click="editUser">{{ this.result.nickname }}</p>
     <ul class="userid">
       <li v-on:click="getBuckets">
         <img src="../../assets/folder-icon.png" alt="folder picture">
@@ -48,8 +49,42 @@
 
         this.getBlobs(bucket)
       })
+      this.$root.$on('updateUserInfos', data => {
+        this.result.nickname = data.nickname
+        this.result.email = data.email
+      })
     },
     methods: {
+      async updateUser() {
+        swal({
+          title: 'Test modal with input',
+          html: 'custom <strong>content</strong>',
+          input: 'text',
+          inputs: [],
+          preConfirm: (value) => {
+            if (!value) {
+              swal.showValidationError('Should not be empty!')
+            }
+          }
+        }).then( newName => {
+          this.renameBucket(newName)
+          this.editBucket = false
+        })
+        swal.addInput({
+          name: 'ajaxradio',
+          type: 'radio',
+          label: 'Ajax radio input label',
+          options: new Promise((resolve) => {
+            setTimeout(() => {
+              resolve({
+                ajax_foo: 'Ajax Foo',
+                ajax_bar: 'Ajax Bar',
+              })
+            }, 2000)
+          }),
+        })
+      },
+
       handleChangeBucket(folder, index) {
         if (this.selectedIndex === index && this.selectedBucket === folder)
           this.editBucket = true
@@ -60,6 +95,7 @@
       },
 
       async getBuckets() {
+        this.clearUser()
         this.token = await this.getToken()
         if (this.depth === 0) {
           axios.get(
@@ -106,6 +142,20 @@
             bucketName: null,
           })
         }
+      },
+
+      editUser() {
+        this.$root.$emit('userEdition', {
+          user: this.result,
+          editUser: true,
+        })
+      },
+
+      clearUser() {
+        this.$root.$emit('userEdition', {
+          user: null,
+          editUser: false,
+        })
       },
 
       /**
@@ -195,6 +245,7 @@
       },
 
       async getBlobs(bucket) {
+        this.clearUser()
         this.token = await this.getToken()
         if (typeof bucket === 'object')
           bucket = bucket.toElement.innerText.trim()
@@ -279,6 +330,7 @@
   margin-top: 0;
   border-radius: 7px 0 0 0;
   text-align: center;
+  cursor: pointer;
 }
 
 ul {

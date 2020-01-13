@@ -86,7 +86,7 @@ const filemanager = (): void => {
     }
     const file = envFolder.downloadFile('testuser/testbucket/test-file.txt')
     expect(JSON.stringify(file)).equals(JSON.stringify({
-      file: `${process.env.HOME}/myS3DATA/tests/testuser/testbucket/test-file.txt`,
+      file: path.normalize(`${process.env.HOME}/myS3DATA/tests/testuser/testbucket/test-file.txt`),
       message: null
     }))
     done()

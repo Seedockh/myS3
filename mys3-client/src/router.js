@@ -3,6 +3,7 @@ import auth from './middleware/auth'
 import Home from './components/Home.vue'
 import Login from './components/AuthComponents/Login.vue'
 import Register from './components/AuthComponents/Register.vue'
+import ResetPassword from './components/AuthComponents/ResetPassword.vue'
 
 const router = new VueRouter({
   mode: 'history',
@@ -11,6 +12,7 @@ const router = new VueRouter({
     { name: 'home', path: '/', component: Home, meta: { middleware: auth } },
     { name: 'login', path: '/login', component: Login },
     { name: 'register', path: '/register', component: Register },
+    { name: 'resetPassword', path: '/resetPassword', component: ResetPassword },
   ]
 })
 
