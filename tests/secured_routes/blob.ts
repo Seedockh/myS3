@@ -199,6 +199,29 @@ const blobSecuredRoutes = (): void => {
     })
   })
 
+  it('RETRIEVES a private blob successfully', async done => {
+    getData(`http://localhost:7331/blob/getinfos/1`,
+    {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` },
+    })
+    .then(blob => {
+      axios.get(`http://localhost:7331/blob/private/${blob.name}`)
+      .then(result => {
+        expect(result.data).equals('This is a test file')
+        done()
+      })
+    })
+  })
+
+  it('FAILS to retrieve a private blob successfully', async done => {
+    getData("http://localhost:7331/blob/private/failing-file.txt",
+    { method: 'GET' }).then(result => {
+      expect(result.message).equals("This file does not exist.")
+      done()
+    })
+  })
+
   it('UPDATES the path of blob when renaming bucket', done => {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
