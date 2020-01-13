@@ -18,8 +18,11 @@ router.get('/get', [checkJwt], UserController.getUser)
 // Get user buckets
 router.get('/getBuckets', [checkJwt], UserController.getBuckets)
 
-//Create a new user
+// Create a new user
 router.post('/createNew', UserController.createUser)
+
+// Check password
+router.post('/checkPassword', UserController.checkPassword)
 
 //Edit one user
 router.put('/edit', [checkJwt], UserController.editUser)
