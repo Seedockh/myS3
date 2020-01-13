@@ -35,11 +35,13 @@ export default class FileManager {
     return dataDir
   }
 
-  readFolder(path: string): Array<string|fs.Dirent> | string | fs.Dirent {
+  readFolder(path: string): Array<string | fs.Dirent> | string | fs.Dirent {
     if (!fs.existsSync(`${this.defaultPath}/${path}`))
       return `Folder ${this.defaultPath}/${path} does not exist.`
 
-    const files = fs.readdirSync(`${this.defaultPath}/${path}`, { withFileTypes: true })
+    const files = fs.readdirSync(`${this.defaultPath}/${path}`, {
+      withFileTypes: true,
+    })
     return files
   }
 

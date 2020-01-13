@@ -82,9 +82,10 @@ class BucketController {
             // ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
             // Create folder with bucket name
             if (parent)
-              getEnvFolder.createFolder(`${result.user.id}/${parent}/${result.name}`)
-            else
-              getEnvFolder.createFolder(`${result.user.id}/${result.name}`)
+              getEnvFolder.createFolder(
+                `${result.user.id}/${parent}/${result.name}`,
+              )
+            else getEnvFolder.createFolder(`${result.user.id}/${result.name}`)
 
             return res.send(result)
           },
