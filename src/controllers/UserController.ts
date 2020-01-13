@@ -161,6 +161,38 @@ class UserController {
       })
     }
   }
+
+  // Generate a mail to reset password
+  static generatePwMail = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response | void> => {
+    const userRepository: Repository<User> = getRepository(User)
+    const user = await userRepository.findOne({
+      where: { email: req.body.email },
+    })
+
+    if (user != undefined) {
+      const newPass: string = Math.random()
+        .toString(36)
+        .substring(7)
+      user.password = newPass
+
+      userRepository.save(user).then(
+        (): Response => {
+          const { email } = req.body
+          const to: string = email
+          const subject = 'Efrei myS3'
+          const message = `You requested a password reset. Your new password is: ${newPass}`
+          const mail: Mail = new Mail(to, subject, message)
+          mail.sendMail()
+          return res.send({
+            message: 'Request password mail was sent',
+          })
+        },
+      )
+    }
+  }
 }
 
 export default UserController

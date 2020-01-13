@@ -82,7 +82,7 @@ const userSecuredRoutes = (): void => {
     getData("http://localhost:7331/user/getAll",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
-      expect(result.users.length).equals(2)
+      expect(result.users.length).equals(3)
       expect(result.users[0].nickname).equals("nonadmin")
       expect(result.users[0].email).equals("nonadmin@gmail.com")
       expect(result.users[0].role).equals("REGULAR")

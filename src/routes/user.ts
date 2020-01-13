@@ -34,4 +34,7 @@ router.delete(
   UserController.deleteUser,
 )
 
+// Change password
+router.put('/generatePwMail', UserController.generatePwMail)
+
 export default router
