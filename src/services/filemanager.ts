@@ -89,8 +89,13 @@ export default class FileManager {
     }
   }
 
-  downloadPublicFile(filePath: string): ProcessFile {
+  downloadSharedFile(filePath: string, permission: string): ProcessFile {
     if (fs.existsSync(`${this.defaultPath}/public/${filePath}`)) {
+      if (permission === 'public')
+        fs.chmodSync(`${this.defaultPath}/public/${filePath}`, 0o766)
+      else
+        fs.chmodSync(`${this.defaultPath}/public/${filePath}`, 0o744)
+
       return {
         file: path.resolve(`${this.defaultPath}/public/${filePath}`),
         message: null,
