@@ -49,9 +49,20 @@ const userPublicRoutes = (): void => {
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     const data = 'email=jack@gmail.com'
 
-    getData(`http://localhost:7331/user/generatePwMail`, 
+    getData(`http://localhost:7331/user/generatePwMail`,
     { method: 'PUT', headers: headers, body: data }).then(result => {
       expect(result.message).equals("Request password mail was sent")
+      done()
+    })
+  })
+
+  it('FAILS to reset user password with wrong email', async done => {
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    const data = 'email=jack'
+
+    getData(`http://localhost:7331/user/generatePwMail`,
+    { method: 'PUT', headers: headers, body: data }).then(result => {
+      expect(result.message).equals('Sorry, this email address is unknown')
       done()
     })
   })

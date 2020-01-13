@@ -176,27 +176,25 @@ class UserController {
         .status(400)
         .send({ message: 'Sorry, this email address is unknown' })
 
-    if (user !== undefined) {
-      const newPass: string = Math.random()
-        .toString(36)
-        .substring(7)
-      user.password = newPass
-      user.hashPassword()
+    const newPass: string = Math.random()
+      .toString(36)
+      .substring(7)
+    user.password = newPass
+    user.hashPassword()
 
-      userRepository.save(user).then(
-        (): Response => {
-          const { email } = req.body
-          const to: string = email
-          const subject = 'Efrei myS3'
-          const message = `You requested a password reset. Your new password is: ${newPass}`
-          const mail: Mail = new Mail(to, subject, message)
-          mail.sendMail()
-          return res.send({
-            message: 'Request password mail was sent',
-          })
-        },
-      )
-    }
+    userRepository.save(user).then(
+      (): Response => {
+        const { email } = req.body
+        const to: string = email
+        const subject = 'Efrei myS3'
+        const message = `You requested a password reset. Your new password is: ${newPass}`
+        const mail: Mail = new Mail(to, subject, message)
+        mail.sendMail()
+        return res.send({
+          message: 'Request password mail was sent',
+        })
+      },
+    )
   }
 }
 
