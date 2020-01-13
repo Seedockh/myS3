@@ -9,6 +9,7 @@
 import axios from 'axios'
 import LeftPanel from './HomeComponents/LeftPanel.vue'
 import FileList from './HomeComponents/FileList.vue'
+import tokenManager from '../mixins/tokenManager'
 
 export default {
   name: 'Home',
@@ -16,16 +17,18 @@ export default {
     LeftPanel,
     FileList,
   },
+  mixins: [tokenManager],
   data() {
-    return { user: { id: null, nickname: null, email: null } }
+    return { user: { id: null, nickname: null, email: null }, token: null }
   },
-  mounted() {
+  async mounted() {
+    this.token = await this.getToken()
     axios.get(
       // URL
       'http://localhost:1337/user/get',
       // HEADERS
       {
-        headers: { 'Authorization': `Bearer ${localStorage.token}` }
+        headers: { 'Authorization': `Bearer ${this.token}` }
       }
     ).then( (result) => {
       this.user = {

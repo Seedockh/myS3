@@ -1,6 +1,6 @@
 <template>
   <div id="leftpanel-container">
-    <p class="leftpanel-title">{{ this.result.nickname }}</p>
+    <p class="leftpanel-title" @click="editUser">{{ this.result.nickname }}</p>
     <ul class="userid">
       <li v-on:click="getBuckets">
         <img src="../../assets/folder-icon.png" alt="folder picture">
@@ -48,18 +48,23 @@
 
         this.getBlobs(bucket)
       })
+      this.$root.$on('updateUserInfos', data => {
+        this.result.nickname = data.nickname
+        this.result.email = data.email
+      })
     },
     methods: {
       handleChangeBucket(folder, index) {
         if (this.selectedIndex === index && this.selectedBucket === folder)
           this.editBucket = true
         else this.editBucket = false
-        
+
         this.selectedIndex = index
         this.selectedBucket = folder
       },
 
       async getBuckets() {
+        this.clearUser()
         this.token = await this.getToken()
         if (this.depth === 0) {
           axios.get(
@@ -104,6 +109,20 @@
             bucketName: null,
           })
         }
+      },
+
+      editUser() {
+        this.$root.$emit('userEdition', {
+          user: this.result,
+          editUser: true,
+        })
+      },
+
+      clearUser() {
+        this.$root.$emit('userEdition', {
+          user: null,
+          editUser: false,
+        })
       },
 
       /**
@@ -193,6 +212,7 @@
       },
 
       async getBlobs(bucket) {
+        this.clearUser()
         this.token = await this.getToken()
         if (typeof bucket === 'object')
           bucket = bucket.toElement.innerText.trim()
@@ -267,6 +287,7 @@
   margin-top: 0;
   border-radius: 7px 0 0 0;
   text-align: center;
+  cursor: pointer;
 }
 
 ul {
