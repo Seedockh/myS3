@@ -35,17 +35,18 @@ export default class FileManager {
     return dataDir
   }
 
-  readFolder(path: string): Array<string> | string {
+  readFolder(path: string): Array<string|fs.Dirent> | string | fs.Dirent {
     if (!fs.existsSync(`${this.defaultPath}/${path}`))
       return `Folder ${this.defaultPath}/${path} does not exist.`
 
-    const files = fs.readdirSync(`${this.defaultPath}/${path}`)
+    const files = fs.readdirSync(`${this.defaultPath}/${path}`, { withFileTypes: true })
     return files
   }
 
   createFolder(path: string): string {
     if (process.env.NODE_ENV === 'test' && !this.defaultPath.includes('/tests'))
       this.defaultPath += '/tests'
+
     if (fs.existsSync(`${this.defaultPath}/${path}`)) {
       return `Folder ${this.defaultPath}/${path} already exists.`
     } else {

@@ -62,7 +62,7 @@ class BucketController {
     res: Response,
   ): Promise<void | Response> => {
     const bucketRepository: Repository<Bucket> = getRepository(Bucket)
-    const { name } = req.body
+    const { name, parent } = req.body
 
     if (req.headers.authorization) {
       const userToken = req.headers.authorization.replace('Bearer ', '')
@@ -81,7 +81,10 @@ class BucketController {
           (result): Response => {
             // ~/myS3DATA/$USER_UUID/$BUCKET_NAME/$BLOB_NAME
             // Create folder with bucket name
-            getEnvFolder.createFolder(`${result.user.id}/${result.name}`)
+            if (parent)
+              getEnvFolder.createFolder(`${result.user.id}/${parent}/${result.name}`)
+            else
+              getEnvFolder.createFolder(`${result.user.id}/${result.name}`)
 
             return res.send(result)
           },

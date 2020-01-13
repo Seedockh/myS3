@@ -39,7 +39,7 @@ const filemanager = (): void => {
 
     const folder = envFolder.readFolder('testingfolder')
     expect(JSON.stringify(folder))
-      .equals(JSON.stringify(['test1.txt', 'test2.txt', 'test3.txt']))
+      .equals(JSON.stringify([{name:'test1.txt'}, {name:'test2.txt'}, {name:'test3.txt'}]))
     done()
   })
 
@@ -138,7 +138,7 @@ const filemanager = (): void => {
   it('DOWNLOADS a public file successfully', async done => {
     const file = envFolder.downloadSharedFile('test-file.txt', 'public')
     expect(JSON.stringify(file)).equals(JSON.stringify({
-      file: `${process.env.HOME}/myS3DATA/tests/public/test-file.txt`,
+      file: path.normalize(`${process.env.HOME}/myS3DATA/tests/public/test-file.txt`),
       message: null
     }))
     expect('0' + (fs.statSync(`${process.env.HOME}/myS3DATA/tests/public/test-file.txt`).mode & 0o777).toString(8))
@@ -149,7 +149,7 @@ const filemanager = (): void => {
   it('DOWNLOADS a private file successfully', async done => {
     const file = envFolder.downloadSharedFile('test-file.txt', 'private')
     expect(JSON.stringify(file)).equals(JSON.stringify({
-      file: `${process.env.HOME}/myS3DATA/tests/public/test-file.txt`,
+      file: path.normalize(`${process.env.HOME}/myS3DATA/tests/public/test-file.txt`),
       message: null
     }))
     expect('0' + (fs.statSync(`${process.env.HOME}/myS3DATA/tests/public/test-file.txt`).mode & 0o777).toString(8))

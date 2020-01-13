@@ -42,7 +42,7 @@ export const getData = async (url, options) => {
 beforeAll(async () => {
   // This condition is only useful for Docker image
   if (process.env.NODE_ENV==='dev') process.env.NODE_ENV = 'test'
-  
+
   testServer = await app.listen(7331)
   connection = await createConnection()
   connection = await connection.synchronize(true).then(async () => {
@@ -80,7 +80,7 @@ describe(':: Database & Environment initialization', (): void => {
     expect(new FileManager('darwin').init('myS3DATA/tests'))
       .equals(`${process.env.HOME}/Library/Preferences/myS3DATA/tests`)
 
-    expect(new FileManager('windows').init('myS3DATA/tests'))
+    expect(new FileManager('win32').init('myS3DATA/tests'))
       .equals(`${process.env.HOME}/myS3DATA/tests`)
 
     expect(fs.existsSync(dataDir)).equals(true)

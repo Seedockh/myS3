@@ -26,14 +26,14 @@
       <input type="file" ref="file" v-on:change="handleFile" name="mys3-upload" class="input-file"/>
       <button class="btn-submit" v-on:click="uploadFile" name="btn-mys3-upload">
         <img src="../../assets/upload-icon.png" alt="add file">
-        Upload a file
+        Upload file
       </button>
     </div>
-    <div v-if="userId && !selectedBucket" class="create-bucket-form">
+    <div v-if="userId" class="create-bucket-form">
       <input type="text" placeholder="Enter bucket name here..." ref="newBucket" v-on:change="handleNewBucket" name="newBucket" />
       <button class="create-bucket" v-on:click="createBucket">
         <img src="../../assets/add-icon.png" alt="add bucket">
-        Create a new bucket
+        New bucket
       </button>
     </div>
   </div>
@@ -53,6 +53,7 @@ export default {
       list: null,
       userId: null,
       selectedBucket: null,
+      parentBucket: null,
       file: null,
       newBucket: '',
     }
@@ -121,6 +122,7 @@ export default {
     async createBucket() {
       this.token = await this.getToken()
       if (!this.newBucket) return swal(`No name specified !`, { icon: "warning" })
+      if (this.selectedBucket) this.parentBucket = this.selectedBucket
       this.newBucket = this.newBucket.replace(/ /g, '-')
 
       // OPTIMISTIC DATA SENT FOR NEW BUCKET
@@ -130,7 +132,10 @@ export default {
         // URL
         `http://localhost:1337/bucket/createNew`,
         // BODY
-        querystring.stringify({ name: this.newBucket }),
+        querystring.stringify({
+          name: this.newBucket,
+          parent: this.parentBucket,
+        }),
         // HEADERS
         { headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -358,8 +363,9 @@ export default {
   justify-content: space-around;
 }
   .upload-blob-form input {
-    width: 250px;
-    padding: 1em 0 1em 1em;
+    width: 100%;
+    height: 22px;
+    padding: .3em 1em .3em 1em;
     border: 2px solid grey;
     cursor: pointer;
     border-radius: 5px;
@@ -374,23 +380,25 @@ export default {
 
 .create-bucket-form {
   width: 90%;
-  margin-top: 2em;
+  margin-top: .5em;
   display: flex;
   justify-content: space-around;
 }
 .create-bucket-form input {
-  width: 250px;
+  width: 100%;
   padding-left: 1em;
   border-radius: 5px;
 }
 .create-bucket, .btn-submit {
-  width: 35%;
+  min-width: 140px;
   display: flex;
+  margin-left: .5em;
   align-items: center;
   justify-content: center;
   background: rgba(40,58,98,.8);
   border-radius: 5px;
-  padding: .5em;
+  height: 34px;
+  padding: 0 1em 0 1em;
   cursor: pointer;
   color: white;
 }

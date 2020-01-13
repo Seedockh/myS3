@@ -9,9 +9,9 @@
     </ul>
     <ul class="buckets-list" v-if="depth>=1">
       <li v-for="(folder, index) in currentFolders" @click="handleChangeBucket(folder,index)"
-        :class="{selected: index === selectedIndex}" v-bind:key="folder">
+        :class="{selected: index === selectedIndex}" v-bind:key="folder.name">
         <img src="../../assets/folder-icon.png" alt="folder picture">
-        <span v-on:click="getBlobs">{{ folder }}</span>
+        <span v-on:click="getBlobs">{{ folder.name }}</span>
         <img v-on:click="deleteBucket" src="../../assets/delete-icon.png" class="delete-icon" alt="folder picture">
       </li>
     </ul>
@@ -54,7 +54,7 @@
         if (this.selectedIndex === index && this.selectedBucket === folder)
           this.editBucket = true
         else this.editBucket = false
-        
+
         this.selectedIndex = index
         this.selectedBucket = folder
       },
@@ -71,11 +71,13 @@
             }
           ).then( result => {
             this.depth++
+            //console.log(result)
             this.$root.$emit('sendDataToFileListComponent', {
               list: null,
               userId: this.result.id,
               bucketName: null,
             })
+
             return this.currentFolders = result.data.list
           }).catch( error => {
             swal(error.response.data.message, {
@@ -208,6 +210,16 @@
               headers: { 'Authorization': `Bearer ${this.token}` }
             }
           ).then( result => {
+            const { files, blobs } = result.data
+            console.log(files)
+            //console.log(blobs)
+            const diff = files.length - blobs.length
+            if (diff > 0) {
+              blobs.map(file => {
+                console.log(file)
+              })
+            }
+
             return this.$root.$emit('sendDataToFileListComponent', {
               list: result.data,
               userId: this.result.id,

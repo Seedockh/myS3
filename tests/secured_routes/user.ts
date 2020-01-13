@@ -87,7 +87,7 @@ const userSecuredRoutes = (): void => {
     getData("http://localhost:7331/user/getBuckets",
     { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } })
     .then(result => {
-      expect(JSON.stringify(result)).equals(JSON.stringify({ list: ["updatedblobbucket"] }))
+      expect(JSON.stringify(result)).equals(JSON.stringify({ list: [{name: "updatedblobbucket"}] }))
       done()
     })
   })
