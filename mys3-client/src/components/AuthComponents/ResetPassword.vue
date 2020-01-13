@@ -44,7 +44,7 @@ export default {
         {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
-      ).then( result => {
+      ).then(() => {
         this.success = `Email successfully sent to your mailbox !`
       }).catch( error => {
         this.error = error.response.data.message
