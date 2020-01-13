@@ -121,7 +121,10 @@ class BlobController {
   }
 
   static getPublicBlob = (req: Request, res: Response): Response | void => {
-    const publicLink = getEnvFolder.downloadSharedFile(req.params.name, 'public')
+    const publicLink = getEnvFolder.downloadSharedFile(
+      req.params.name,
+      'public',
+    )
     if (publicLink.file === null)
       return res.status(400).send({ message: publicLink.message })
 
@@ -129,7 +132,10 @@ class BlobController {
   }
 
   static getPrivateBlob = (req: Request, res: Response): Response | void => {
-    const privateLink = getEnvFolder.downloadSharedFile(req.params.name, 'private')
+    const privateLink = getEnvFolder.downloadSharedFile(
+      req.params.name,
+      'private',
+    )
     if (privateLink.file === null)
       return res.status(400).send({ message: privateLink.message })
 

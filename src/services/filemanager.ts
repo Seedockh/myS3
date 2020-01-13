@@ -93,8 +93,7 @@ export default class FileManager {
     if (fs.existsSync(`${this.defaultPath}/public/${filePath}`)) {
       if (permission === 'public')
         fs.chmodSync(`${this.defaultPath}/public/${filePath}`, 0o766)
-      else
-        fs.chmodSync(`${this.defaultPath}/public/${filePath}`, 0o744)
+      else fs.chmodSync(`${this.defaultPath}/public/${filePath}`, 0o744)
 
       return {
         file: path.resolve(`${this.defaultPath}/public/${filePath}`),
