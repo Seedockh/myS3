@@ -19,12 +19,12 @@ The goal here is to recreate an **`AWS S3`** docker container, working only loca
 
 ### Reset Password
 
-![]()
+![https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-17-58.png](https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-17-58.png)
 
 ### Edit User
 
 By clicking on your nickname :
-![]()
+![https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-18-17.png](https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-18-17.png)
 
 ### Create bucket
 
@@ -60,11 +60,11 @@ By clicking on your bucket folder :
 
 ![https://image.noelshack.com/fichiers/2020/02/4/1578572255-screenshot-from-2020-01-09-13-17-25.png](https://image.noelshack.com/fichiers/2020/02/4/1578572255-screenshot-from-2020-01-09-13-17-25.png)
 
-### Generate Share Link
+### Generate Share Link with Read-Only or Read|Write permissions
 
 By clicking on your blob :
 
-![https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-06-40.png](https://image.noelshack.com/fichiers/2020/02/4/1578571824-screenshot-from-2020-01-09-13-06-40.png)
+![https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-18-31.png](https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-18-31.png)
 
 # Run with Docker-Compose
 
@@ -187,9 +187,9 @@ Once it is closed, you can run this command in root directory :
 yarn test
 ```
 
-This project has a **100% Tests coverage** :
+This project has a **100% Tests coverage** 🚀 :
 
-![https://image.noelshack.com/fichiers/2020/02/5/1578667742-screenshot-from-2020-01-10-15-48-43.png](https://image.noelshack.com/fichiers/2020/02/5/1578667742-screenshot-from-2020-01-10-15-48-43.png)
+![https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-17-14.png](https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-17-14.png)
 
 ### Errors when running tests
 
