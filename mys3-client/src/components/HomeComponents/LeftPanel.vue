@@ -136,14 +136,14 @@
         name = name.replace(/ /g, '-')
 
         // OPTIMISTIC RENAME
-        this.currentFolders[this.currentFolders.indexOf(this.selectedBucket)] = name
+        this.currentFolders[this.currentFolders.indexOf(this.selectedBucket)] = { name: name }
         const optimisticName = this.currentFolders[this.currentFolders.indexOf(this.selectedBucket)]
         this.getBuckets()
 
         // FETCHING REAL DATA
         axios.put(
           // URL
-          `http://localhost:1337/bucket/edit/${this.selectedBucket}`,
+          `http://localhost:1337/bucket/edit/${this.selectedBucket.name}`,
           // BODY
           querystring.stringify({
             name: name,
@@ -190,11 +190,11 @@
           if (confirm) {
             // OPTIMISTIC DELETE
             const bucketsBackup = this.currentFolders
-            this.currentFolders.splice(this.currentFolders.indexOf(this.selectedBucket), 1)
+            this.currentFolders.splice(this.currentFolders.indexOf(this.selectedBucket.name), 1)
             this.getBuckets()
 
             axios.delete(
-              `http://localhost:1337/bucket/delete/${this.selectedBucket}`,
+              `http://localhost:1337/bucket/delete/${this.selectedBucket.name}`,
               // HEADERS
               {
                 headers: { 'Authorization': `Bearer ${this.token}` }
