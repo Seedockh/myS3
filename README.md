@@ -244,7 +244,7 @@ Then you will be able to run `yarn test` again !
 - [X] Of course your app is responsive :)
 
 ### bonus
-- [ ] Add bucket and|or blob sharing permission (read|write)
+- [X] Add bucket and|or blob sharing permission (read|write)
 - [X] Front : PRPL
 
 ### required
