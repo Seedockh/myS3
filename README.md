@@ -15,7 +15,12 @@ The goal here is to recreate an **`AWS S3`** docker container, working only loca
 
 ### Login
 
-![https://image.noelshack.com/fichiers/2020/02/4/1578572012-screenshot-from-2020-01-09-13-13-21.png](https://image.noelshack.com/fichiers/2020/02/4/1578572012-screenshot-from-2020-01-09-13-13-21.png)
+![https://image.noelshack.com/fichiers/2020/03/2/1578959991-screenshot-from-2020-01-14-00-59-26.png](https://image.noelshack.com/fichiers/2020/03/2/1578959991-screenshot-from-2020-01-14-00-59-26.png)
+
+### Edit User
+
+By clicking on your nickname :
+![]()
 
 ### Create bucket
 
