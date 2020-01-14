@@ -17,6 +17,10 @@ The goal here is to recreate an **`AWS S3`** docker container, working only loca
 
 ![https://image.noelshack.com/fichiers/2020/03/2/1578959991-screenshot-from-2020-01-14-00-59-26.png](https://image.noelshack.com/fichiers/2020/03/2/1578959991-screenshot-from-2020-01-14-00-59-26.png)
 
+### Reset Password
+
+![]()
+
 ### Edit User
 
 By clicking on your nickname :
