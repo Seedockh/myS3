@@ -60,7 +60,6 @@ export default {
       user: null,
       editUser: false,
       selectedBucket: null,
-      parentBucket: null,
       file: null,
       newBucket: '',
     }
@@ -134,7 +133,6 @@ export default {
     async createBucket() {
       this.token = await this.getToken()
       if (!this.newBucket) return swal(`No name specified !`, { icon: "warning" })
-      if (this.selectedBucket) this.parentBucket = this.selectedBucket
       this.newBucket = this.newBucket.replace(/ /g, '-')
 
       // OPTIMISTIC DATA SENT FOR NEW BUCKET
@@ -146,7 +144,6 @@ export default {
         // BODY
         querystring.stringify({
           name: this.newBucket,
-          parent: this.parentBucket,
         }),
         // HEADERS
         { headers: {

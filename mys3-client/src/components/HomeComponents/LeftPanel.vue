@@ -1,6 +1,5 @@
 <template>
   <div id="leftpanel-container">
-    <!--<p class="leftpanel-title" @click="updateUser">{{ this.result.nickname }}</p>-->
     <p class="leftpanel-title" @click="editUser">{{ this.result.nickname }}</p>
     <ul class="userid">
       <li v-on:click="getBuckets">
@@ -55,36 +54,6 @@
       })
     },
     methods: {
-      async updateUser() {
-        swal({
-          title: 'Test modal with input',
-          html: 'custom <strong>content</strong>',
-          input: 'text',
-          inputs: [],
-          preConfirm: (value) => {
-            if (!value) {
-              swal.showValidationError('Should not be empty!')
-            }
-          }
-        }).then( newName => {
-          this.renameBucket(newName)
-          this.editBucket = false
-        })
-        swal.addInput({
-          name: 'ajaxradio',
-          type: 'radio',
-          label: 'Ajax radio input label',
-          options: new Promise((resolve) => {
-            setTimeout(() => {
-              resolve({
-                ajax_foo: 'Ajax Foo',
-                ajax_bar: 'Ajax Bar',
-              })
-            }, 2000)
-          }),
-        })
-      },
-
       handleChangeBucket(folder, index) {
         if (this.selectedIndex === index && this.selectedBucket === folder)
           this.editBucket = true
