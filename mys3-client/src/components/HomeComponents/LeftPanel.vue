@@ -1,6 +1,5 @@
 <template>
   <div id="leftpanel-container">
-    <!--<p class="leftpanel-title" @click="updateUser">{{ this.result.nickname }}</p>-->
     <p class="leftpanel-title" @click="editUser">{{ this.result.nickname }}</p>
     <ul class="userid">
       <li v-on:click="getBuckets">
@@ -10,9 +9,9 @@
     </ul>
     <ul class="buckets-list" v-if="depth>=1">
       <li v-for="(folder, index) in currentFolders" @click="handleChangeBucket(folder,index)"
-        :class="{selected: index === selectedIndex}" v-bind:key="folder">
+        :class="{selected: index === selectedIndex}" v-bind:key="folder.name">
         <img src="../../assets/folder-icon.png" alt="folder picture">
-        <span v-on:click="getBlobs">{{ folder }}</span>
+        <span v-on:click="getBlobs">{{ folder.name }}</span>
         <img v-on:click="deleteBucket" src="../../assets/delete-icon.png" class="delete-icon" alt="folder picture">
       </li>
     </ul>
@@ -55,36 +54,6 @@
       })
     },
     methods: {
-      async updateUser() {
-        swal({
-          title: 'Test modal with input',
-          html: 'custom <strong>content</strong>',
-          input: 'text',
-          inputs: [],
-          preConfirm: (value) => {
-            if (!value) {
-              swal.showValidationError('Should not be empty!')
-            }
-          }
-        }).then( newName => {
-          this.renameBucket(newName)
-          this.editBucket = false
-        })
-        swal.addInput({
-          name: 'ajaxradio',
-          type: 'radio',
-          label: 'Ajax radio input label',
-          options: new Promise((resolve) => {
-            setTimeout(() => {
-              resolve({
-                ajax_foo: 'Ajax Foo',
-                ajax_bar: 'Ajax Bar',
-              })
-            }, 2000)
-          }),
-        })
-      },
-
       handleChangeBucket(folder, index) {
         if (this.selectedIndex === index && this.selectedBucket === folder)
           this.editBucket = true
@@ -107,11 +76,13 @@
             }
           ).then( result => {
             this.depth++
+            //console.log(result)
             this.$root.$emit('sendDataToFileListComponent', {
               list: null,
               userId: this.result.id,
               bucketName: null,
             })
+
             return this.currentFolders = result.data.list
           }).catch( error => {
             swal(error.response.data.message, {
@@ -165,14 +136,14 @@
         name = name.replace(/ /g, '-')
 
         // OPTIMISTIC RENAME
-        this.currentFolders[this.currentFolders.indexOf(this.selectedBucket)] = name
+        this.currentFolders[this.currentFolders.indexOf(this.selectedBucket)] = { name: name }
         const optimisticName = this.currentFolders[this.currentFolders.indexOf(this.selectedBucket)]
         this.getBuckets()
 
         // FETCHING REAL DATA
         axios.put(
           // URL
-          `http://localhost:1337/bucket/edit/${this.selectedBucket}`,
+          `http://localhost:1337/bucket/edit/${this.selectedBucket.name}`,
           // BODY
           querystring.stringify({
             name: name,
@@ -219,11 +190,11 @@
           if (confirm) {
             // OPTIMISTIC DELETE
             const bucketsBackup = this.currentFolders
-            this.currentFolders.splice(this.currentFolders.indexOf(this.selectedBucket), 1)
+            this.currentFolders.splice(this.currentFolders.indexOf(this.selectedBucket.name), 1)
             this.getBuckets()
 
             axios.delete(
-              `http://localhost:1337/bucket/delete/${this.selectedBucket}`,
+              `http://localhost:1337/bucket/delete/${this.selectedBucket.name}`,
               // HEADERS
               {
                 headers: { 'Authorization': `Bearer ${this.token}` }
@@ -259,6 +230,16 @@
               headers: { 'Authorization': `Bearer ${this.token}` }
             }
           ).then( result => {
+            const { files, blobs } = result.data
+            console.log(files)
+            //console.log(blobs)
+            const diff = files.length - blobs.length
+            if (diff > 0) {
+              blobs.map(file => {
+                console.log(file)
+              })
+            }
+
             return this.$root.$emit('sendDataToFileListComponent', {
               list: result.data,
               userId: this.result.id,

@@ -28,6 +28,7 @@ export default class Authentifier {
 
       const user = await this.repository.findOne({
         where: { id: JSON.parse(JSON.stringify(jwtPayload)).userId },
+        relations: ['buckets'],
       })
 
       if (user === undefined)

@@ -121,11 +121,25 @@ class BlobController {
   }
 
   static getPublicBlob = (req: Request, res: Response): Response | void => {
-    const publicLink = getEnvFolder.downloadPublicFile(req.params.name)
+    const publicLink = getEnvFolder.downloadSharedFile(
+      req.params.name,
+      'public',
+    )
     if (publicLink.file === null)
       return res.status(400).send({ message: publicLink.message })
 
     return res.status(200).sendFile(publicLink.file)
+  }
+
+  static getPrivateBlob = (req: Request, res: Response): Response | void => {
+    const privateLink = getEnvFolder.downloadSharedFile(
+      req.params.name,
+      'private',
+    )
+    if (privateLink.file === null)
+      return res.status(400).send({ message: privateLink.message })
+
+    return res.status(200).sendFile(privateLink.file)
   }
 
   static addBlob = async (req: Request, res: Response): Promise<Response> => {

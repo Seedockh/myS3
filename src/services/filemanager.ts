@@ -35,17 +35,20 @@ export default class FileManager {
     return dataDir
   }
 
-  readFolder(path: string): Array<string> | string {
+  readFolder(path: string): Array<string | fs.Dirent> | string | fs.Dirent {
     if (!fs.existsSync(`${this.defaultPath}/${path}`))
       return `Folder ${this.defaultPath}/${path} does not exist.`
 
-    const files = fs.readdirSync(`${this.defaultPath}/${path}`)
+    const files = fs.readdirSync(`${this.defaultPath}/${path}`, {
+      withFileTypes: true,
+    })
     return files
   }
 
   createFolder(path: string): string {
     if (process.env.NODE_ENV === 'test' && !this.defaultPath.includes('/tests'))
       this.defaultPath += '/tests'
+
     if (fs.existsSync(`${this.defaultPath}/${path}`)) {
       return `Folder ${this.defaultPath}/${path} already exists.`
     } else {
@@ -89,8 +92,12 @@ export default class FileManager {
     }
   }
 
-  downloadPublicFile(filePath: string): ProcessFile {
+  downloadSharedFile(filePath: string, permission: string): ProcessFile {
     if (fs.existsSync(`${this.defaultPath}/public/${filePath}`)) {
+      if (permission === 'public')
+        fs.chmodSync(`${this.defaultPath}/public/${filePath}`, 0o766)
+      else fs.chmodSync(`${this.defaultPath}/public/${filePath}`, 0o744)
+
       return {
         file: path.resolve(`${this.defaultPath}/public/${filePath}`),
         message: null,

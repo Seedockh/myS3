@@ -39,7 +39,7 @@ const filemanager = (): void => {
 
     const folder = envFolder.readFolder('testingfolder')
     expect(JSON.stringify(folder))
-      .equals(JSON.stringify(['test1.txt', 'test2.txt', 'test3.txt']))
+      .equals(JSON.stringify([{name:'test1.txt'}, {name:'test2.txt'}, {name:'test3.txt'}]))
     done()
   })
 
@@ -136,16 +136,29 @@ const filemanager = (): void => {
   })
 
   it('DOWNLOADS a public file successfully', async done => {
-    const file = envFolder.downloadPublicFile('test-file.txt')
+    const file = envFolder.downloadSharedFile('test-file.txt', 'public')
     expect(JSON.stringify(file)).equals(JSON.stringify({
       file: path.normalize(`${process.env.HOME}/myS3DATA/tests/public/test-file.txt`),
       message: null
     }))
+    expect('0' + (fs.statSync(`${process.env.HOME}/myS3DATA/tests/public/test-file.txt`).mode & 0o777).toString(8))
+      .equals('0766') // undefined means it's ok
+    done()
+  })
+
+  it('DOWNLOADS a private file successfully', async done => {
+    const file = envFolder.downloadSharedFile('test-file.txt', 'private')
+    expect(JSON.stringify(file)).equals(JSON.stringify({
+      file: path.normalize(`${process.env.HOME}/myS3DATA/tests/public/test-file.txt`),
+      message: null
+    }))
+    expect('0' + (fs.statSync(`${process.env.HOME}/myS3DATA/tests/public/test-file.txt`).mode & 0o777).toString(8))
+      .equals('0744') // undefined means it's ok
     done()
   })
 
   it('FAILS to download unexistent file', async done => {
-    const file = envFolder.downloadPublicFile('unexistent-file.txt')
+    const file = envFolder.downloadSharedFile('unexistent-file.txt', 'public')
     expect(JSON.stringify(file)).equals(JSON.stringify({
       file: null,
       message: 'This file does not exist.'

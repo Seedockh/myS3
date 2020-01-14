@@ -29,14 +29,14 @@
       <input type="file" ref="file" v-on:change="handleFile" name="mys3-upload" class="input-file"/>
       <button class="btn-submit" v-on:click="uploadFile" name="btn-mys3-upload">
         <img src="../../assets/upload-icon.png" alt="add file">
-        Upload a file
+        Upload file
       </button>
     </div>
     <div v-if="userId && !selectedBucket && !editUser" class="create-bucket-form">
       <input type="text" placeholder="Enter bucket name here..." ref="newBucket" v-on:change="handleNewBucket" name="newBucket" />
       <button class="create-bucket" v-on:click="createBucket">
         <img src="../../assets/add-icon.png" alt="add bucket">
-        Create a new bucket
+        New bucket
       </button>
     </div>
   </div>
@@ -92,15 +92,35 @@ export default {
           headers: { 'Authorization': `Bearer ${this.token}` },
         }
       ).then( result => {
-        const url = `http://localhost:1337/blob/public/${result.data}`
-        const clickableLink = document.createElement('a')
-        clickableLink.href = url
-        clickableLink.innerHTML = url
-        clickableLink.setAttribute('download', result.data)
+        const container = document.createElement('div')
+
+        // This file will have READ + WRITE access
+        const publicText = document.createTextNode('Public link : ')
+        const publicUrl = `http://localhost:1337/blob/public/${result.data}`
+        const publicLink = document.createElement('a')
+        publicLink.href = publicUrl
+        publicLink.innerHTML = publicUrl
+        publicLink.setAttribute('download', result.data)
+
+        const newLine = document.createElement('br')
+
+        // This file will have only READ access
+        const privateText = document.createTextNode('Private link : ')
+        const privateUrl = `http://localhost:1337/blob/private/${result.data}`
+        const privateLink = document.createElement('a')
+        privateLink.href = privateUrl
+        privateLink.innerHTML = privateUrl
+        privateLink.setAttribute('download', result.data)
+
+        container.appendChild(publicText)
+        container.appendChild(publicLink)
+        container.appendChild(newLine)
+        container.appendChild(privateText)
+        container.appendChild(privateLink)
 
         swal({
-          title: "Share link :",
-          content: clickableLink,
+          title: "Share links :",
+          content: container,
         })
       }).catch( error => {
           return swal(error.response.data.message, { icon: "warning" })
@@ -122,7 +142,9 @@ export default {
         // URL
         `http://localhost:1337/bucket/createNew`,
         // BODY
-        querystring.stringify({ name: this.newBucket }),
+        querystring.stringify({
+          name: this.newBucket,
+        }),
         // HEADERS
         { headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -206,6 +228,7 @@ export default {
           return swal(error.response.data.message, { icon: "warning" })
       })
     },
+
     async duplicateFile(id) {
       this.token = await this.getToken()
       axios.post(
@@ -226,6 +249,7 @@ export default {
           return swal(error.response.data.message, { icon: "warning" })
         })
     },
+
     async deleteFile(id) {
       this.token = await this.getToken()
       swal(
@@ -352,8 +376,9 @@ export default {
   justify-content: space-around;
 }
   .upload-blob-form input {
-    width: 250px;
-    padding: 1em 0 1em 1em;
+    width: 100%;
+    height: 22px;
+    padding: .3em 1em .3em 1em;
     border: 2px solid grey;
     cursor: pointer;
     border-radius: 5px;
@@ -368,23 +393,25 @@ export default {
 
 .create-bucket-form {
   width: 90%;
-  margin-top: 2em;
+  margin-top: .5em;
   display: flex;
   justify-content: space-around;
 }
 .create-bucket-form input {
-  width: 250px;
+  width: 100%;
   padding-left: 1em;
   border-radius: 5px;
 }
 .create-bucket, .btn-submit {
-  width: 35%;
+  min-width: 140px;
   display: flex;
+  margin-left: .5em;
   align-items: center;
   justify-content: center;
   background: rgba(40,58,98,.8);
   border-radius: 5px;
-  padding: .5em;
+  height: 34px;
+  padding: 0 1em 0 1em;
   cursor: pointer;
   color: white;
 }

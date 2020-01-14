@@ -16,6 +16,9 @@ router.get('/share/:id([0-9]+)', [checkJwt], BlobController.shareBlob)
 // Get a public blob
 router.get('/public/:name', BlobController.getPublicBlob)
 
+// Get a private blob
+router.get('/private/:name', BlobController.getPrivateBlob)
+
 // Add a blob
 router.post('/add/:bucketName', [checkJwt], BlobController.addBlob)
 
