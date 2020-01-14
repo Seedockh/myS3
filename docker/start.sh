@@ -5,4 +5,4 @@ cd /home/app/
 yarn test
 yarn dev &
 cd ./mys3-client/
-yarn serve
+yarn dev:serve

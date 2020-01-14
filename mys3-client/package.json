@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:serve": "vue-cli-service serve --port 8181",
     "serve": "npm run build && node scripts/serve",
-    "build": "npm run build:server && mv dist/vue-ssr-server-bundle.json bundle && npm run build:client && mv bundle dist/vue-ssr-server-bundle.json",
+    "build": "npm run build:server && mv ./dist/vue-ssr-server-bundle.json bundle && npm run build:client && mv bundle ./dist/vue-ssr-server-bundle.json",
     "lint": "vue-cli-service lint",
     "build:client": "vue-cli-service build",
     "build:server": "cross-env WEBPACK_TARGET=node vue-cli-service build",
