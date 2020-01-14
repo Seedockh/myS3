@@ -24,6 +24,7 @@ The goal here is to recreate an **`AWS S3`** docker container, working only loca
 ### Edit User
 
 By clicking on your nickname :
+
 ![https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-18-17.png](https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-18-17.png)
 
 ### Create bucket
@@ -66,7 +67,7 @@ By clicking on your blob :
 
 ![https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-18-31.png](https://image.noelshack.com/fichiers/2020/03/2/1578968345-screenshot-from-2020-01-14-03-18-31.png)
 
-# Run with Docker-Compose
+# Run with Docker-Compose (No SSR)
 
 **`Dockerfile`** and **`docker-compose.yml`** are configured so you don't have any database configuration to deal with.
 
@@ -92,7 +93,8 @@ Once you have your 2 `.env` files, you're good to build & run the docker image :
 sudo docker-compose up --build
 ```
 
-  `Note : Tests suite will run during the build so you can check if everything is alright and well covered.`
+  `Note-1 : Tests suite will run during the build so you can check if everything is alright and well covered. If it fails to run, check if no previous container would still be running with docker-compose down.`
+  `Note-2 : Docker was struggling to find his way in build folders, so it will run the dev script for the VueJS Client, which is without Server-Side-Rendering.`
 
 Then both server & client will be accessible :
   - Server on http://localhost:1337
